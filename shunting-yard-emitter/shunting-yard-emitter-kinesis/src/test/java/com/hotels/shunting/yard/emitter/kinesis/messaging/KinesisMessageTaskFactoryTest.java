@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.emitter.kinesis.messaging;
+package com.hotels.shunting.yard.emitter.kinesis.messaging;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.KinesisProducerProperty.MAX_CONNECTIONS;
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.KinesisProducerProperty.RECORD_MAX_BUFFERED_TIME;
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.KinesisProducerProperty.REGION;
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.KinesisProducerProperty.REQUEST_TIMEOUT;
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.KinesisProducerProperty.RETRIES;
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.KinesisProducerProperty.STREAM;
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.messaging.KinesisMessageTaskFactory.kinesisProperties;
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.messaging.KinesisMessageTaskFactory.topic;
+import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.MAX_CONNECTIONS;
+import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.RECORD_MAX_BUFFERED_TIME;
+import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.REGION;
+import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.REQUEST_TIMEOUT;
+import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.RETRIES;
+import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.STREAM;
+import static com.hotels.shunting.yard.emitter.kinesis.messaging.KinesisMessageTaskFactory.kinesisProperties;
+import static com.hotels.shunting.yard.emitter.kinesis.messaging.KinesisMessageTaskFactory.topic;
 
 import org.apache.hadoop.conf.Configuration;
 import org.junit.Test;
@@ -35,8 +35,10 @@ import org.junit.Test;
 import com.amazonaws.services.kinesis.producer.KinesisProducer;
 import com.amazonaws.services.kinesis.producer.KinesisProducerConfiguration;
 
-import com.hotels.bdp.circus.train.event.common.messaging.Message;
-import com.hotels.bdp.circus.train.event.common.messaging.MessageTask;
+import com.hotels.shunting.yard.common.messaging.Message;
+import com.hotels.shunting.yard.common.messaging.MessageTask;
+import com.hotels.shunting.yard.emitter.kinesis.messaging.KinesisMessageTask;
+import com.hotels.shunting.yard.emitter.kinesis.messaging.KinesisMessageTaskFactory;
 
 public class KinesisMessageTaskFactoryTest {
 

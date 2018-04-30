@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.receiver.kafka;
+package com.hotels.shunting.yard.receiver.kafka;
 
-import static com.hotels.bdp.circus.train.event.common.Utils.checkNotNull;
-import static com.hotels.bdp.circus.train.event.receiver.kafka.KafkaConsumerProperty.TOPIC;
-import static com.hotels.bdp.circus.train.event.receiver.kafka.Utils.stringProperty;
+import static com.hotels.shunting.yard.common.Utils.checkNotNull;
+import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.TOPIC;
+import static com.hotels.shunting.yard.receiver.kafka.Utils.stringProperty;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -30,9 +30,9 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import com.hotels.bdp.circus.train.event.common.event.SerializableListenerEvent;
-import com.hotels.bdp.circus.train.event.common.io.MetaStoreEventSerDe;
-import com.hotels.bdp.circus.train.event.common.messaging.MessageReader;
+import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
+import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
+import com.hotels.shunting.yard.common.messaging.MessageReader;
 
 public class KafkaMessageReader implements MessageReader {
 

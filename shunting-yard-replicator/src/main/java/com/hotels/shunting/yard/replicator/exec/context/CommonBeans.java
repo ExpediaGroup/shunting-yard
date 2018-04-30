@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.receiver.exec.context;
+package com.hotels.shunting.yard.replicator.exec.context;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import static com.hotels.bdp.circus.train.event.receiver.exec.app.ConfigurationVariables.WORKSPACE;
+import static com.hotels.shunting.yard.replicator.exec.app.ConfigurationVariables.WORKSPACE;
 
 import java.util.HashMap;
 import java.util.List;
@@ -41,17 +41,17 @@ import com.expedia.hdw.common.hive.conf.HiveConfFactory;
 import com.expedia.hdw.common.hive.metastore.CloseableMetaStoreClient;
 import com.expedia.hdw.common.hive.metastore.MetaStoreClientFactory;
 
-import com.hotels.bdp.circus.train.event.common.io.MetaStoreEventSerDe;
-import com.hotels.bdp.circus.train.event.common.messaging.MessageReader;
-import com.hotels.bdp.circus.train.event.common.receiver.CircusTrainMetaStoreEventListener;
-import com.hotels.bdp.circus.train.event.receiver.exec.conf.MessageReaderConfiguration;
-import com.hotels.bdp.circus.train.event.receiver.exec.conf.ReplicaCatalog;
-import com.hotels.bdp.circus.train.event.receiver.exec.external.Marshaller;
-import com.hotels.bdp.circus.train.event.receiver.exec.launcher.CircusTrainRunner;
-import com.hotels.bdp.circus.train.event.receiver.exec.receiver.ContextFactory;
-import com.hotels.bdp.circus.train.event.receiver.exec.receiver.ReplicationCircusTrainMetaStoreEventListener;
-import com.hotels.bdp.circus.train.event.receiver.kinesis.KinesisMessageReader;
-import com.hotels.bdp.circus.train.event.receiver.metastore.DefaultMetaStoreClientSupplier;
+import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
+import com.hotels.shunting.yard.common.messaging.MessageReader;
+import com.hotels.shunting.yard.common.receiver.CircusTrainMetaStoreEventListener;
+import com.hotels.shunting.yard.receiver.kinesis.KinesisMessageReader;
+import com.hotels.shunting.yard.replicator.exec.conf.MessageReaderConfiguration;
+import com.hotels.shunting.yard.replicator.exec.conf.ReplicaCatalog;
+import com.hotels.shunting.yard.replicator.exec.external.Marshaller;
+import com.hotels.shunting.yard.replicator.exec.launcher.CircusTrainRunner;
+import com.hotels.shunting.yard.replicator.exec.receiver.ContextFactory;
+import com.hotels.shunting.yard.replicator.exec.receiver.ReplicationCircusTrainMetaStoreEventListener;
+import com.hotels.shunting.yard.replicator.metastore.DefaultMetaStoreClientSupplier;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @org.springframework.context.annotation.Configuration

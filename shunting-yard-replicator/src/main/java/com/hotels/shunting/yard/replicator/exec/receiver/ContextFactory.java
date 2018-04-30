@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.receiver.exec.receiver;
+package com.hotels.shunting.yard.replicator.exec.receiver;
 
 import static org.apache.hadoop.hive.conf.HiveConf.ConfVars.METASTOREURIS;
 
-import static com.hotels.bdp.circus.train.event.receiver.exec.app.ConfigurationVariables.WORKSPACE;
+import static com.hotels.shunting.yard.replicator.exec.app.ConfigurationVariables.WORKSPACE;
 
 import java.io.File;
 import java.net.URI;
@@ -38,10 +38,10 @@ import org.slf4j.LoggerFactory;
 
 import com.expedia.hdw.common.hive.metastore.CloseableMetaStoreClient;
 
-import com.hotels.bdp.circus.train.event.common.event.SerializableListenerEvent;
-import com.hotels.bdp.circus.train.event.receiver.exec.external.CircusTrainConfig;
-import com.hotels.bdp.circus.train.event.receiver.exec.external.Marshaller;
 import com.hotels.bdp.circustrain.core.conf.ReplicationMode;
+import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
+import com.hotels.shunting.yard.replicator.exec.external.CircusTrainConfig;
+import com.hotels.shunting.yard.replicator.exec.external.Marshaller;
 
 public class ContextFactory {
   private static final Logger LOG = LoggerFactory.getLogger(ContextFactory.class);

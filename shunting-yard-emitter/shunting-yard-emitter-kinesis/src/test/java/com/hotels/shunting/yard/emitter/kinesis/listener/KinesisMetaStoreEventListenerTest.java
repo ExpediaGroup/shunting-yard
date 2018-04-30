@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.emitter.kinesis.listener;
+package com.hotels.shunting.yard.emitter.kinesis.listener;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -48,19 +48,20 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import com.hotels.bdp.circus.train.event.common.event.SerializableAddPartitionEvent;
-import com.hotels.bdp.circus.train.event.common.event.SerializableAlterPartitionEvent;
-import com.hotels.bdp.circus.train.event.common.event.SerializableAlterTableEvent;
-import com.hotels.bdp.circus.train.event.common.event.SerializableCreateTableEvent;
-import com.hotels.bdp.circus.train.event.common.event.SerializableDropPartitionEvent;
-import com.hotels.bdp.circus.train.event.common.event.SerializableDropTableEvent;
-import com.hotels.bdp.circus.train.event.common.event.SerializableInsertEvent;
-import com.hotels.bdp.circus.train.event.common.event.SerializableListenerEvent;
-import com.hotels.bdp.circus.train.event.common.event.SerializableListenerEventFactory;
-import com.hotels.bdp.circus.train.event.common.io.MetaStoreEventSerDe;
-import com.hotels.bdp.circus.train.event.common.messaging.Message;
-import com.hotels.bdp.circus.train.event.common.messaging.MessageTask;
-import com.hotels.bdp.circus.train.event.common.messaging.MessageTaskFactory;
+import com.hotels.shunting.yard.common.event.SerializableAddPartitionEvent;
+import com.hotels.shunting.yard.common.event.SerializableAlterPartitionEvent;
+import com.hotels.shunting.yard.common.event.SerializableAlterTableEvent;
+import com.hotels.shunting.yard.common.event.SerializableCreateTableEvent;
+import com.hotels.shunting.yard.common.event.SerializableDropPartitionEvent;
+import com.hotels.shunting.yard.common.event.SerializableDropTableEvent;
+import com.hotels.shunting.yard.common.event.SerializableInsertEvent;
+import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
+import com.hotels.shunting.yard.common.event.SerializableListenerEventFactory;
+import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
+import com.hotels.shunting.yard.common.messaging.Message;
+import com.hotels.shunting.yard.common.messaging.MessageTask;
+import com.hotels.shunting.yard.common.messaging.MessageTaskFactory;
+import com.hotels.shunting.yard.emitter.kinesis.listener.KinesisMetaStoreEventListener;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KinesisMetaStoreEventListenerTest {

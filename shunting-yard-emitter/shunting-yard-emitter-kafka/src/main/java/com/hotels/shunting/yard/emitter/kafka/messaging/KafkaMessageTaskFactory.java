@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.emitter.kafka.messaging;
+package com.hotels.shunting.yard.emitter.kafka.messaging;
 
-import static com.hotels.bdp.circus.train.event.common.Utils.checkNotNull;
-import static com.hotels.bdp.circus.train.event.emitter.kafka.KafkaProducerProperty.ACKS;
-import static com.hotels.bdp.circus.train.event.emitter.kafka.KafkaProducerProperty.BATCH_SIZE;
-import static com.hotels.bdp.circus.train.event.emitter.kafka.KafkaProducerProperty.BOOTSTRAP_SERVERS;
-import static com.hotels.bdp.circus.train.event.emitter.kafka.KafkaProducerProperty.BUFFER_MEMORY;
-import static com.hotels.bdp.circus.train.event.emitter.kafka.KafkaProducerProperty.CLIENT_ID;
-import static com.hotels.bdp.circus.train.event.emitter.kafka.KafkaProducerProperty.LINGER_MS;
-import static com.hotels.bdp.circus.train.event.emitter.kafka.KafkaProducerProperty.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION;
-import static com.hotels.bdp.circus.train.event.emitter.kafka.KafkaProducerProperty.RETRIES;
-import static com.hotels.bdp.circus.train.event.emitter.kafka.KafkaProducerProperty.TOPIC;
-import static com.hotels.bdp.circus.train.event.emitter.kafka.Utils.intProperty;
-import static com.hotels.bdp.circus.train.event.emitter.kafka.Utils.longProperty;
-import static com.hotels.bdp.circus.train.event.emitter.kafka.Utils.stringProperty;
+import static com.hotels.shunting.yard.common.Utils.checkNotNull;
+import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.ACKS;
+import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.BATCH_SIZE;
+import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.BOOTSTRAP_SERVERS;
+import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.BUFFER_MEMORY;
+import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.CLIENT_ID;
+import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.LINGER_MS;
+import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION;
+import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.RETRIES;
+import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.TOPIC;
+import static com.hotels.shunting.yard.emitter.kafka.Utils.intProperty;
+import static com.hotels.shunting.yard.emitter.kafka.Utils.longProperty;
+import static com.hotels.shunting.yard.emitter.kafka.Utils.stringProperty;
 
 import java.util.Properties;
 
@@ -36,9 +36,9 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import com.hotels.bdp.circus.train.event.common.messaging.Message;
-import com.hotels.bdp.circus.train.event.common.messaging.MessageTask;
-import com.hotels.bdp.circus.train.event.common.messaging.MessageTaskFactory;
+import com.hotels.shunting.yard.common.messaging.Message;
+import com.hotels.shunting.yard.common.messaging.MessageTask;
+import com.hotels.shunting.yard.common.messaging.MessageTaskFactory;
 
 /**
  * A {@link MessageTaskFactory} that create a task to post message to a Kafka topic. Note that in order to preserve the

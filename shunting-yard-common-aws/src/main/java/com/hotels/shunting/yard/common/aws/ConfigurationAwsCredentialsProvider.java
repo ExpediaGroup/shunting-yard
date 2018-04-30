@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.common.aws;
+package com.hotels.shunting.yard.common.aws;
 
-import static com.hotels.bdp.circus.train.event.common.Utils.checkNotNull;
-import static com.hotels.bdp.circus.train.event.common.aws.SqsProperty.AWS_ACCESS_KEY;
-import static com.hotels.bdp.circus.train.event.common.aws.SqsProperty.AWS_SECRET_KEY;
-import static com.hotels.bdp.circus.train.event.common.aws.Utils.stringProperty;
+import static com.hotels.shunting.yard.common.Utils.checkNotNull;
+import static com.hotels.shunting.yard.common.aws.SqsProperty.AWS_ACCESS_KEY;
+import static com.hotels.shunting.yard.common.aws.SqsProperty.AWS_SECRET_KEY;
+import static com.hotels.shunting.yard.common.aws.Utils.stringProperty;
 
 import java.io.IOException;
 

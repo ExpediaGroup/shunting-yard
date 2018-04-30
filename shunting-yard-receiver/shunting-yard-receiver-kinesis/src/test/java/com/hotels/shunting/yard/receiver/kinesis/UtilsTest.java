@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.receiver.kinesis;
+package com.hotels.shunting.yard.receiver.kinesis;
 
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import static com.hotels.bdp.circus.train.event.receiver.kinesis.KinesisConsumerProperty.MAX_RECORDS;
-import static com.hotels.bdp.circus.train.event.receiver.kinesis.KinesisConsumerProperty.STREAM;
-import static com.hotels.bdp.circus.train.event.receiver.kinesis.KinesisConsumerProperty.WORKER_ID;
-import static com.hotels.bdp.circus.train.event.receiver.kinesis.Utils.intProperty;
-import static com.hotels.bdp.circus.train.event.receiver.kinesis.Utils.stringProperty;
+import static com.hotels.shunting.yard.receiver.kinesis.KinesisConsumerProperty.MAX_RECORDS;
+import static com.hotels.shunting.yard.receiver.kinesis.KinesisConsumerProperty.STREAM;
+import static com.hotels.shunting.yard.receiver.kinesis.KinesisConsumerProperty.WORKER_ID;
+import static com.hotels.shunting.yard.receiver.kinesis.Utils.intProperty;
+import static com.hotels.shunting.yard.receiver.kinesis.Utils.stringProperty;
 
 import org.apache.hadoop.conf.Configuration;
 import org.junit.Rule;

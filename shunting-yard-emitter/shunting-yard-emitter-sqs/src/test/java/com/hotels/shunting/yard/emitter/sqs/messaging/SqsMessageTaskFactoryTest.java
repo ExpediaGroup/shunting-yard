@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.emitter.sqs.messaging;
+package com.hotels.shunting.yard.emitter.sqs.messaging;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -27,8 +27,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.amazonaws.services.sqs.AmazonSQS;
 
-import com.hotels.bdp.circus.train.event.common.messaging.Message;
-import com.hotels.bdp.circus.train.event.common.messaging.MessageTask;
+import com.hotels.shunting.yard.common.messaging.Message;
+import com.hotels.shunting.yard.common.messaging.MessageTask;
+import com.hotels.shunting.yard.emitter.sqs.messaging.SqsMessageTask;
+import com.hotels.shunting.yard.emitter.sqs.messaging.SqsMessageTaskFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SqsMessageTaskFactoryTest {

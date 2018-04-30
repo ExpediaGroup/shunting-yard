@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.receiver.metastore;
+package com.hotels.shunting.yard.replicator.metastore;
 
 import org.apache.hadoop.hive.conf.HiveConf;
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.common.messaging;
+package com.hotels.shunting.yard.common.messaging;
 
 public class Message {
 

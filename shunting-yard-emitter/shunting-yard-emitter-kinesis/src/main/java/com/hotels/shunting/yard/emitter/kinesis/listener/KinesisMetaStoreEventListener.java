@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.emitter.kinesis.listener;
+package com.hotels.shunting.yard.emitter.kinesis.listener;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -22,11 +22,11 @@ import org.apache.hadoop.conf.Configuration;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import com.hotels.bdp.circus.train.event.common.emitter.AbstractMetaStoreEventListener;
-import com.hotels.bdp.circus.train.event.common.event.SerializableListenerEventFactory;
-import com.hotels.bdp.circus.train.event.common.io.MetaStoreEventSerDe;
-import com.hotels.bdp.circus.train.event.common.messaging.MessageTaskFactory;
-import com.hotels.bdp.circus.train.event.emitter.kinesis.messaging.KinesisMessageTaskFactory;
+import com.hotels.shunting.yard.common.emitter.AbstractMetaStoreEventListener;
+import com.hotels.shunting.yard.common.event.SerializableListenerEventFactory;
+import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
+import com.hotels.shunting.yard.common.messaging.MessageTaskFactory;
+import com.hotels.shunting.yard.emitter.kinesis.messaging.KinesisMessageTaskFactory;
 
 public class KinesisMetaStoreEventListener extends AbstractMetaStoreEventListener {
 

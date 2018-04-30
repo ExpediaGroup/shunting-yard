@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.receiver.kinesis;
+package com.hotels.shunting.yard.receiver.kinesis;
 
 import java.io.IOException;
 
@@ -22,11 +22,11 @@ import org.apache.hadoop.hive.metastore.api.MetaException;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import com.hotels.bdp.circus.train.event.common.event.SerializableListenerEvent;
-import com.hotels.bdp.circus.train.event.common.io.MetaStoreEventSerDe;
-import com.hotels.bdp.circus.train.event.common.messaging.MessageReader;
-import com.hotels.bdp.circus.train.event.receiver.kinesis.consumer.DefaultKinesisConsumer;
-import com.hotels.bdp.circus.train.event.receiver.kinesis.consumer.KinesisConsumer;
+import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
+import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
+import com.hotels.shunting.yard.common.messaging.MessageReader;
+import com.hotels.shunting.yard.receiver.kinesis.consumer.DefaultKinesisConsumer;
+import com.hotels.shunting.yard.receiver.kinesis.consumer.KinesisConsumer;
 
 public class KinesisMessageReader implements MessageReader {
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.receiver.exec.app;
+package com.hotels.shunting.yard.replicator.exec.app;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,16 +23,16 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.stereotype.Component;
 
-import com.hotels.bdp.circus.train.event.common.event.SerializableAddPartitionEvent;
-import com.hotels.bdp.circus.train.event.common.event.SerializableAlterPartitionEvent;
-import com.hotels.bdp.circus.train.event.common.event.SerializableAlterTableEvent;
-import com.hotels.bdp.circus.train.event.common.event.SerializableCreateTableEvent;
-import com.hotels.bdp.circus.train.event.common.event.SerializableDropPartitionEvent;
-import com.hotels.bdp.circus.train.event.common.event.SerializableDropTableEvent;
-import com.hotels.bdp.circus.train.event.common.event.SerializableInsertEvent;
-import com.hotels.bdp.circus.train.event.common.event.SerializableListenerEvent;
-import com.hotels.bdp.circus.train.event.common.messaging.MessageReader;
-import com.hotels.bdp.circus.train.event.common.receiver.CircusTrainMetaStoreEventListener;
+import com.hotels.shunting.yard.common.event.SerializableAddPartitionEvent;
+import com.hotels.shunting.yard.common.event.SerializableAlterPartitionEvent;
+import com.hotels.shunting.yard.common.event.SerializableAlterTableEvent;
+import com.hotels.shunting.yard.common.event.SerializableCreateTableEvent;
+import com.hotels.shunting.yard.common.event.SerializableDropPartitionEvent;
+import com.hotels.shunting.yard.common.event.SerializableDropTableEvent;
+import com.hotels.shunting.yard.common.event.SerializableInsertEvent;
+import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
+import com.hotels.shunting.yard.common.messaging.MessageReader;
+import com.hotels.shunting.yard.common.receiver.CircusTrainMetaStoreEventListener;
 
 @Component
 class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.receiver.exec.receiver;
+package com.hotels.shunting.yard.replicator.exec.receiver;
 
 public class Context {
 

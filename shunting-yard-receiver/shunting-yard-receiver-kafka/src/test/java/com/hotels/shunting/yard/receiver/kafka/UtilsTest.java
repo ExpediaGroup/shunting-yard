@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.receiver.kafka;
+package com.hotels.shunting.yard.receiver.kafka;
 
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import static com.hotels.bdp.circus.train.event.receiver.kafka.KafkaConsumerProperty.CLIENT_ID;
-import static com.hotels.bdp.circus.train.event.receiver.kafka.KafkaConsumerProperty.ENABLE_AUTO_COMMIT;
-import static com.hotels.bdp.circus.train.event.receiver.kafka.KafkaConsumerProperty.RETRY_BACKOFF_MS;
-import static com.hotels.bdp.circus.train.event.receiver.kafka.KafkaConsumerProperty.SESSION_TIMEOUT_MS;
-import static com.hotels.bdp.circus.train.event.receiver.kafka.KafkaConsumerProperty.TOPIC;
-import static com.hotels.bdp.circus.train.event.receiver.kafka.Utils.booleanProperty;
-import static com.hotels.bdp.circus.train.event.receiver.kafka.Utils.intProperty;
-import static com.hotels.bdp.circus.train.event.receiver.kafka.Utils.longProperty;
-import static com.hotels.bdp.circus.train.event.receiver.kafka.Utils.stringProperty;
+import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.CLIENT_ID;
+import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.ENABLE_AUTO_COMMIT;
+import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.RETRY_BACKOFF_MS;
+import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.SESSION_TIMEOUT_MS;
+import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.TOPIC;
+import static com.hotels.shunting.yard.receiver.kafka.Utils.booleanProperty;
+import static com.hotels.shunting.yard.receiver.kafka.Utils.intProperty;
+import static com.hotels.shunting.yard.receiver.kafka.Utils.longProperty;
+import static com.hotels.shunting.yard.receiver.kafka.Utils.stringProperty;
 
 import org.apache.hadoop.conf.Configuration;
 import org.junit.Rule;

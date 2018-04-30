@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.receiver.exec.app;
+package com.hotels.shunting.yard.replicator.exec.app;
 
 class Constants {
   static final String PREFIX = "com.hotels.bdp.circus.train.event.receiver.exec.app.";

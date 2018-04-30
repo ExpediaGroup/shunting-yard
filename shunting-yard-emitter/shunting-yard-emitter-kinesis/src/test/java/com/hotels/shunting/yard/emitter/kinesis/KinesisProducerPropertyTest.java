@@ -13,20 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.emitter.kinesis;
+package com.hotels.shunting.yard.emitter.kinesis;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.KinesisProducerProperty.MAX_CONNECTIONS;
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.KinesisProducerProperty.RECORD_MAX_BUFFERED_TIME;
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.KinesisProducerProperty.REGION;
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.KinesisProducerProperty.REQUEST_TIMEOUT;
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.KinesisProducerProperty.RETRIES;
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.KinesisProducerProperty.STREAM;
+import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.MAX_CONNECTIONS;
+import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.RECORD_MAX_BUFFERED_TIME;
+import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.REGION;
+import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.REQUEST_TIMEOUT;
+import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.RETRIES;
+import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.STREAM;
 
 import org.junit.Test;
+
+import com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty;
 
 public class KinesisProducerPropertyTest {
 

@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.common.aws;
+package com.hotels.shunting.yard.common.aws;
 
-import static com.hotels.bdp.circus.train.event.common.Utils.checkNotNull;
-import static com.hotels.bdp.circus.train.event.common.aws.SqsProperty.GROUP_ID;
-import static com.hotels.bdp.circus.train.event.common.aws.SqsProperty.QUEUE;
-import static com.hotels.bdp.circus.train.event.common.aws.SqsProperty.REGION;
-import static com.hotels.bdp.circus.train.event.common.aws.SqsProperty.WAIT_TIME_SECONDS;
+import static com.hotels.shunting.yard.common.Utils.checkNotNull;
+import static com.hotels.shunting.yard.common.aws.SqsProperty.GROUP_ID;
+import static com.hotels.shunting.yard.common.aws.SqsProperty.QUEUE;
+import static com.hotels.shunting.yard.common.aws.SqsProperty.REGION;
+import static com.hotels.shunting.yard.common.aws.SqsProperty.WAIT_TIME_SECONDS;
 
 import org.apache.hadoop.conf.Configuration;
 

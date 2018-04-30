@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.receiver.exec.external;
+package com.hotels.shunting.yard.replicator.exec.external;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -27,7 +27,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import com.google.common.base.Charsets;
 
-import com.hotels.bdp.circus.train.event.receiver.yaml.YamlFactory;
+import com.hotels.shunting.yard.replicator.yaml.YamlFactory;
 
 public class Marshaller {
 

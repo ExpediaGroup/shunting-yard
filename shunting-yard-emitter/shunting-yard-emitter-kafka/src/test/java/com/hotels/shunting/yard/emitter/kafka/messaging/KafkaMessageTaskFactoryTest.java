@@ -13,23 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.emitter.kafka.messaging;
+package com.hotels.shunting.yard.emitter.kafka.messaging;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-import static com.hotels.bdp.circus.train.event.emitter.kafka.KafkaProducerProperty.ACKS;
-import static com.hotels.bdp.circus.train.event.emitter.kafka.KafkaProducerProperty.BATCH_SIZE;
-import static com.hotels.bdp.circus.train.event.emitter.kafka.KafkaProducerProperty.BOOTSTRAP_SERVERS;
-import static com.hotels.bdp.circus.train.event.emitter.kafka.KafkaProducerProperty.BUFFER_MEMORY;
-import static com.hotels.bdp.circus.train.event.emitter.kafka.KafkaProducerProperty.LINGER_MS;
-import static com.hotels.bdp.circus.train.event.emitter.kafka.KafkaProducerProperty.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION;
-import static com.hotels.bdp.circus.train.event.emitter.kafka.KafkaProducerProperty.RETRIES;
-import static com.hotels.bdp.circus.train.event.emitter.kafka.KafkaProducerProperty.TOPIC;
-import static com.hotels.bdp.circus.train.event.emitter.kafka.messaging.KafkaMessageTaskFactory.kafkaProperties;
-import static com.hotels.bdp.circus.train.event.emitter.kafka.messaging.KafkaMessageTaskFactory.topic;
+import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.ACKS;
+import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.BATCH_SIZE;
+import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.BOOTSTRAP_SERVERS;
+import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.BUFFER_MEMORY;
+import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.LINGER_MS;
+import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION;
+import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.RETRIES;
+import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.TOPIC;
+import static com.hotels.shunting.yard.emitter.kafka.messaging.KafkaMessageTaskFactory.kafkaProperties;
+import static com.hotels.shunting.yard.emitter.kafka.messaging.KafkaMessageTaskFactory.topic;
 
 import java.util.Properties;
 
@@ -42,8 +42,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import com.hotels.bdp.circus.train.event.common.messaging.Message;
-import com.hotels.bdp.circus.train.event.common.messaging.MessageTask;
+import com.hotels.shunting.yard.common.messaging.Message;
+import com.hotels.shunting.yard.common.messaging.MessageTask;
+import com.hotels.shunting.yard.emitter.kafka.messaging.KafkaMessageTask;
+import com.hotels.shunting.yard.emitter.kafka.messaging.KafkaMessageTaskFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KafkaMessageTaskFactoryTest {

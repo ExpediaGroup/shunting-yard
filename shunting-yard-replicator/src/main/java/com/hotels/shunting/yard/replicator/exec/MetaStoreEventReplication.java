@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.receiver.exec;
+package com.hotels.shunting.yard.replicator.exec;
 
-import static com.hotels.bdp.circus.train.event.receiver.exec.Constants.CIRCUS_TRAIN_HOME_ENV_VAR;
+import static com.hotels.shunting.yard.replicator.exec.Constants.CIRCUS_TRAIN_HOME_ENV_VAR;
 
 import java.io.IOException;
 import java.util.List;

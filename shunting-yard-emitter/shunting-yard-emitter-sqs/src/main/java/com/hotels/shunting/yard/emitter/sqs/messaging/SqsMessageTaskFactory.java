@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.emitter.sqs.messaging;
+package com.hotels.shunting.yard.emitter.sqs.messaging;
 
-import static com.hotels.bdp.circus.train.event.common.aws.Utils.credentials;
-import static com.hotels.bdp.circus.train.event.common.aws.Utils.groupId;
-import static com.hotels.bdp.circus.train.event.common.aws.Utils.queue;
-import static com.hotels.bdp.circus.train.event.common.aws.Utils.region;
+import static com.hotels.shunting.yard.common.aws.Utils.credentials;
+import static com.hotels.shunting.yard.common.aws.Utils.groupId;
+import static com.hotels.shunting.yard.common.aws.Utils.queue;
+import static com.hotels.shunting.yard.common.aws.Utils.region;
 
 import org.apache.hadoop.conf.Configuration;
 
@@ -26,9 +26,9 @@ import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.google.common.annotations.VisibleForTesting;
 
-import com.hotels.bdp.circus.train.event.common.messaging.Message;
-import com.hotels.bdp.circus.train.event.common.messaging.MessageTask;
-import com.hotels.bdp.circus.train.event.common.messaging.MessageTaskFactory;
+import com.hotels.shunting.yard.common.messaging.Message;
+import com.hotels.shunting.yard.common.messaging.MessageTask;
+import com.hotels.shunting.yard.common.messaging.MessageTaskFactory;
 
 /**
  * A {@link MessageTaskFactory} that create a task to post message to a SNS topic.

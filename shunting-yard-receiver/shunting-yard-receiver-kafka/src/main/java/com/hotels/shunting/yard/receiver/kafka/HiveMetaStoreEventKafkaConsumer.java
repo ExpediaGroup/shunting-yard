@@ -13,27 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.receiver.kafka;
+package com.hotels.shunting.yard.receiver.kafka;
 
-import static com.hotels.bdp.circus.train.event.common.Utils.checkNotNull;
-import static com.hotels.bdp.circus.train.event.receiver.kafka.KafkaConsumerProperty.AUTO_COMMIT_INTERVAL_MS;
-import static com.hotels.bdp.circus.train.event.receiver.kafka.KafkaConsumerProperty.BOOTSTRAP_SERVERS;
-import static com.hotels.bdp.circus.train.event.receiver.kafka.KafkaConsumerProperty.CLIENT_ID;
-import static com.hotels.bdp.circus.train.event.receiver.kafka.KafkaConsumerProperty.CONNECTIONS_MAX_IDLE_MS;
-import static com.hotels.bdp.circus.train.event.receiver.kafka.KafkaConsumerProperty.ENABLE_AUTO_COMMIT;
-import static com.hotels.bdp.circus.train.event.receiver.kafka.KafkaConsumerProperty.FETCH_MAX_BYTES;
-import static com.hotels.bdp.circus.train.event.receiver.kafka.KafkaConsumerProperty.GROUP_ID;
-import static com.hotels.bdp.circus.train.event.receiver.kafka.KafkaConsumerProperty.MAX_POLL_INTERVAL_MS;
-import static com.hotels.bdp.circus.train.event.receiver.kafka.KafkaConsumerProperty.MAX_POLL_RECORDS;
-import static com.hotels.bdp.circus.train.event.receiver.kafka.KafkaConsumerProperty.RECEIVE_BUFFER_BYTES;
-import static com.hotels.bdp.circus.train.event.receiver.kafka.KafkaConsumerProperty.RECONNECT_BACKOFF_MAX_MS;
-import static com.hotels.bdp.circus.train.event.receiver.kafka.KafkaConsumerProperty.RECONNECT_BACKOFF_MS;
-import static com.hotels.bdp.circus.train.event.receiver.kafka.KafkaConsumerProperty.RETRY_BACKOFF_MS;
-import static com.hotels.bdp.circus.train.event.receiver.kafka.KafkaConsumerProperty.SESSION_TIMEOUT_MS;
-import static com.hotels.bdp.circus.train.event.receiver.kafka.Utils.booleanProperty;
-import static com.hotels.bdp.circus.train.event.receiver.kafka.Utils.intProperty;
-import static com.hotels.bdp.circus.train.event.receiver.kafka.Utils.longProperty;
-import static com.hotels.bdp.circus.train.event.receiver.kafka.Utils.stringProperty;
+import static com.hotels.shunting.yard.common.Utils.checkNotNull;
+import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.AUTO_COMMIT_INTERVAL_MS;
+import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.BOOTSTRAP_SERVERS;
+import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.CLIENT_ID;
+import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.CONNECTIONS_MAX_IDLE_MS;
+import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.ENABLE_AUTO_COMMIT;
+import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.FETCH_MAX_BYTES;
+import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.GROUP_ID;
+import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.MAX_POLL_INTERVAL_MS;
+import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.MAX_POLL_RECORDS;
+import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.RECEIVE_BUFFER_BYTES;
+import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.RECONNECT_BACKOFF_MAX_MS;
+import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.RECONNECT_BACKOFF_MS;
+import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.RETRY_BACKOFF_MS;
+import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.SESSION_TIMEOUT_MS;
+import static com.hotels.shunting.yard.receiver.kafka.Utils.booleanProperty;
+import static com.hotels.shunting.yard.receiver.kafka.Utils.intProperty;
+import static com.hotels.shunting.yard.receiver.kafka.Utils.longProperty;
+import static com.hotels.shunting.yard.receiver.kafka.Utils.stringProperty;
 
 import java.util.Properties;
 

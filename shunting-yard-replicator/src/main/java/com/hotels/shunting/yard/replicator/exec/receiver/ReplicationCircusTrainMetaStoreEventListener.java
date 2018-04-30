@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.receiver.exec.receiver;
+package com.hotels.shunting.yard.replicator.exec.receiver;
 
-import static com.hotels.bdp.circus.train.event.common.receiver.thrift.Utils.toObjectPairs;
 import static com.hotels.bdp.circustrain.api.CircusTrainTableParameter.REPLICATION_EVENT;
+import static com.hotels.shunting.yard.common.receiver.thrift.Utils.toObjectPairs;
 
 import java.util.Arrays;
 
@@ -29,15 +29,15 @@ import org.slf4j.LoggerFactory;
 
 import com.expedia.hdw.common.hive.metastore.CloseableMetaStoreClient;
 
-import com.hotels.bdp.circus.train.event.common.event.SerializableAddPartitionEvent;
-import com.hotels.bdp.circus.train.event.common.event.SerializableAlterPartitionEvent;
-import com.hotels.bdp.circus.train.event.common.event.SerializableAlterTableEvent;
-import com.hotels.bdp.circus.train.event.common.event.SerializableCreateTableEvent;
-import com.hotels.bdp.circus.train.event.common.event.SerializableDropPartitionEvent;
-import com.hotels.bdp.circus.train.event.common.event.SerializableDropTableEvent;
-import com.hotels.bdp.circus.train.event.common.event.SerializableInsertEvent;
-import com.hotels.bdp.circus.train.event.common.receiver.CircusTrainMetaStoreEventListener;
-import com.hotels.bdp.circus.train.event.receiver.exec.launcher.CircusTrainRunner;
+import com.hotels.shunting.yard.common.event.SerializableAddPartitionEvent;
+import com.hotels.shunting.yard.common.event.SerializableAlterPartitionEvent;
+import com.hotels.shunting.yard.common.event.SerializableAlterTableEvent;
+import com.hotels.shunting.yard.common.event.SerializableCreateTableEvent;
+import com.hotels.shunting.yard.common.event.SerializableDropPartitionEvent;
+import com.hotels.shunting.yard.common.event.SerializableDropTableEvent;
+import com.hotels.shunting.yard.common.event.SerializableInsertEvent;
+import com.hotels.shunting.yard.common.receiver.CircusTrainMetaStoreEventListener;
+import com.hotels.shunting.yard.replicator.exec.launcher.CircusTrainRunner;
 
 public class ReplicationCircusTrainMetaStoreEventListener implements CircusTrainMetaStoreEventListener {
   private static final Logger LOG = LoggerFactory.getLogger(ReplicationCircusTrainMetaStoreEventListener.class);

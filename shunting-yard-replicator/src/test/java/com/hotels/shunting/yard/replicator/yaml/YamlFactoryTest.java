@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.receiver.yaml;
+package com.hotels.shunting.yard.replicator.yaml;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -23,7 +23,8 @@ import java.io.StringWriter;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 
-import com.hotels.bdp.circus.train.event.receiver.exec.external.CircusTrainConfig;
+import com.hotels.shunting.yard.replicator.exec.external.CircusTrainConfig;
+import com.hotels.shunting.yard.replicator.yaml.YamlFactory;
 
 public class YamlFactoryTest {
 

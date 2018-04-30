@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.common.hive.iterator;
+package com.hotels.shunting.yard.common.hive.iterator;
 
 import java.io.Closeable;
 import java.io.IOException;

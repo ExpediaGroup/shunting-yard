@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.common.event;
+package com.hotels.shunting.yard.common.event;
 
 import java.util.Objects;
 

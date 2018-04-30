@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.receiver.yaml;
+package com.hotels.shunting.yard.replicator.yaml;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -39,6 +39,8 @@ import org.yaml.snakeyaml.nodes.SequenceNode;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+
+import com.hotels.shunting.yard.replicator.yaml.AdvancedRepresenter;
 
 public class AdvancedRepresenterTest {
 

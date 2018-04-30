@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.receiver.yaml;
+package com.hotels.shunting.yard.replicator.yaml;
 
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.DumperOptions.FlowStyle;
@@ -23,7 +23,7 @@ import org.yaml.snakeyaml.introspector.PropertyUtils;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
-import com.hotels.bdp.circus.train.event.receiver.exec.external.CircusTrainConfig;
+import com.hotels.shunting.yard.replicator.exec.external.CircusTrainConfig;
 
 public final class YamlFactory {
 

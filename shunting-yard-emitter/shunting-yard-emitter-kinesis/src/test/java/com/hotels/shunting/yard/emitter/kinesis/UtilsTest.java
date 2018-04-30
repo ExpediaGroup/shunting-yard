@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.emitter.kinesis;
+package com.hotels.shunting.yard.emitter.kinesis;
 
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.KinesisProducerProperty.REGION;
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.KinesisProducerProperty.REQUEST_TIMEOUT;
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.KinesisProducerProperty.RETRIES;
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.KinesisProducerProperty.STREAM;
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.Utils.intProperty;
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.Utils.longProperty;
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.Utils.stringProperty;
+import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.REGION;
+import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.REQUEST_TIMEOUT;
+import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.RETRIES;
+import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.STREAM;
+import static com.hotels.shunting.yard.emitter.kinesis.Utils.intProperty;
+import static com.hotels.shunting.yard.emitter.kinesis.Utils.longProperty;
+import static com.hotels.shunting.yard.emitter.kinesis.Utils.stringProperty;
 
 import org.apache.hadoop.conf.Configuration;
 import org.junit.Rule;

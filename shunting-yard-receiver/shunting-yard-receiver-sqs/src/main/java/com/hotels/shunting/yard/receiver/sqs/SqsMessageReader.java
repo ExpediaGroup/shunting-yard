@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.receiver.sqs;
+package com.hotels.shunting.yard.receiver.sqs;
 
-import static com.hotels.bdp.circus.train.event.common.aws.Utils.credentials;
-import static com.hotels.bdp.circus.train.event.common.aws.Utils.queue;
-import static com.hotels.bdp.circus.train.event.common.aws.Utils.region;
-import static com.hotels.bdp.circus.train.event.common.aws.Utils.waitTimeSeconds;
+import static com.hotels.shunting.yard.common.aws.Utils.credentials;
+import static com.hotels.shunting.yard.common.aws.Utils.queue;
+import static com.hotels.shunting.yard.common.aws.Utils.region;
+import static com.hotels.shunting.yard.common.aws.Utils.waitTimeSeconds;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -34,9 +34,9 @@ import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import com.google.common.annotations.VisibleForTesting;
 import com.sun.jersey.core.util.Base64;
 
-import com.hotels.bdp.circus.train.event.common.event.SerializableListenerEvent;
-import com.hotels.bdp.circus.train.event.common.io.MetaStoreEventSerDe;
-import com.hotels.bdp.circus.train.event.common.messaging.MessageReader;
+import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
+import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
+import com.hotels.shunting.yard.common.messaging.MessageReader;
 
 public class SqsMessageReader implements MessageReader {
   private String queueUrl;

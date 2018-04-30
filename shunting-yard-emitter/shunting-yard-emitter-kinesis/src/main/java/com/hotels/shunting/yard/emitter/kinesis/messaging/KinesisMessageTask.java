@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.emitter.kinesis.messaging;
+package com.hotels.shunting.yard.emitter.kinesis.messaging;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutionException;
@@ -22,8 +22,8 @@ import com.amazonaws.services.kinesis.producer.KinesisProducer;
 import com.amazonaws.services.kinesis.producer.UserRecord;
 import com.amazonaws.services.kinesis.producer.UserRecordResult;
 
-import com.hotels.bdp.circus.train.event.common.messaging.Message;
-import com.hotels.bdp.circus.train.event.common.messaging.MessageTask;
+import com.hotels.shunting.yard.common.messaging.Message;
+import com.hotels.shunting.yard.common.messaging.MessageTask;
 
 class KinesisMessageTask implements MessageTask {
   private final KinesisProducer producer;

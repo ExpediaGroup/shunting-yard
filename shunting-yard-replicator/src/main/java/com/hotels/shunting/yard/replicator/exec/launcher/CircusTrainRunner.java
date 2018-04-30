@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.receiver.exec.launcher;
+package com.hotels.shunting.yard.replicator.exec.launcher;
 
 import static org.apache.commons.exec.environment.EnvironmentUtils.getProcEnvironment;
 
-import static com.hotels.bdp.circus.train.event.receiver.exec.Constants.CIRCUS_TRAIN_HOME_ENV_VAR;
-import static com.hotels.bdp.circus.train.event.receiver.exec.Constants.CIRCUS_TRAIN_HOME_SCRIPT;
+import static com.hotels.shunting.yard.replicator.exec.Constants.CIRCUS_TRAIN_HOME_ENV_VAR;
+import static com.hotels.shunting.yard.replicator.exec.Constants.CIRCUS_TRAIN_HOME_SCRIPT;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -36,8 +36,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableMap;
 
-import com.hotels.bdp.circus.train.event.receiver.exec.receiver.Context;
 import com.hotels.bdp.circustrain.api.CircusTrainException;
+import com.hotels.shunting.yard.replicator.exec.receiver.Context;
 
 public class CircusTrainRunner {
   private static final Logger LOG = LoggerFactory.getLogger(CircusTrainRunner.class);

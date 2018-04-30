@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.common.emitter;
+package com.hotels.shunting.yard.common.emitter;
 
 import java.util.concurrent.ExecutorService;
 
@@ -39,12 +39,12 @@ import org.apache.hadoop.hive.metastore.events.LoadPartitionDoneEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hotels.bdp.circus.train.event.common.event.SerializableListenerEvent;
-import com.hotels.bdp.circus.train.event.common.event.SerializableListenerEventFactory;
-import com.hotels.bdp.circus.train.event.common.io.MetaStoreEventSerDe;
-import com.hotels.bdp.circus.train.event.common.messaging.Message;
-import com.hotels.bdp.circus.train.event.common.messaging.MessageTask;
-import com.hotels.bdp.circus.train.event.common.messaging.MessageTaskFactory;
+import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
+import com.hotels.shunting.yard.common.event.SerializableListenerEventFactory;
+import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
+import com.hotels.shunting.yard.common.messaging.Message;
+import com.hotels.shunting.yard.common.messaging.MessageTask;
+import com.hotels.shunting.yard.common.messaging.MessageTaskFactory;
 
 public abstract class AbstractMetaStoreEventListener extends MetaStoreEventListener {
   private static final Logger LOG = LoggerFactory.getLogger(AbstractMetaStoreEventListener.class);

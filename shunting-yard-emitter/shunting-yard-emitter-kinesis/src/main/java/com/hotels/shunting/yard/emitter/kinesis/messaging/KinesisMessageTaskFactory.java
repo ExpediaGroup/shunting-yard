@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.emitter.kinesis.messaging;
+package com.hotels.shunting.yard.emitter.kinesis.messaging;
 
-import static com.hotels.bdp.circus.train.event.common.Utils.checkNotNull;
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.KinesisProducerProperty.MAX_CONNECTIONS;
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.KinesisProducerProperty.RECORD_MAX_BUFFERED_TIME;
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.KinesisProducerProperty.REGION;
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.KinesisProducerProperty.REQUEST_TIMEOUT;
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.KinesisProducerProperty.RETRIES;
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.KinesisProducerProperty.STREAM;
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.Utils.intProperty;
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.Utils.longProperty;
-import static com.hotels.bdp.circus.train.event.emitter.kinesis.Utils.stringProperty;
+import static com.hotels.shunting.yard.common.Utils.checkNotNull;
+import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.MAX_CONNECTIONS;
+import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.RECORD_MAX_BUFFERED_TIME;
+import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.REGION;
+import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.REQUEST_TIMEOUT;
+import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.RETRIES;
+import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.STREAM;
+import static com.hotels.shunting.yard.emitter.kinesis.Utils.intProperty;
+import static com.hotels.shunting.yard.emitter.kinesis.Utils.longProperty;
+import static com.hotels.shunting.yard.emitter.kinesis.Utils.stringProperty;
 
 import org.apache.hadoop.conf.Configuration;
 
@@ -33,9 +33,9 @@ import com.amazonaws.services.kinesis.producer.KinesisProducer;
 import com.amazonaws.services.kinesis.producer.KinesisProducerConfiguration;
 import com.google.common.annotations.VisibleForTesting;
 
-import com.hotels.bdp.circus.train.event.common.messaging.Message;
-import com.hotels.bdp.circus.train.event.common.messaging.MessageTask;
-import com.hotels.bdp.circus.train.event.common.messaging.MessageTaskFactory;
+import com.hotels.shunting.yard.common.messaging.Message;
+import com.hotels.shunting.yard.common.messaging.MessageTask;
+import com.hotels.shunting.yard.common.messaging.MessageTaskFactory;
 
 /**
  * A {@link MessageTaskFactory} that create a task to post message to a Kinesis topic. Note that in order to preserve

@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.bdp.circus.train.event.emitter.kafka;
+package com.hotels.shunting.yard.emitter.kafka;
 
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import static com.hotels.bdp.circus.train.event.emitter.kafka.KafkaProducerProperty.ACKS;
-import static com.hotels.bdp.circus.train.event.emitter.kafka.KafkaProducerProperty.BUFFER_MEMORY;
-import static com.hotels.bdp.circus.train.event.emitter.kafka.KafkaProducerProperty.RETRIES;
-import static com.hotels.bdp.circus.train.event.emitter.kafka.KafkaProducerProperty.TOPIC;
-import static com.hotels.bdp.circus.train.event.emitter.kafka.Utils.intProperty;
-import static com.hotels.bdp.circus.train.event.emitter.kafka.Utils.longProperty;
-import static com.hotels.bdp.circus.train.event.emitter.kafka.Utils.stringProperty;
+import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.ACKS;
+import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.BUFFER_MEMORY;
+import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.RETRIES;
+import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.TOPIC;
+import static com.hotels.shunting.yard.emitter.kafka.Utils.intProperty;
+import static com.hotels.shunting.yard.emitter.kafka.Utils.longProperty;
+import static com.hotels.shunting.yard.emitter.kafka.Utils.stringProperty;
 
 import org.apache.hadoop.conf.Configuration;
 import org.junit.Rule;
