@@ -1,0 +1,7 @@
+replica-catalog:
+  name: aws-data-warehouse
+  hive-metastore-uris: thrift://localhost:9083
+message-reader:
+  configuration-properties:
+    com.hotels.bdp.circus.train.event.receiver.kinesis.stream: bdp-circus-train-event-driven-poc-stream
+    com.hotels.bdp.circus.train.event.receiver.kinesis.application.id: bdp_CircusTrainEventDrivenReceiver
