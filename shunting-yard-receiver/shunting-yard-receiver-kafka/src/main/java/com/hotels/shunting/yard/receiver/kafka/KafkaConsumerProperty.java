@@ -32,7 +32,7 @@ public enum KafkaConsumerProperty {
   FETCH_MAX_BYTES("fetch.max.bytes", 52428800),
   RECEIVE_BUFFER_BYTES("receive.buffer.bytes", 65536);
 
-  private static final String PROPERTY_PREFIX = "com.hotels.bdp.circus.train.event.receiver.kafka.";
+  private static final String PROPERTY_PREFIX = "com.hotels.shunting.yard.event.receiver.kafka.";
 
   private final String unPrefixedKey;
   private final Object defaultValue;

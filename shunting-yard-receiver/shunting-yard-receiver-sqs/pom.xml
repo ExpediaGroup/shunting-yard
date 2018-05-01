@@ -19,11 +19,6 @@
       <artifactId>shunting-yard-common</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>com.hotels</groupId>
-      <artifactId>shunting-yard-common-aws</artifactId>
-      <version>${project.version}</version>
-    </dependency>
 
     <!-- AWS -->
     <dependency>

@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.shunting.yard.replicator.exec.receiver;
+package com.hotels.shunting.yard.common.receiver.thrift;
 
-import static com.hotels.bdp.circustrain.api.CircusTrainTableParameter.REPLICATION_EVENT;
 import static com.hotels.shunting.yard.common.receiver.thrift.Utils.toObjectPairs;
 
-import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.hadoop.hive.metastore.api.NoSuchObjectException;
 import org.apache.hadoop.hive.metastore.api.Partition;
@@ -37,22 +37,46 @@ import com.hotels.shunting.yard.common.event.SerializableDropPartitionEvent;
 import com.hotels.shunting.yard.common.event.SerializableDropTableEvent;
 import com.hotels.shunting.yard.common.event.SerializableInsertEvent;
 import com.hotels.shunting.yard.common.receiver.ShuntingYardMetaStoreEventListener;
-import com.hotels.shunting.yard.replicator.exec.launcher.CircusTrainRunner;
 
-public class ReplicationCircusTrainMetaStoreEventListener implements ShuntingYardMetaStoreEventListener {
-  private static final Logger LOG = LoggerFactory.getLogger(ReplicationCircusTrainMetaStoreEventListener.class);
+public class ThriftShuntingYardMetaStoreEventListener implements ShuntingYardMetaStoreEventListener {
+  private static final Logger LOG = LoggerFactory.getLogger(ThriftShuntingYardMetaStoreEventListener.class);
+
+  private static final String CIRCUS_TRAIN_REPLICATION_EVENT_PREFIX = "cte";
+  private static final String CIRCUS_TRAIN_REPLICATION_EVENT_PROPERTY = "com.hotels.bdp.circustrain.replication.event";
 
   private final CloseableMetaStoreClient metaStoreClient;
-  private final ContextFactory contextFactory;
-  private final CircusTrainRunner circusTrainRunner;
+  private final EventIdFactory eventIdFactory = EventIdFactory.DEFAULT;
 
-  public ReplicationCircusTrainMetaStoreEventListener(
-      CloseableMetaStoreClient metaStoreClient,
-      ContextFactory contextFactory,
-      CircusTrainRunner circusTrainRunner) {
+  public ThriftShuntingYardMetaStoreEventListener(CloseableMetaStoreClient metaStoreClient) {
     this.metaStoreClient = metaStoreClient;
-    this.contextFactory = contextFactory;
-    this.circusTrainRunner = circusTrainRunner;
+  }
+
+  private String newEventId() {
+    return eventIdFactory.newEventId(CIRCUS_TRAIN_REPLICATION_EVENT_PREFIX);
+  }
+
+  private String tagReplication(Table table) {
+    String eventId = newEventId();
+    addEventId(table.getParameters(), eventId);
+    return eventId;
+  }
+
+  private String tagReplication(Partition partition) {
+    String eventId = newEventId();
+    addEventId(partition.getParameters(), eventId);
+    return eventId;
+  }
+
+  private String tagReplication(List<Partition> partitions) {
+    String eventId = newEventId();
+    for (Partition partition : partitions) {
+      addEventId(partition.getParameters(), eventId);
+    }
+    return eventId;
+  }
+
+  private void addEventId(Map<String, String> parameters, String eventId) {
+    parameters.put(CIRCUS_TRAIN_REPLICATION_EVENT_PROPERTY, eventId);
   }
 
   private boolean ifExists() {
@@ -70,7 +94,7 @@ public class ReplicationCircusTrainMetaStoreEventListener implements ShuntingYar
   private boolean canReplicate(String dbName, String tableName) {
     try {
       Table table = metaStoreClient.getTable(dbName, tableName);
-      return table.getParameters().get(REPLICATION_EVENT.parameterName()) != null;
+      return table.getParameters().get(CIRCUS_TRAIN_REPLICATION_EVENT_PROPERTY) != null;
     } catch (NoSuchObjectException e) {
       return true;
     } catch (TException e) {
@@ -84,9 +108,12 @@ public class ReplicationCircusTrainMetaStoreEventListener implements ShuntingYar
     if (!canReplicate(event.getTable())) {
       LOG.info("Skipping create table: {}.{}", event.getTable().getDbName(), event.getTable().getTableName());
     }
-
-    Context context = contextFactory.createContext(event, event.getTable());
-    circusTrainRunner.run(context);
+    tagReplication(event.getTable());
+    try {
+      metaStoreClient.createTable(event.getTable());
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
@@ -94,7 +121,7 @@ public class ReplicationCircusTrainMetaStoreEventListener implements ShuntingYar
     if (!canReplicate(event.getTable())) {
       LOG.info("Skipping drop table: {}.{}", event.getTable().getDbName(), event.getTable().getTableName());
     }
-
+    // Tagging is not needed here
     try {
       metaStoreClient.dropTable(event.getTable().getDbName(), event.getTable().getTableName(), event.getDeleteData(),
           ifExists());
@@ -108,17 +135,10 @@ public class ReplicationCircusTrainMetaStoreEventListener implements ShuntingYar
     if (!canReplicate(event.getOldTable())) {
       LOG.info("Skipping alter table {}.{}", event.getOldTable().getDbName(), event.getOldTable().getTableName());
     }
-
-    Context context = contextFactory.createContext(event, event.getNewTable());
-    circusTrainRunner.run(context);
-
-    // TODO dodge code: we update here and the CT updates again
+    tagReplication(event.getNewTable());
     try {
-      Table newReplicaTable = metaStoreClient.getTable(event.getNewTable().getDbName(),
-          event.getNewTable().getTableName());
-      // This will make sure the partitions are updated if the cascade option was
-      metaStoreClient.alter_table_with_environmentContext(newReplicaTable.getDbName(), newReplicaTable.getTableName(),
-          newReplicaTable, event.getEnvironmentContext());
+      metaStoreClient.alter_table_with_environmentContext(event.getOldTable().getDbName(),
+          event.getOldTable().getTableName(), event.getNewTable(), event.getEnvironmentContext());
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -129,9 +149,12 @@ public class ReplicationCircusTrainMetaStoreEventListener implements ShuntingYar
     if (!canReplicate(event.getTable())) {
       LOG.info("Skipping add partition on table: {}.{}", event.getTable().getDbName(), event.getTable().getTableName());
     }
-
-    Context context = contextFactory.createContext(event, event.getTable(), event.getPartitions());
-    circusTrainRunner.run(context);
+    tagReplication(event.getPartitions());
+    try {
+      metaStoreClient.add_partitions(event.getPartitions());
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
@@ -140,7 +163,7 @@ public class ReplicationCircusTrainMetaStoreEventListener implements ShuntingYar
       LOG.info("Skipping drop partition on table: {}.{}", event.getTable().getDbName(),
           event.getTable().getTableName());
     }
-
+    // Tagging is not needed here
     try {
       metaStoreClient.dropPartitions(event.getTable().getDbName(), event.getTable().getTableName(),
           toObjectPairs(event.getTable(), event.getPartitions()), event.getDeleteData(), ifExists(), false);
@@ -155,9 +178,13 @@ public class ReplicationCircusTrainMetaStoreEventListener implements ShuntingYar
       LOG.info("Skipping alter partition on table: {}.{}", event.getTable().getDbName(),
           event.getTable().getTableName());
     }
-
-    Context context = contextFactory.createContext(event, event.getTable(), Arrays.asList(event.getNewPartition()));
-    circusTrainRunner.run(context);
+    tagReplication(event.getNewPartition());
+    try {
+      metaStoreClient.alter_partition(event.getTable().getDbName(), event.getTable().getTableName(),
+          event.getNewPartition(), event.getEnvironmentContext());
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override

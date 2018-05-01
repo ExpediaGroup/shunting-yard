@@ -28,8 +28,6 @@ import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.S
 
 import org.junit.Test;
 
-import com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty;
-
 public class KinesisProducerPropertyTest {
 
   private static <T> Object asObject(T t) {
@@ -37,7 +35,7 @@ public class KinesisProducerPropertyTest {
   }
 
   private static String prefixedKey(String key) {
-    return "com.hotels.bdp.circus.train.event.emitter.kinesis." + key;
+    return "com.hotels.shunting.yard.event.emitter.kinesis." + key;
   }
 
   @Test

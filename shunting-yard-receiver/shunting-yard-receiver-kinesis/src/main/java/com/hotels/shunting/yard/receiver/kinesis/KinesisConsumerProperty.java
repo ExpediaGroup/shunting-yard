@@ -25,7 +25,7 @@ public enum KinesisConsumerProperty {
   MAX_RECORDS("max.records", 30),
   BUFFER_CAPACITY("buffer.capacity", 100);
 
-  private static final String PROPERTY_PREFIX = "com.hotels.bdp.circus.train.event.receiver.kinesis.";
+  private static final String PROPERTY_PREFIX = "com.hotels.shunting.yard.event.receiver.kinesis.";
 
   private final String unPrefixedKey;
   private final Object defaultValue;

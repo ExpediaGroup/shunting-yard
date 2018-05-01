@@ -31,8 +31,6 @@ import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.TOPIC
 
 import org.junit.Test;
 
-import com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty;
-
 public class KafkaProducerPropertyTest {
 
   private static <T> Object asObject(T t) {
@@ -40,7 +38,7 @@ public class KafkaProducerPropertyTest {
   }
 
   private static String prefixedKey(String key) {
-    return "com.hotels.bdp.circus.train.event.emitter.kafka." + key;
+    return "com.hotels.shunting.yard.event.emitter.kafka." + key;
   }
 
   @Test

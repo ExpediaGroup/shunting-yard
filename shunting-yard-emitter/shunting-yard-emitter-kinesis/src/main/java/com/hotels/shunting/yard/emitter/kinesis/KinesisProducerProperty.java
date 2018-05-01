@@ -25,7 +25,7 @@ public enum KinesisProducerProperty {
   RECORD_MAX_BUFFERED_TIME("record.max.buffered.time", 15000L),
   RETRIES("retries", 3);
 
-  private static final String PROPERTY_PREFIX = "com.hotels.bdp.circus.train.event.emitter.kinesis.";
+  private static final String PROPERTY_PREFIX = "com.hotels.shunting.yard.event.emitter.kinesis.";
 
   private final String unPrefixedKey;
   private final Object defaultValue;

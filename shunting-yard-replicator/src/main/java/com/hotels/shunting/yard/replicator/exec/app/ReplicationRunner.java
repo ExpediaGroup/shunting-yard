@@ -32,17 +32,17 @@ import com.hotels.shunting.yard.common.event.SerializableDropTableEvent;
 import com.hotels.shunting.yard.common.event.SerializableInsertEvent;
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
-import com.hotels.shunting.yard.common.receiver.CircusTrainMetaStoreEventListener;
+import com.hotels.shunting.yard.common.receiver.ShuntingYardMetaStoreEventListener;
 
 @Component
 class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator {
   private static final Logger LOG = LoggerFactory.getLogger(ReplicationRunner.class);
 
-  private CircusTrainMetaStoreEventListener listener;
+  private ShuntingYardMetaStoreEventListener listener;
   private MessageReader messageReader;
 
   @Autowired
-  ReplicationRunner(MessageReader messageReader, CircusTrainMetaStoreEventListener listener) {
+  ReplicationRunner(MessageReader messageReader, ShuntingYardMetaStoreEventListener listener) {
     this.listener = listener;
     this.messageReader = messageReader;
   }

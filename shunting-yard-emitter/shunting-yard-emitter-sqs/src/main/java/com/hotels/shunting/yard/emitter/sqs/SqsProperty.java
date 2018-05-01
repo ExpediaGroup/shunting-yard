@@ -13,25 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.shunting.yard.emitter.kafka;
+package com.hotels.shunting.yard.emitter.sqs;
 
-public enum KafkaProducerProperty {
-  TOPIC("topic", null),
-  BOOTSTRAP_SERVERS("bootstrap.servers", null),
-  CLIENT_ID("client.id", "CircusTrainEventDrivenEmitter"),
-  ACKS("acks", "all"),
-  RETRIES("retries", 3),
-  MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION("max.in.flight.requests.per.connection", 1),
-  BATCH_SIZE("batch.size", 16384),
-  LINGER_MS("linger.ms", 1L),
-  BUFFER_MEMORY("buffer.memory", 33554432L);
+import com.amazonaws.regions.Regions;
 
-  private static final String PROPERTY_PREFIX = "com.hotels.shunting.yard.event.emitter.kafka.";
+public enum SqsProperty {
+  QUEUE("queue", null),
+  REGION("region", Regions.US_WEST_2.getName()),
+  GROUP_ID("group.id", null),
+  AWS_ACCESS_KEY("aws.access.key", null),
+  AWS_SECRET_KEY("aws.secret.key", null);
+
+  private static final String PROPERTY_PREFIX = "com.hotels.shunting.yard.event.emitter.sqs.";
 
   private final String unPrefixedKey;
   private final Object defaultValue;
 
-  private KafkaProducerProperty(String unPrefixedKey, Object defaultValue) {
+  private SqsProperty(String unPrefixedKey, Object defaultValue) {
     this.unPrefixedKey = unPrefixedKey;
     this.defaultValue = defaultValue;
   }

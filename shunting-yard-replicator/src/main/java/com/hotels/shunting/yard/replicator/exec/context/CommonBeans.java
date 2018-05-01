@@ -43,9 +43,9 @@ import com.expedia.hdw.common.hive.metastore.MetaStoreClientFactory;
 
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
-import com.hotels.shunting.yard.common.receiver.CircusTrainMetaStoreEventListener;
-import com.hotels.shunting.yard.receiver.kinesis.KinesisMessageReader;
-import com.hotels.shunting.yard.replicator.exec.conf.MessageReaderConfiguration;
+import com.hotels.shunting.yard.common.receiver.ShuntingYardMetaStoreEventListener;
+import com.hotels.shunting.yard.receiver.kinesis.messaging.KinesisMessageReader;
+import com.hotels.shunting.yard.replicator.exec.conf.EventReceiverConfiguration;
 import com.hotels.shunting.yard.replicator.exec.conf.ReplicaCatalog;
 import com.hotels.shunting.yard.replicator.exec.external.Marshaller;
 import com.hotels.shunting.yard.replicator.exec.launcher.CircusTrainRunner;
@@ -70,7 +70,7 @@ public class CommonBeans {
   HiveConf replicaHiveConf(
       Configuration baseConfiguration,
       ReplicaCatalog replicaCatalog,
-      MessageReaderConfiguration messageReaderConfig) {
+      EventReceiverConfiguration messageReaderConfig) {
     List<String> siteXml = replicaCatalog.getSiteXml();
     if (CollectionUtils.isEmpty(siteXml)) {
       LOG.info("No Hadoop site XML is defined for catalog {}.", replicaCatalog.getName());
@@ -107,7 +107,7 @@ public class CommonBeans {
   }
 
   @Bean
-  CircusTrainMetaStoreEventListener circusTrainMetaStoreEventListener(
+  ShuntingYardMetaStoreEventListener circusTrainMetaStoreEventListener(
       HiveConf replicaHiveConf,
       Supplier<CloseableMetaStoreClient> replicaMetaStoreClientSupplier) {
     CloseableMetaStoreClient metaStoreClient = replicaMetaStoreClientSupplier.get();
