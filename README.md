@@ -2,6 +2,12 @@
 
 Little Spring Boot app that read Java-serialized Hive MetaStore Events and build a YAML file with the information provided in the event which is then passed to [Circus Train](https://github.com/HotelsDotCom/circus-train) to perform the replication.
 
+## Start using
+
+You can obtain Shunting Yard from Maven Central:
+
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.hotels/shunting-yard/badge.svg?subject=com.hotels:shunting-yard)](https://maven-badges.herokuapp.com/maven-central/com.hotels/shunting-yard) [![Build Status](https://travis-ci.org/HotelsDotCom/shunting-yard.svg?branch=master)](https://travis-ci.org/HotelsDotCom/shunting-yard) [![Coverage Status](https://coveralls.io/repos/github/HotelsDotCom/shunting-yard/badge.svg?branch=master)](https://coveralls.io/github/HotelsDotCom/shunting-yard?branch=master) ![GitHub license](https://img.shields.io/github/license/HotelsDotCom/shunting-yard.svg)
+
 ### How to install the emitter - SOURCE
 
 On the source cluster, copy the file _circus-train-event-driven-binary/target/circus-train-event-emitter-0.0.1-SNAPSHOT-all.jar_ to _/usr/lib/hive/lib/_ and configure _/etc/hive/conf/hive-site.xml_ with the properties required by the listener to talk to the messaging infrastructure:
