@@ -15,8 +15,7 @@
  */
 package com.hotels.shunting.yard.common.io;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -56,7 +55,6 @@ import com.hotels.shunting.yard.common.event.SerializableDropPartitionEvent;
 import com.hotels.shunting.yard.common.event.SerializableDropTableEvent;
 import com.hotels.shunting.yard.common.event.SerializableInsertEvent;
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
-import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 
 @RunWith(Parameterized.class)
 public class MetaStoreEventSerDeTest {
@@ -129,12 +127,12 @@ public class MetaStoreEventSerDeTest {
 
   public @Parameter SerializableListenerEvent event;
 
-  private MetaStoreEventSerDe serDe = new MetaStoreEventSerDe();
+  private final MetaStoreEventSerDe serDe = new MetaStoreEventSerDe();
 
   @Test
   public void typical() throws Exception {
     SerializableListenerEvent processedEvent = serDe.unmarshall(serDe.marshall(event));
-    assertThat(processedEvent, is(event));
+    assertThat(processedEvent).isEqualTo(event);
   }
 
 }

@@ -15,8 +15,7 @@
  */
 package com.hotels.shunting.yard.common;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import static com.hotels.shunting.yard.common.Utils.checkNotNull;
 
@@ -33,7 +32,7 @@ public class UtilsTest {
 
   @Test
   public void checkNotNullSucceeds() {
-    assertThat(checkNotNull("", "message"), is(""));
+    assertThat(checkNotNull("", "message")).isSameAs("");
   }
 
   @Test
