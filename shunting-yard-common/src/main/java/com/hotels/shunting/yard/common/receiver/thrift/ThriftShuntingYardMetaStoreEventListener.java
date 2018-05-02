@@ -107,6 +107,7 @@ public class ThriftShuntingYardMetaStoreEventListener implements ShuntingYardMet
   public void onCreateTable(SerializableCreateTableEvent event) {
     if (!canReplicate(event.getTable())) {
       LOG.info("Skipping create table: {}.{}", event.getTable().getDbName(), event.getTable().getTableName());
+      return;
     }
     tagReplication(event.getTable());
     try {
@@ -120,6 +121,7 @@ public class ThriftShuntingYardMetaStoreEventListener implements ShuntingYardMet
   public void onDropTable(SerializableDropTableEvent event) {
     if (!canReplicate(event.getTable())) {
       LOG.info("Skipping drop table: {}.{}", event.getTable().getDbName(), event.getTable().getTableName());
+      return;
     }
     // Tagging is not needed here
     try {
@@ -134,6 +136,7 @@ public class ThriftShuntingYardMetaStoreEventListener implements ShuntingYardMet
   public void onAlterTable(SerializableAlterTableEvent event) {
     if (!canReplicate(event.getOldTable())) {
       LOG.info("Skipping alter table {}.{}", event.getOldTable().getDbName(), event.getOldTable().getTableName());
+      return;
     }
     tagReplication(event.getNewTable());
     try {
@@ -148,6 +151,7 @@ public class ThriftShuntingYardMetaStoreEventListener implements ShuntingYardMet
   public void onAddPartition(SerializableAddPartitionEvent event) {
     if (!canReplicate(event.getTable())) {
       LOG.info("Skipping add partition on table: {}.{}", event.getTable().getDbName(), event.getTable().getTableName());
+      return;
     }
     tagReplication(event.getPartitions());
     try {
@@ -162,6 +166,7 @@ public class ThriftShuntingYardMetaStoreEventListener implements ShuntingYardMet
     if (!canReplicate(event.getTable())) {
       LOG.info("Skipping drop partition on table: {}.{}", event.getTable().getDbName(),
           event.getTable().getTableName());
+      return;
     }
     // Tagging is not needed here
     try {
@@ -177,6 +182,7 @@ public class ThriftShuntingYardMetaStoreEventListener implements ShuntingYardMet
     if (!canReplicate(event.getTable())) {
       LOG.info("Skipping alter partition on table: {}.{}", event.getTable().getDbName(),
           event.getTable().getTableName());
+      return;
     }
     tagReplication(event.getNewPartition());
     try {
