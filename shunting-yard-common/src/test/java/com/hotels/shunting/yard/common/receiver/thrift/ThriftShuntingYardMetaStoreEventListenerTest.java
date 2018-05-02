@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -31,8 +32,10 @@ import java.util.Map;
 
 import org.apache.hadoop.hive.common.ObjectPair;
 import org.apache.hadoop.hive.metastore.api.EnvironmentContext;
+import org.apache.hadoop.hive.metastore.api.NoSuchObjectException;
 import org.apache.hadoop.hive.metastore.api.Partition;
 import org.apache.hadoop.hive.metastore.api.Table;
+import org.apache.thrift.TException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,6 +57,7 @@ import com.hotels.shunting.yard.common.event.SerializableDropPartitionEvent;
 import com.hotels.shunting.yard.common.event.SerializableDropTableEvent;
 import com.hotels.shunting.yard.common.event.SerializableInsertEvent;
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
+import com.hotels.shunting.yard.common.exception.ShuntingYardException;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(ThriftListenerUtils.class)
@@ -109,6 +113,20 @@ public class ThriftShuntingYardMetaStoreEventListenerTest {
   }
 
   @Test
+  public void canReplicateTableIfTableDoesNotExist() throws Exception {
+    when(targetTableParameters.get(REPLICATION_EVENT)).thenReturn("123");
+    when(metaStoreClient.getTable(DATABASE, TABLE)).thenThrow(NoSuchObjectException.class);
+    assertThat(listener.canReplicate(sourceTable)).isTrue();
+  }
+
+  @Test(expected = ShuntingYardException.class)
+  public void cannotReplicateTableMetastoreClientThrowsException() throws Exception {
+    when(targetTableParameters.get(REPLICATION_EVENT)).thenReturn("123");
+    when(metaStoreClient.getTable(DATABASE, TABLE)).thenThrow(TException.class);
+    assertThat(listener.canReplicate(sourceTable)).isTrue();
+  }
+
+  @Test
   public void cannotReplicateTable() throws Exception {
     assertThat(listener.canReplicate(sourceTable)).isFalse();
   }
@@ -116,6 +134,20 @@ public class ThriftShuntingYardMetaStoreEventListenerTest {
   @Test
   public void canReplicatePartition() throws Exception {
     when(targetTableParameters.get(REPLICATION_EVENT)).thenReturn("123");
+    assertThat(listener.canReplicate(sourcePartition)).isTrue();
+  }
+
+  @Test
+  public void canReplicatePartitionIfTableDoesNotExist() throws Exception {
+    when(targetTableParameters.get(REPLICATION_EVENT)).thenReturn("123");
+    when(metaStoreClient.getTable(DATABASE, TABLE)).thenThrow(NoSuchObjectException.class);
+    assertThat(listener.canReplicate(sourcePartition)).isTrue();
+  }
+
+  @Test(expected = ShuntingYardException.class)
+  public void cannotReplicatePartitionIfMetastoreClientThrowsException() throws Exception {
+    when(targetTableParameters.get(REPLICATION_EVENT)).thenReturn("123");
+    when(metaStoreClient.getTable(DATABASE, TABLE)).thenThrow(TException.class);
     assertThat(listener.canReplicate(sourcePartition)).isTrue();
   }
 
@@ -135,6 +167,15 @@ public class ThriftShuntingYardMetaStoreEventListenerTest {
     assertThat(eventKeyCaptor.getValue()).isEqualTo(REPLICATION_EVENT);
   }
 
+  @Test(expected = ShuntingYardException.class)
+  public void onCreateTableFails() throws Exception {
+    when(targetTableParameters.get(REPLICATION_EVENT)).thenReturn("123");
+    SerializableCreateTableEvent event = mockEvent(SerializableCreateTableEvent.class);
+    when(event.getTable()).thenReturn(sourceTable);
+    doThrow(TException.class).when(metaStoreClient).createTable(sourceTable);
+    listener.onCreateTable(event);
+  }
+
   @Test
   public void onCreateTableSkipsReplication() throws Exception {
     SerializableCreateTableEvent event = mockEvent(SerializableCreateTableEvent.class);
@@ -151,6 +192,15 @@ public class ThriftShuntingYardMetaStoreEventListenerTest {
     when(event.getTable()).thenReturn(sourceTable);
     listener.onDropTable(event);
     verify(metaStoreClient).dropTable(eq(DATABASE), eq(TABLE), eq(DELETE_DATA), eq(EXISTS));
+  }
+
+  @Test(expected = ShuntingYardException.class)
+  public void onDropTableFails() throws Exception {
+    when(targetTableParameters.get(REPLICATION_EVENT)).thenReturn("123");
+    SerializableDropTableEvent event = mockEvent(SerializableDropTableEvent.class);
+    when(event.getTable()).thenReturn(sourceTable);
+    doThrow(TException.class).when(metaStoreClient).dropTable(eq(DATABASE), eq(TABLE), eq(DELETE_DATA), eq(EXISTS));
+    listener.onDropTable(event);
   }
 
   @Test
@@ -185,6 +235,27 @@ public class ThriftShuntingYardMetaStoreEventListenerTest {
     assertThat(eventKeyCaptor.getValue()).isEqualTo(REPLICATION_EVENT);
   }
 
+  @Test(expected = ShuntingYardException.class)
+  public void onAlterTableFails() throws Exception {
+    when(targetTableParameters.get(REPLICATION_EVENT)).thenReturn("123");
+    final String oldDbName = "old_db";
+    final String oldTableName = "old_tbl";
+    Map<String, String> oldParameters = mock(Map.class);
+    Table oldTable = mock(Table.class);
+    when(oldTable.getDbName()).thenReturn(oldDbName);
+    when(oldTable.getTableName()).thenReturn(oldTableName);
+    when(oldTable.getParameters()).thenReturn(oldParameters);
+    when(targetTable.getDbName()).thenReturn(oldDbName);
+    when(targetTable.getTableName()).thenReturn(oldTableName);
+    when(metaStoreClient.getTable(oldDbName, oldTableName)).thenReturn(targetTable);
+    SerializableAlterTableEvent event = mockEvent(SerializableAlterTableEvent.class);
+    when(event.getOldTable()).thenReturn(oldTable);
+    when(event.getNewTable()).thenReturn(sourceTable);
+    doThrow(TException.class).when(metaStoreClient).alter_table_with_environmentContext(eq(oldDbName), eq(oldTableName),
+        same(sourceTable), same(eventContext));
+    listener.onAlterTable(event);
+  }
+
   @Test
   public void onAlterTableSkipsReplication() throws Exception {
     final String oldDbName = "old_db";
@@ -215,6 +286,17 @@ public class ThriftShuntingYardMetaStoreEventListenerTest {
     assertThat(eventKeyCaptor.getValue()).isEqualTo(REPLICATION_EVENT);
   }
 
+  @Test(expected = ShuntingYardException.class)
+  public void onAddPartitionFails() throws Exception {
+    when(targetTableParameters.get(REPLICATION_EVENT)).thenReturn("123");
+    List<Partition> partitions = ImmutableList.of(sourcePartition);
+    SerializableAddPartitionEvent event = mockEvent(SerializableAddPartitionEvent.class);
+    when(event.getTable()).thenReturn(sourceTable);
+    when(event.getPartitions()).thenReturn(partitions);
+    doThrow(TException.class).when(metaStoreClient).add_partitions(eq(partitions));
+    listener.onAddPartition(event);
+  }
+
   @Test
   public void onAddPartitionSkipsReplication() throws Exception {
     SerializableAddPartitionEvent event = mockEvent(SerializableAddPartitionEvent.class);
@@ -236,6 +318,20 @@ public class ThriftShuntingYardMetaStoreEventListenerTest {
     listener.onDropPartition(event);
     verify(metaStoreClient).dropPartitions(eq(DATABASE), eq(TABLE),
         eq(ImmutableList.<ObjectPair<Integer, byte[]>> of()), eq(DELETE_DATA), eq(EXISTS), eq(false));
+  }
+
+  @Test(expected = ShuntingYardException.class)
+  public void onDropPartitionFails() throws Exception {
+    when(targetTableParameters.get(REPLICATION_EVENT)).thenReturn("123");
+    List<Partition> partitions = ImmutableList.of(sourcePartition);
+    SerializableDropPartitionEvent event = mockEvent(SerializableDropPartitionEvent.class);
+    when(event.getTable()).thenReturn(sourceTable);
+    when(event.getPartitions()).thenReturn(partitions);
+    when(ThriftListenerUtils.toObjectPairs(sourceTable, partitions))
+        .thenReturn(ImmutableList.<ObjectPair<Integer, byte[]>> of());
+    doThrow(TException.class).when(metaStoreClient).dropPartitions(eq(DATABASE), eq(TABLE),
+        eq(ImmutableList.<ObjectPair<Integer, byte[]>> of()), eq(DELETE_DATA), eq(EXISTS), eq(false));
+    listener.onDropPartition(event);
   }
 
   @Test
@@ -261,6 +357,21 @@ public class ThriftShuntingYardMetaStoreEventListenerTest {
     verify(metaStoreClient).alter_partition(eq(DATABASE), eq(TABLE), same(sourcePartition), same(eventContext));
     verify(sourcePartitionParameters).put(eventKeyCaptor.capture(), anyString());
     assertThat(eventKeyCaptor.getValue()).isEqualTo(REPLICATION_EVENT);
+  }
+
+  @Test(expected = ShuntingYardException.class)
+  public void onAlterPartitionFails() throws Exception {
+    when(targetTableParameters.get(REPLICATION_EVENT)).thenReturn("123");
+    Partition oldPartition = mock(Partition.class);
+    when(oldPartition.getDbName()).thenReturn(DATABASE);
+    when(oldPartition.getTableName()).thenReturn(TABLE);
+    SerializableAlterPartitionEvent event = mockEvent(SerializableAlterPartitionEvent.class);
+    when(event.getTable()).thenReturn(sourceTable);
+    when(event.getOldPartition()).thenReturn(oldPartition);
+    when(event.getNewPartition()).thenReturn(sourcePartition);
+    doThrow(TException.class).when(metaStoreClient).alter_partition(eq(DATABASE), eq(TABLE), same(sourcePartition),
+        same(eventContext));
+    listener.onAlterPartition(event);
   }
 
   @Test

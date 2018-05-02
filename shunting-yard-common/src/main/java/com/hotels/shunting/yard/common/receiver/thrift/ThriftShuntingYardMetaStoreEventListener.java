@@ -36,6 +36,7 @@ import com.hotels.shunting.yard.common.event.SerializableCreateTableEvent;
 import com.hotels.shunting.yard.common.event.SerializableDropPartitionEvent;
 import com.hotels.shunting.yard.common.event.SerializableDropTableEvent;
 import com.hotels.shunting.yard.common.event.SerializableInsertEvent;
+import com.hotels.shunting.yard.common.exception.ShuntingYardException;
 import com.hotels.shunting.yard.common.receiver.ShuntingYardMetaStoreEventListener;
 
 public class ThriftShuntingYardMetaStoreEventListener implements ShuntingYardMetaStoreEventListener {
@@ -98,8 +99,8 @@ public class ThriftShuntingYardMetaStoreEventListener implements ShuntingYardMet
     } catch (NoSuchObjectException e) {
       return true;
     } catch (TException e) {
-      throw new RuntimeException(String.format("Cannot check whether table %s.%s can be replicated", dbName, tableName),
-          e);
+      throw new ShuntingYardException(
+          String.format("Cannot check whether table %s.%s can be replicated", dbName, tableName), e);
     }
   }
 
@@ -113,7 +114,7 @@ public class ThriftShuntingYardMetaStoreEventListener implements ShuntingYardMet
     try {
       metaStoreClient.createTable(event.getTable());
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new ShuntingYardException("Unable to create table", e);
     }
   }
 
@@ -128,7 +129,7 @@ public class ThriftShuntingYardMetaStoreEventListener implements ShuntingYardMet
       metaStoreClient.dropTable(event.getTable().getDbName(), event.getTable().getTableName(), event.getDeleteData(),
           ifExists());
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new ShuntingYardException("Unable to drop table", e);
     }
   }
 
@@ -143,7 +144,7 @@ public class ThriftShuntingYardMetaStoreEventListener implements ShuntingYardMet
       metaStoreClient.alter_table_with_environmentContext(event.getOldTable().getDbName(),
           event.getOldTable().getTableName(), event.getNewTable(), event.getEnvironmentContext());
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new ShuntingYardException("Unable to alter table", e);
     }
   }
 
@@ -157,7 +158,7 @@ public class ThriftShuntingYardMetaStoreEventListener implements ShuntingYardMet
     try {
       metaStoreClient.add_partitions(event.getPartitions());
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new ShuntingYardException("Unable to add partitions", e);
     }
   }
 
@@ -173,7 +174,7 @@ public class ThriftShuntingYardMetaStoreEventListener implements ShuntingYardMet
       metaStoreClient.dropPartitions(event.getTable().getDbName(), event.getTable().getTableName(),
           toObjectPairs(event.getTable(), event.getPartitions()), event.getDeleteData(), ifExists(), false);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new ShuntingYardException("Unable to drop partitions", e);
     }
   }
 
@@ -189,7 +190,7 @@ public class ThriftShuntingYardMetaStoreEventListener implements ShuntingYardMet
       metaStoreClient.alter_partition(event.getTable().getDbName(), event.getTable().getTableName(),
           event.getNewPartition(), event.getEnvironmentContext());
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new ShuntingYardException("Unable to alter partition", e);
     }
   }
 
