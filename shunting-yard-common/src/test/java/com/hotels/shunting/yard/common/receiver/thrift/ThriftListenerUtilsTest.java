@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,24 +33,22 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import com.google.common.base.Joiner;
+
 @RunWith(MockitoJUnitRunner.class)
 public class ThriftListenerUtilsTest {
 
   private static final String DATABASE = "test_db";
   private static final String TABLE = "test_table";
   private static final List<FieldSchema> DATA_COLS = Arrays.asList(new FieldSchema("col", "integer", "comment"));
-  private static final List<FieldSchema> PARTITION_COLS = Arrays.asList(new FieldSchema("part", "string", "comment"));
 
-  private static Table createTable(FieldSchema... moreCols) {
+  private static Table createTable(FieldSchema... partCols) {
     Table table = new Table();
     table.setDbName(DATABASE);
     table.setTableName(TABLE);
-    table.setPartitionKeys(PARTITION_COLS);
+    table.setPartitionKeys(Arrays.asList(partCols));
     table.setSd(new StorageDescriptor());
     List<FieldSchema> cols = new ArrayList<>(DATA_COLS);
-    if (moreCols != null) {
-      Collections.addAll(cols, moreCols);
-    }
     table.getSd().setCols(cols);
     table.getSd().setLocation("hdfs://server:8020/foo/bar/");
     table.setParameters(new HashMap<String, String>());
@@ -59,14 +56,14 @@ public class ThriftListenerUtilsTest {
     return table;
   }
 
-  private static Partition createPartition(String value) {
+  private static Partition createPartition(String... values) {
     Partition partition = new Partition();
     partition.setDbName(DATABASE);
     partition.setTableName(TABLE);
-    partition.setValues(Arrays.asList(value));
+    partition.setValues(Arrays.asList(values));
     partition.setSd(new StorageDescriptor());
     partition.getSd().setCols(DATA_COLS);
-    partition.getSd().setLocation("hdfs://server:8020/foo/bar/part=a");
+    partition.getSd().setLocation("hdfs://server:8020/foo/bar/" + Joiner.on("/").join(values));
     partition.setParameters(new HashMap<String, String>());
     partition.getParameters().put("foo", "bazz");
     return partition;
@@ -75,10 +72,31 @@ public class ThriftListenerUtilsTest {
   public @Rule ExpectedException exception = ExpectedException.none();
 
   @Test
-  public void typical() {
-    List<ObjectPair<Integer, byte[]>> pairs = ThriftListenerUtils.toObjectPairs(createTable(),
+  public void singlePartitionCol() {
+    List<ObjectPair<Integer, byte[]>> pairs = ThriftListenerUtils.toObjectPairs(
+        createTable(new FieldSchema("part", "string", null)),
         Arrays.asList(createPartition("a"), createPartition("b")));
     assertThat(pairs.size()).isEqualTo(2);
+    for (ObjectPair<Integer, byte[]> pair : pairs) {
+      assertThat(pair.getFirst()).isEqualTo(1);
+    }
+  }
+
+  @Test
+  public void twoPartitionCols() {
+    List<ObjectPair<Integer, byte[]>> pairs = ThriftListenerUtils.toObjectPairs(
+        createTable(new FieldSchema("part_1", "string", null), new FieldSchema("part_2", "int", null)),
+        Arrays.asList(createPartition("a", "1"), createPartition("b", "2")));
+    assertThat(pairs.size()).isEqualTo(2);
+    for (ObjectPair<Integer, byte[]> pair : pairs) {
+      assertThat(pair.getFirst()).isEqualTo(2);
+    }
+  }
+
+  @Test(expected = RuntimeException.class)
+  public void moreValuesThanPartitionCols() {
+    ThriftListenerUtils.toObjectPairs(createTable(new FieldSchema("part", "string", null)),
+        Arrays.asList(createPartition("a", "1")));
   }
 
 }
