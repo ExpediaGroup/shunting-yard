@@ -15,8 +15,7 @@
  */
 package com.hotels.shunting.yard.emitter.kafka.messaging;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,7 +29,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.hotels.shunting.yard.common.messaging.Message;
-import com.hotels.shunting.yard.emitter.kafka.messaging.KafkaMessageTask;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KafkaMessageTaskTest {
@@ -58,9 +56,9 @@ public class KafkaMessageTaskTest {
 
     kafkaTask.run();
     verify(producer).send(captor.capture());
-    assertThat(captor.getValue().topic(), is(TOPIC));
-    assertThat(captor.getValue().partition(), is(0));
-    assertThat(captor.getValue().value(), is(PAYLOAD));
+    assertThat(captor.getValue().topic()).isEqualTo(TOPIC);
+    assertThat(captor.getValue().partition()).isEqualTo(0);
+    assertThat(captor.getValue().value()).isEqualTo(PAYLOAD);
   }
 
 }

@@ -77,6 +77,7 @@ public class ThriftShuntingYardMetaStoreEventListenerTest {
   private @Mock Map<String, String> sourceTableParameters;
   private @Mock Map<String, String> targetTableParameters;
   private @Mock Map<String, String> sourcePartitionParameters;
+
   private @Captor ArgumentCaptor<String> eventKeyCaptor;
 
   private ThriftShuntingYardMetaStoreEventListener listener;

@@ -15,9 +15,7 @@
  */
 package com.hotels.shunting.yard.emitter.kafka.messaging;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.ACKS;
@@ -44,17 +42,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.hotels.shunting.yard.common.messaging.Message;
 import com.hotels.shunting.yard.common.messaging.MessageTask;
-import com.hotels.shunting.yard.emitter.kafka.messaging.KafkaMessageTask;
-import com.hotels.shunting.yard.emitter.kafka.messaging.KafkaMessageTaskFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KafkaMessageTaskFactoryTest {
 
   private static final String TOPIC_NAME = "topic";
-
-  private static <T> Object asObject(T t) {
-    return t;
-  }
 
   private @Mock Message message;
 
@@ -65,7 +57,7 @@ public class KafkaMessageTaskFactoryTest {
     @SuppressWarnings("unchecked")
     KafkaProducer<Long, byte[]> producer = mock(KafkaProducer.class);
     MessageTask task = new KafkaMessageTaskFactory(TOPIC_NAME, producer).newTask(message);
-    assertThat(task, is(instanceOf(KafkaMessageTask.class)));
+    assertThat(task).isInstanceOf(KafkaMessageTask.class);
   }
 
   @Test
@@ -78,21 +70,21 @@ public class KafkaMessageTaskFactoryTest {
     conf.set(LINGER_MS.key(), "4");
     conf.set(BUFFER_MEMORY.key(), "5");
     Properties props = kafkaProperties(conf);
-    assertThat(props.get("bootstrap.servers"), is(asObject("broker")));
-    assertThat(props.get("acks"), is(asObject("acknowledgements")));
-    assertThat(props.get("retries"), is(asObject(1)));
-    assertThat(props.get("max.in.flight.requests.per.connection"), is(asObject(2)));
-    assertThat(props.get("batch.size"), is(asObject(3)));
-    assertThat(props.get("linger.ms"), is(asObject(4L)));
-    assertThat(props.get("buffer.memory"), is(asObject(5L)));
-    assertThat(props.get("key.serializer"), is(asObject(LongSerializer.class.getName())));
-    assertThat(props.get("value.serializer"), is(asObject(ByteArraySerializer.class.getName())));
+    assertThat(props.get("bootstrap.servers")).isEqualTo("broker");
+    assertThat(props.get("acks")).isEqualTo("acknowledgements");
+    assertThat(props.get("retries")).isEqualTo(1);
+    assertThat(props.get("max.in.flight.requests.per.connection")).isEqualTo(2);
+    assertThat(props.get("batch.size")).isEqualTo(3);
+    assertThat(props.get("linger.ms")).isEqualTo(4L);
+    assertThat(props.get("buffer.memory")).isEqualTo(5L);
+    assertThat(props.get("key.serializer")).isEqualTo(LongSerializer.class.getName());
+    assertThat(props.get("value.serializer")).isEqualTo(ByteArraySerializer.class.getName());
   }
 
   @Test
   public void topicIsNotNull() {
     conf.set(TOPIC.key(), TOPIC_NAME);
-    assertThat(topic(conf), is(TOPIC_NAME));
+    assertThat(topic(conf)).isEqualTo(TOPIC_NAME);
   }
 
   @Test(expected = NullPointerException.class)
