@@ -15,9 +15,7 @@
  */
 package com.hotels.shunting.yard.emitter.sqs;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import static com.hotels.shunting.yard.emitter.sqs.SqsProperty.AWS_ACCESS_KEY;
 import static com.hotels.shunting.yard.emitter.sqs.SqsProperty.AWS_SECRET_KEY;
@@ -29,52 +27,48 @@ import org.junit.Test;
 
 public class SqsPropertyTest {
 
-  private static <T> Object asObject(T t) {
-    return t;
-  }
-
   private static String prefixedKey(String key) {
     return "com.hotels.shunting.yard.event.emitter.sqs." + key;
   }
 
   @Test
   public void numberOfProperties() {
-    assertThat(SqsProperty.values().length, is(5));
+    assertThat(SqsProperty.values().length).isEqualTo(5);
   }
 
   @Test
   public void queue() {
-    assertThat(QUEUE.unPrefixedKey(), is("queue"));
-    assertThat(QUEUE.key(), is(prefixedKey("queue")));
-    assertThat(QUEUE.defaultValue(), is(nullValue()));
+    assertThat(QUEUE.unPrefixedKey()).isEqualTo("queue");
+    assertThat(QUEUE.key()).isEqualTo(prefixedKey("queue"));
+    assertThat(QUEUE.defaultValue()).isNull();
   }
 
   @Test
   public void region() {
-    assertThat(REGION.unPrefixedKey(), is("region"));
-    assertThat(REGION.key(), is(prefixedKey("region")));
-    assertThat(REGION.defaultValue(), is(asObject("us-west-2")));
+    assertThat(REGION.unPrefixedKey()).isEqualTo("region");
+    assertThat(REGION.key()).isEqualTo(prefixedKey("region"));
+    assertThat(REGION.defaultValue()).isEqualTo("us-west-2");
   }
 
   @Test
   public void groupId() {
-    assertThat(GROUP_ID.unPrefixedKey(), is("group.id"));
-    assertThat(GROUP_ID.key(), is(prefixedKey("group.id")));
-    assertThat(GROUP_ID.defaultValue(), is(nullValue()));
+    assertThat(GROUP_ID.unPrefixedKey()).isEqualTo("group.id");
+    assertThat(GROUP_ID.key()).isEqualTo(prefixedKey("group.id"));
+    assertThat(GROUP_ID.defaultValue()).isNull();
   }
 
   @Test
   public void awsAccessKey() {
-    assertThat(AWS_ACCESS_KEY.unPrefixedKey(), is("aws.access.key"));
-    assertThat(AWS_ACCESS_KEY.key(), is(prefixedKey("aws.access.key")));
-    assertThat(AWS_ACCESS_KEY.defaultValue(), is(nullValue()));
+    assertThat(AWS_ACCESS_KEY.unPrefixedKey()).isEqualTo("aws.access.key");
+    assertThat(AWS_ACCESS_KEY.key()).isEqualTo(prefixedKey("aws.access.key"));
+    assertThat(AWS_ACCESS_KEY.defaultValue()).isNull();
   }
 
   @Test
   public void awsSecretKey() {
-    assertThat(AWS_SECRET_KEY.unPrefixedKey(), is("aws.secret.key"));
-    assertThat(AWS_SECRET_KEY.key(), is(prefixedKey("aws.secret.key")));
-    assertThat(AWS_SECRET_KEY.defaultValue(), is(nullValue()));
+    assertThat(AWS_SECRET_KEY.unPrefixedKey()).isEqualTo("aws.secret.key");
+    assertThat(AWS_SECRET_KEY.key()).isEqualTo(prefixedKey("aws.secret.key"));
+    assertThat(AWS_SECRET_KEY.defaultValue()).isNull();
   }
 
 }

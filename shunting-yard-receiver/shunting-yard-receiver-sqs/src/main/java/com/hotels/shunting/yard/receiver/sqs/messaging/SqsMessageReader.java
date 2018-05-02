@@ -65,7 +65,7 @@ public class SqsMessageReader implements MessageReader {
 
   @Override
   public void remove() {
-    throw new UnsupportedOperationException("Cannot remove message from Kafka topic");
+    throw new UnsupportedOperationException("Cannot remove message from SQS topic");
   }
 
   @Override

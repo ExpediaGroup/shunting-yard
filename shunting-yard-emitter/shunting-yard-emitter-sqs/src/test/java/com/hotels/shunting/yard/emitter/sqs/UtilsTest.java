@@ -15,8 +15,7 @@
  */
 package com.hotels.shunting.yard.emitter.sqs;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import static com.hotels.shunting.yard.emitter.sqs.SqsProperty.GROUP_ID;
 import static com.hotels.shunting.yard.emitter.sqs.SqsProperty.QUEUE;
@@ -26,23 +25,16 @@ import static com.hotels.shunting.yard.emitter.sqs.Utils.queue;
 import static com.hotels.shunting.yard.emitter.sqs.Utils.region;
 
 import org.apache.hadoop.conf.Configuration;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(MockitoJUnitRunner.class)
 public class UtilsTest {
-
-  public @Rule ExpectedException exception = ExpectedException.none();
 
   private final Configuration conf = new Configuration();
 
   @Test
   public void queueIsNotNull() {
     conf.set(QUEUE.key(), "queue");
-    assertThat(queue(conf), is("queue"));
+    assertThat(queue(conf)).isEqualTo("queue");
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -54,7 +46,7 @@ public class UtilsTest {
   @Test
   public void regionIsNotNull() {
     conf.set(REGION.key(), "region");
-    assertThat(region(conf), is("region"));
+    assertThat(region(conf)).isEqualTo("region");
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -66,7 +58,7 @@ public class UtilsTest {
   @Test
   public void groupIdIsNotNull() {
     conf.set(GROUP_ID.key(), "group");
-    assertThat(groupId(conf), is("group"));
+    assertThat(groupId(conf)).isEqualTo("group");
   }
 
   @Test(expected = IllegalArgumentException.class)

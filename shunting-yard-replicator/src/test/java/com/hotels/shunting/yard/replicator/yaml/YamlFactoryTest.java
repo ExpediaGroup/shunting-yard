@@ -15,8 +15,7 @@
  */
 package com.hotels.shunting.yard.replicator.yaml;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.StringWriter;
 
@@ -24,7 +23,6 @@ import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 
 import com.hotels.shunting.yard.replicator.exec.external.CircusTrainConfig;
-import com.hotels.shunting.yard.replicator.yaml.YamlFactory;
 
 public class YamlFactoryTest {
 
@@ -47,7 +45,7 @@ public class YamlFactoryTest {
         .build();
     Yaml yaml = YamlFactory.newYaml();
     yaml.dump(circusTrainConfig, sw);
-    assertThat(sw.toString(), is(expectedYaml));
+    assertThat(sw.toString()).isEqualTo(expectedYaml);
   }
 
 }
