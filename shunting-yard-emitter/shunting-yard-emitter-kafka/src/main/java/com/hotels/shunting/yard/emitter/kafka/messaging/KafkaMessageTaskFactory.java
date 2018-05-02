@@ -15,7 +15,10 @@
  */
 package com.hotels.shunting.yard.emitter.kafka.messaging;
 
-import static com.hotels.shunting.yard.common.Utils.checkNotNull;
+import static com.hotels.shunting.yard.common.Preconditions.checkNotNull;
+import static com.hotels.shunting.yard.common.PropertyUtils.intProperty;
+import static com.hotels.shunting.yard.common.PropertyUtils.longProperty;
+import static com.hotels.shunting.yard.common.PropertyUtils.stringProperty;
 import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.ACKS;
 import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.BATCH_SIZE;
 import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.BOOTSTRAP_SERVERS;
@@ -25,9 +28,6 @@ import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.LINGE
 import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION;
 import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.RETRIES;
 import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.TOPIC;
-import static com.hotels.shunting.yard.emitter.kafka.Utils.intProperty;
-import static com.hotels.shunting.yard.emitter.kafka.Utils.longProperty;
-import static com.hotels.shunting.yard.emitter.kafka.Utils.stringProperty;
 
 import java.util.Properties;
 

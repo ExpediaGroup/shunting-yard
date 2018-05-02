@@ -17,7 +17,7 @@ package com.hotels.shunting.yard.common;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import static com.hotels.shunting.yard.common.Utils.checkNotNull;
+import static com.hotels.shunting.yard.common.Preconditions.checkNotNull;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,7 +26,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UtilsTest {
+public class PreconditionsTest {
 
   public @Rule ExpectedException exception = ExpectedException.none();
 

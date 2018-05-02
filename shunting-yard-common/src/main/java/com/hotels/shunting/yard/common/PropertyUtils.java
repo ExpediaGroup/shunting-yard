@@ -13,23 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.shunting.yard.emitter.kinesis;
+package com.hotels.shunting.yard.common;
 
 import org.apache.hadoop.conf.Configuration;
 
-public final class Utils {
+public class PropertyUtils {
 
-  private Utils() {}
+  private PropertyUtils() {}
 
-  public static String stringProperty(Configuration conf, KinesisProducerProperty property) {
+  public static String stringProperty(Configuration conf, Property property) {
     return conf.get(property.key(), (String) property.defaultValue());
   }
 
-  public static Integer intProperty(Configuration conf, KinesisProducerProperty property) {
+  public static boolean booleanProperty(Configuration conf, Property property) {
+    return conf.getBoolean(property.key(), (boolean) property.defaultValue());
+  }
+
+  public static int intProperty(Configuration conf, Property property) {
     return conf.getInt(property.key(), (int) property.defaultValue());
   }
 
-  public static Long longProperty(Configuration conf, KinesisProducerProperty property) {
+  public static long longProperty(Configuration conf, Property property) {
     return conf.getLong(property.key(), (long) property.defaultValue());
   }
 

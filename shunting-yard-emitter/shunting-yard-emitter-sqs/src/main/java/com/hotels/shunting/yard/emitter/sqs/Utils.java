@@ -15,7 +15,8 @@
  */
 package com.hotels.shunting.yard.emitter.sqs;
 
-import static com.hotels.shunting.yard.common.Utils.checkNotNull;
+import static com.hotels.shunting.yard.common.Preconditions.checkNotNull;
+import static com.hotels.shunting.yard.common.PropertyUtils.stringProperty;
 import static com.hotels.shunting.yard.emitter.sqs.SqsProperty.GROUP_ID;
 import static com.hotels.shunting.yard.emitter.sqs.SqsProperty.QUEUE;
 import static com.hotels.shunting.yard.emitter.sqs.SqsProperty.REGION;
@@ -32,14 +33,6 @@ import com.hotels.shunting.yard.emitter.sqs.aws.ConfigurationAwsCredentialsProvi
 public final class Utils {
 
   private Utils() {}
-
-  public static String stringProperty(Configuration conf, SqsProperty property) {
-    return conf.get(property.key(), (String) property.defaultValue());
-  }
-
-  public static Integer intProperty(Configuration conf, SqsProperty property) {
-    return conf.getInt(property.key(), (Integer) property.defaultValue());
-  }
 
   public static String queue(Configuration conf) {
     return checkNotNull(stringProperty(conf, QUEUE), "Property " + QUEUE + " is not set");

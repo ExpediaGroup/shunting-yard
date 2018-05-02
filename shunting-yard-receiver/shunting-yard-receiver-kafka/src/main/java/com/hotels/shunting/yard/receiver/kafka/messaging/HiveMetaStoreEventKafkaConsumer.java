@@ -15,7 +15,11 @@
  */
 package com.hotels.shunting.yard.receiver.kafka.messaging;
 
-import static com.hotels.shunting.yard.common.Utils.checkNotNull;
+import static com.hotels.shunting.yard.common.Preconditions.checkNotNull;
+import static com.hotels.shunting.yard.common.PropertyUtils.booleanProperty;
+import static com.hotels.shunting.yard.common.PropertyUtils.intProperty;
+import static com.hotels.shunting.yard.common.PropertyUtils.longProperty;
+import static com.hotels.shunting.yard.common.PropertyUtils.stringProperty;
 import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.AUTO_COMMIT_INTERVAL_MS;
 import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.BOOTSTRAP_SERVERS;
 import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.CLIENT_ID;
@@ -30,10 +34,6 @@ import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.RECO
 import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.RECONNECT_BACKOFF_MS;
 import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.RETRY_BACKOFF_MS;
 import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.SESSION_TIMEOUT_MS;
-import static com.hotels.shunting.yard.receiver.kafka.Utils.booleanProperty;
-import static com.hotels.shunting.yard.receiver.kafka.Utils.intProperty;
-import static com.hotels.shunting.yard.receiver.kafka.Utils.longProperty;
-import static com.hotels.shunting.yard.receiver.kafka.Utils.stringProperty;
 
 import java.util.Properties;
 

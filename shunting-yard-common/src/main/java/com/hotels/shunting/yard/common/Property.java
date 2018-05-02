@@ -15,15 +15,12 @@
  */
 package com.hotels.shunting.yard.common;
 
-public final class Utils {
+public interface Property {
 
-  private Utils() {}
+  String key();
 
-  public static <T> T checkNotNull(T t, String message) {
-    if (t == null) {
-      throw new NullPointerException(message);
-    }
-    return t;
-  }
+  String unPrefixedKey();
+
+  Object defaultValue();
 
 }

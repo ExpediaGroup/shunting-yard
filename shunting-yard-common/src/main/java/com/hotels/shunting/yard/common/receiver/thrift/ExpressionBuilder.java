@@ -1,5 +1,9 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2018 Expedia Inc. and Apache Hive authors.
+ *
+ * Copied from Hive 2.3.0:
+ *
+ *     https://github.com/apache/hive/blob/rel/release-2.3.0/hcatalog/webhcat/java-client/src/main/java/org/apache/hive/hcatalog/api/HCatClientHMSImpl.java#L521
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,12 +37,6 @@ import org.apache.hadoop.hive.serde2.typeinfo.TypeInfoUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-/*
- * Copied from:
- *
- *     https://github.com/apache/hive/blob/rel/release-2.3.0/hcatalog/webhcat/java-client/src/main/java/org/apache/hive/hcatalog/api/HCatClientHMSImpl.java#L521
- *
- */
 /**
  * Helper class to help build ExprDesc tree to represent the partitions to be dropped. Note: At present, the
  * ExpressionBuilder only constructs partition predicates where partition-keys equal specific values, and logical-AND
@@ -47,8 +45,8 @@ import com.google.common.collect.Maps;
  */
 class ExpressionBuilder {
 
-  private Map<String, PrimitiveTypeInfo> partColumnTypesMap = Maps.newHashMap();
-  private Map<String, String> partSpecs;
+  private final Map<String, PrimitiveTypeInfo> partColumnTypesMap = Maps.newHashMap();
+  private final Map<String, String> partSpecs;
 
   public ExpressionBuilder(Table table, Map<String, String> partSpecs) {
     this.partSpecs = partSpecs;

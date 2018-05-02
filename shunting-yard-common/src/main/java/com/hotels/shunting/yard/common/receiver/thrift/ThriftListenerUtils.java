@@ -27,7 +27,9 @@ import org.apache.hadoop.hive.ql.exec.SerializationUtilities;
 import org.apache.hadoop.hive.ql.parse.SemanticException;
 import org.apache.hadoop.hive.ql.plan.ExprNodeGenericFuncDesc;
 
-public class Utils {
+public class ThriftListenerUtils {
+
+  private ThriftListenerUtils() {}
 
   public static List<ObjectPair<Integer, byte[]>> toObjectPairs(Table table, List<Partition> partitions) {
     List<ObjectPair<Integer, byte[]>> pairs = new ArrayList<>(partitions.size());

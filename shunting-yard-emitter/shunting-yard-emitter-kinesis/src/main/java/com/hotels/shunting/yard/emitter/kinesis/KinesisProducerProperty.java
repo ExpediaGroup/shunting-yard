@@ -17,7 +17,9 @@ package com.hotels.shunting.yard.emitter.kinesis;
 
 import com.amazonaws.regions.Regions;
 
-public enum KinesisProducerProperty {
+import com.hotels.shunting.yard.common.Property;
+
+public enum KinesisProducerProperty implements Property {
   STREAM("stream", null),
   REGION("region", Regions.US_WEST_2.getName()),
   MAX_CONNECTIONS("max.connections", 1L),
@@ -35,14 +37,17 @@ public enum KinesisProducerProperty {
     this.defaultValue = defaultValue;
   }
 
+  @Override
   public String key() {
     return new StringBuffer(PROPERTY_PREFIX).append(unPrefixedKey).toString();
   }
 
+  @Override
   public String unPrefixedKey() {
     return unPrefixedKey;
   }
 
+  @Override
   public Object defaultValue() {
     return defaultValue;
   }

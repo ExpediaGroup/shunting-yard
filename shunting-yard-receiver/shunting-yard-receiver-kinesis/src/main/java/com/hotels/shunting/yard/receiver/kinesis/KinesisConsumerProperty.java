@@ -17,7 +17,9 @@ package com.hotels.shunting.yard.receiver.kinesis;
 
 import com.amazonaws.regions.Regions;
 
-public enum KinesisConsumerProperty {
+import com.hotels.shunting.yard.common.Property;
+
+public enum KinesisConsumerProperty implements Property {
   STREAM("stream", null),
   REGION("region", Regions.US_WEST_2.getName()),
   APPLICTION_ID("application.id", null),
@@ -35,14 +37,17 @@ public enum KinesisConsumerProperty {
     this.defaultValue = defaultValue;
   }
 
+  @Override
   public String key() {
     return new StringBuffer(PROPERTY_PREFIX).append(unPrefixedKey).toString();
   }
 
+  @Override
   public String unPrefixedKey() {
     return unPrefixedKey;
   }
 
+  @Override
   public Object defaultValue() {
     return defaultValue;
   }

@@ -16,7 +16,7 @@
 package com.hotels.shunting.yard.replicator.exec.receiver;
 
 import static com.hotels.bdp.circustrain.api.CircusTrainTableParameter.REPLICATION_EVENT;
-import static com.hotels.shunting.yard.common.receiver.thrift.Utils.toObjectPairs;
+import static com.hotels.shunting.yard.common.receiver.thrift.ThriftListenerUtils.toObjectPairs;
 
 import java.util.Arrays;
 

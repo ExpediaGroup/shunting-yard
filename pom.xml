@@ -308,11 +308,9 @@
           <configuration>
             <!-- excluding files that don't need a header update -->
             <excludes>
-              <exclude>src/main/java/com/hotels/bdp/waggledance/api/validation/constraint/TunnelRoute.java</exclude>
-              <exclude>src/main/java/com/hotels/bdp/waggledance/api/validation/validator/TunnelRouteValidator.java</exclude>
-              <exclude>src/main/java/com/hotels/bdp/waggledance/client/ThriftMetastoreClient.java</exclude>
-              <exclude>src/main/java/com/hotels/bdp/waggledance/server/MetaStoreProxyServer.java</exclude>
-              <exclude>src/main/java/com/hotels/bdp/waggledance/validation/Preconditions.java</exclude>
+              <exclude>src/main/java/com/hotels/shunting/yard/common/receiver/thrift/EventIdFactory.java</exclude>
+              <exclude>src/test/java/com/hotels/shunting/yard/common/receiver/thrift/EventIdFactoryTest.java</exclude>
+              <exclude>src/main/java/com/hotels/shunting/yard/common/receiver/thrift/ExpressionBuilder.java</exclude>
             </excludes>
           </configuration>
         </plugin>

@@ -15,9 +15,9 @@
  */
 package com.hotels.shunting.yard.receiver.kafka.messaging;
 
-import static com.hotels.shunting.yard.common.Utils.checkNotNull;
+import static com.hotels.shunting.yard.common.Preconditions.checkNotNull;
+import static com.hotels.shunting.yard.common.PropertyUtils.stringProperty;
 import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.TOPIC;
-import static com.hotels.shunting.yard.receiver.kafka.Utils.stringProperty;
 
 import java.io.IOException;
 import java.util.Arrays;

@@ -15,15 +15,15 @@
  */
 package com.hotels.shunting.yard.receiver.kinesis.adapter;
 
-import static com.hotels.shunting.yard.common.Utils.checkNotNull;
+import static com.hotels.shunting.yard.common.Preconditions.checkNotNull;
+import static com.hotels.shunting.yard.common.PropertyUtils.intProperty;
+import static com.hotels.shunting.yard.common.PropertyUtils.stringProperty;
 import static com.hotels.shunting.yard.receiver.kinesis.KinesisConsumerProperty.APPLICTION_ID;
 import static com.hotels.shunting.yard.receiver.kinesis.KinesisConsumerProperty.BUFFER_CAPACITY;
 import static com.hotels.shunting.yard.receiver.kinesis.KinesisConsumerProperty.MAX_RECORDS;
 import static com.hotels.shunting.yard.receiver.kinesis.KinesisConsumerProperty.REGION;
 import static com.hotels.shunting.yard.receiver.kinesis.KinesisConsumerProperty.STREAM;
 import static com.hotels.shunting.yard.receiver.kinesis.KinesisConsumerProperty.WORKER_ID;
-import static com.hotels.shunting.yard.receiver.kinesis.Utils.intProperty;
-import static com.hotels.shunting.yard.receiver.kinesis.Utils.stringProperty;
 
 import java.io.Closeable;
 import java.io.IOException;

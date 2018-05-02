@@ -15,7 +15,6 @@
  */
 package com.hotels.shunting.yard.emitter.sqs;
 
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -25,7 +24,6 @@ import static com.hotels.shunting.yard.emitter.sqs.SqsProperty.REGION;
 import static com.hotels.shunting.yard.emitter.sqs.Utils.groupId;
 import static com.hotels.shunting.yard.emitter.sqs.Utils.queue;
 import static com.hotels.shunting.yard.emitter.sqs.Utils.region;
-import static com.hotels.shunting.yard.emitter.sqs.Utils.stringProperty;
 
 import org.apache.hadoop.conf.Configuration;
 import org.junit.Rule;
@@ -40,22 +38,6 @@ public class UtilsTest {
   public @Rule ExpectedException exception = ExpectedException.none();
 
   private final Configuration conf = new Configuration();
-
-  @Test
-  public void stringPropertyReturnsConfValue() {
-    conf.set(REGION.key(), "prop");
-    assertThat(stringProperty(conf, REGION), is("prop"));
-  }
-
-  @Test
-  public void stringPropertyReturnsDefaultValue() {
-    assertThat(stringProperty(conf, REGION), is((String) REGION.defaultValue()));
-  }
-
-  @Test
-  public void stringPropertyReturnsNull() {
-    assertThat(stringProperty(conf, QUEUE), is(nullValue()));
-  }
 
   @Test
   public void queueIsNotNull() {

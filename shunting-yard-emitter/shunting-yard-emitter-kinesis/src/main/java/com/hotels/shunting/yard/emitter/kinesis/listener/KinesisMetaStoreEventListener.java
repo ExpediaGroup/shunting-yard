@@ -24,17 +24,18 @@ import com.google.common.annotations.VisibleForTesting;
 
 import com.hotels.shunting.yard.common.emitter.AbstractMetaStoreEventListener;
 import com.hotels.shunting.yard.common.event.SerializableListenerEventFactory;
+import com.hotels.shunting.yard.common.io.JavaSerializationMetaStoreEventSerDe;
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 import com.hotels.shunting.yard.common.messaging.MessageTaskFactory;
 import com.hotels.shunting.yard.emitter.kinesis.messaging.KinesisMessageTaskFactory;
 
 public class KinesisMetaStoreEventListener extends AbstractMetaStoreEventListener {
 
-  private MetaStoreEventSerDe eventSerDe;
-  private MessageTaskFactory messageTaskFactory;
+  private final MetaStoreEventSerDe eventSerDe;
+  private final MessageTaskFactory messageTaskFactory;
 
   public KinesisMetaStoreEventListener(Configuration config) {
-    this(config, new SerializableListenerEventFactory(config), new MetaStoreEventSerDe(),
+    this(config, new SerializableListenerEventFactory(config), new JavaSerializationMetaStoreEventSerDe(),
         new KinesisMessageTaskFactory(config), Executors.newSingleThreadExecutor());
   }
 

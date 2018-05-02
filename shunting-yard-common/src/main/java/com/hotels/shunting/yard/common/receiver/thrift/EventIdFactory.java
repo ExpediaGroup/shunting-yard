@@ -1,6 +1,10 @@
 /**
  * Copyright (C) 2016-2018 Expedia Inc.
  *
+ * Copied from Circus Train 11.4.0:
+ *
+ *      https://github.com/HotelsDotCom/circus-train/blob/circus-train-parent-11.4.0/circus-train-core/src/main/java/com/hotels/bdp/circustrain/core/EventIdFactory.java
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,9 +23,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-/*
- * Copied from Circus Train
- */
 /**
  * Generate an id that will to all intents and purposes be unique for a given replication task. This is an interface so
  * that we can mock and return predictable values for tests. This id is generally used for the creation of unique,

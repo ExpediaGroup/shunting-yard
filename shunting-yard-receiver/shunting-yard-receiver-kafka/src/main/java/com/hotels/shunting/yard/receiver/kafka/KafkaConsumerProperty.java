@@ -15,7 +15,9 @@
  */
 package com.hotels.shunting.yard.receiver.kafka;
 
-public enum KafkaConsumerProperty {
+import com.hotels.shunting.yard.common.Property;
+
+public enum KafkaConsumerProperty implements Property {
   TOPIC("topic", null),
   BOOTSTRAP_SERVERS("bootstrap.servers", null),
   GROUP_ID("group.id", null),
@@ -42,14 +44,17 @@ public enum KafkaConsumerProperty {
     this.defaultValue = defaultValue;
   }
 
+  @Override
   public String key() {
     return new StringBuffer(PROPERTY_PREFIX).append(unPrefixedKey).toString();
   }
 
+  @Override
   public String unPrefixedKey() {
     return unPrefixedKey;
   }
 
+  @Override
   public Object defaultValue() {
     return defaultValue;
   }

@@ -15,7 +15,9 @@
  */
 package com.hotels.shunting.yard.receiver.sqs;
 
-import static com.hotels.shunting.yard.common.Utils.checkNotNull;
+import static com.hotels.shunting.yard.common.Preconditions.checkNotNull;
+import static com.hotels.shunting.yard.common.PropertyUtils.intProperty;
+import static com.hotels.shunting.yard.common.PropertyUtils.stringProperty;
 import static com.hotels.shunting.yard.receiver.sqs.SqsProperty.QUEUE;
 import static com.hotels.shunting.yard.receiver.sqs.SqsProperty.REGION;
 import static com.hotels.shunting.yard.receiver.sqs.SqsProperty.WAIT_TIME_SECONDS;
@@ -32,14 +34,6 @@ import com.hotels.shunting.yard.receiver.sqs.aws.ConfigurationAwsCredentialsProv
 public final class Utils {
 
   private Utils() {}
-
-  public static String stringProperty(Configuration conf, SqsProperty property) {
-    return conf.get(property.key(), (String) property.defaultValue());
-  }
-
-  public static Integer intProperty(Configuration conf, SqsProperty property) {
-    return conf.getInt(property.key(), (Integer) property.defaultValue());
-  }
 
   public static String queue(Configuration conf) {
     return checkNotNull(stringProperty(conf, QUEUE), "Property " + QUEUE + " is not set");

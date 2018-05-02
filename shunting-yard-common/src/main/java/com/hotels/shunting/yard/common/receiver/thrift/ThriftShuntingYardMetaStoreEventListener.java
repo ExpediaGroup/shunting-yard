@@ -15,7 +15,7 @@
  */
 package com.hotels.shunting.yard.common.receiver.thrift;
 
-import static com.hotels.shunting.yard.common.receiver.thrift.Utils.toObjectPairs;
+import static com.hotels.shunting.yard.common.receiver.thrift.ThriftListenerUtils.toObjectPairs;
 
 import java.util.List;
 import java.util.Map;

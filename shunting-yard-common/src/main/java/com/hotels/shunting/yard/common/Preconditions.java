@@ -13,20 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.shunting.yard.receiver.kinesis;
+package com.hotels.shunting.yard.common;
 
-import org.apache.hadoop.conf.Configuration;
+public final class Preconditions {
 
-public final class Utils {
+  private Preconditions() {}
 
-  private Utils() {}
-
-  public static String stringProperty(Configuration conf, KinesisConsumerProperty property) {
-    return conf.get(property.key(), (String) property.defaultValue());
-  }
-
-  public static Integer intProperty(Configuration conf, KinesisConsumerProperty property) {
-    return conf.getInt(property.key(), (int) property.defaultValue());
+  public static <T> T checkNotNull(T t, String message) {
+    if (t == null) {
+      throw new NullPointerException(message);
+    }
+    return t;
   }
 
 }

@@ -57,7 +57,7 @@ import com.hotels.shunting.yard.common.event.SerializableInsertEvent;
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 
 @RunWith(Parameterized.class)
-public class MetaStoreEventSerDeTest {
+public class JavaSerializationMetaStoreEventSerDeTest {
 
   private static final String DATABASE = "test_db";
   private static final String TABLE = "test_table";
@@ -127,7 +127,7 @@ public class MetaStoreEventSerDeTest {
 
   public @Parameter SerializableListenerEvent event;
 
-  private final MetaStoreEventSerDe serDe = new MetaStoreEventSerDe();
+  private final JavaSerializationMetaStoreEventSerDe serDe = new JavaSerializationMetaStoreEventSerDe();
 
   @Test
   public void typical() throws Exception {
