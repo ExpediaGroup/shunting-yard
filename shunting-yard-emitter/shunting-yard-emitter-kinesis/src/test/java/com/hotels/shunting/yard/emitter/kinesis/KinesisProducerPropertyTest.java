@@ -15,9 +15,7 @@
  */
 package com.hotels.shunting.yard.emitter.kinesis;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.MAX_CONNECTIONS;
 import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.RECORD_MAX_BUFFERED_TIME;
@@ -30,59 +28,55 @@ import org.junit.Test;
 
 public class KinesisProducerPropertyTest {
 
-  private static <T> Object asObject(T t) {
-    return t;
-  }
-
   private static String prefixedKey(String key) {
     return "com.hotels.shunting.yard.event.emitter.kinesis." + key;
   }
 
   @Test
   public void numberOfProperties() {
-    assertThat(KinesisProducerProperty.values().length, is(6));
+    assertThat(KinesisProducerProperty.values().length).isEqualTo(6);
   }
 
   @Test
   public void stream() {
-    assertThat(STREAM.unPrefixedKey(), is("stream"));
-    assertThat(STREAM.key(), is(prefixedKey("stream")));
-    assertThat(STREAM.defaultValue(), is(nullValue()));
+    assertThat(STREAM.unPrefixedKey()).isEqualTo("stream");
+    assertThat(STREAM.key()).isEqualTo(prefixedKey("stream"));
+    assertThat(STREAM.defaultValue()).isNull();
   }
 
   @Test
   public void region() {
-    assertThat(REGION.unPrefixedKey(), is("region"));
-    assertThat(REGION.key(), is(prefixedKey("region")));
-    assertThat(REGION.defaultValue(), is(asObject("us-west-2")));
+    assertThat(REGION.unPrefixedKey()).isEqualTo("region");
+    assertThat(REGION.key()).isEqualTo(prefixedKey("region"));
+    assertThat(REGION.defaultValue()).isEqualTo("us-west-2");
   }
 
   @Test
   public void maxConnections() {
-    assertThat(MAX_CONNECTIONS.unPrefixedKey(), is("max.connections"));
-    assertThat(MAX_CONNECTIONS.key(), is(prefixedKey("max.connections")));
-    assertThat(MAX_CONNECTIONS.defaultValue(), is(asObject(1L)));
+    assertThat(MAX_CONNECTIONS.unPrefixedKey()).isEqualTo("max.connections");
+    assertThat(MAX_CONNECTIONS.key()).isEqualTo(prefixedKey("max.connections"));
+    assertThat(MAX_CONNECTIONS.defaultValue()).isEqualTo(1L);
   }
 
   @Test
   public void requestTimeout() {
-    assertThat(REQUEST_TIMEOUT.unPrefixedKey(), is("request.timeout"));
-    assertThat(REQUEST_TIMEOUT.key(), is(prefixedKey("request.timeout")));
-    assertThat(REQUEST_TIMEOUT.defaultValue(), is(asObject(60000L)));
+    assertThat(REQUEST_TIMEOUT.unPrefixedKey()).isEqualTo("request.timeout");
+    assertThat(REQUEST_TIMEOUT.key()).isEqualTo(prefixedKey("request.timeout"));
+    assertThat(REQUEST_TIMEOUT.defaultValue()).isEqualTo(60000L);
   }
 
   @Test
   public void maxInFlightRequestsPerConnection() {
-    assertThat(RECORD_MAX_BUFFERED_TIME.unPrefixedKey(), is("record.max.buffered.time"));
-    assertThat(RECORD_MAX_BUFFERED_TIME.key(), is(prefixedKey("record.max.buffered.time")));
-    assertThat(RECORD_MAX_BUFFERED_TIME.defaultValue(), is(asObject(15000L)));
+    assertThat(RECORD_MAX_BUFFERED_TIME.unPrefixedKey()).isEqualTo("record.max.buffered.time");
+    assertThat(RECORD_MAX_BUFFERED_TIME.key()).isEqualTo(prefixedKey("record.max.buffered.time"));
+    assertThat(RECORD_MAX_BUFFERED_TIME.defaultValue()).isEqualTo(15000L);
   }
 
   @Test
   public void retires() {
-    assertThat(RETRIES.unPrefixedKey(), is("retries"));
-    assertThat(RETRIES.key(), is(prefixedKey("retries")));
-    assertThat(RETRIES.defaultValue(), is(asObject(3)));
+    assertThat(RETRIES.unPrefixedKey()).isEqualTo("retries");
+    assertThat(RETRIES.key()).isEqualTo(prefixedKey("retries"));
+    assertThat(RETRIES.defaultValue()).isEqualTo(3);
   }
 
 }

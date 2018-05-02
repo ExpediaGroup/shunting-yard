@@ -15,9 +15,7 @@
  */
 package com.hotels.shunting.yard.emitter.kinesis.messaging;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.MAX_CONNECTIONS;
@@ -37,8 +35,6 @@ import com.amazonaws.services.kinesis.producer.KinesisProducerConfiguration;
 
 import com.hotels.shunting.yard.common.messaging.Message;
 import com.hotels.shunting.yard.common.messaging.MessageTask;
-import com.hotels.shunting.yard.emitter.kinesis.messaging.KinesisMessageTask;
-import com.hotels.shunting.yard.emitter.kinesis.messaging.KinesisMessageTaskFactory;
 
 public class KinesisMessageTaskFactoryTest {
 
@@ -51,7 +47,7 @@ public class KinesisMessageTaskFactoryTest {
     KinesisProducer producer = mock(KinesisProducer.class);
     Message message = mock(Message.class);
     MessageTask task = new KinesisMessageTaskFactory(STREAM_NAME, producer, 2).newTask(message);
-    assertThat(task, is(instanceOf(KinesisMessageTask.class)));
+    assertThat(task).isInstanceOf(KinesisMessageTask.class);
   }
 
   @Test
@@ -62,16 +58,16 @@ public class KinesisMessageTaskFactoryTest {
     conf.set(RECORD_MAX_BUFFERED_TIME.key(), "250");
     conf.set(RETRIES.key(), "1");
     KinesisProducerConfiguration config = kinesisProperties(conf);
-    assertThat(config.getRegion(), is("us-east-1"));
-    assertThat(config.getMaxConnections(), is(3L));
-    assertThat(config.getRequestTimeout(), is(1500L));
-    assertThat(config.getRecordMaxBufferedTime(), is(250L));
+    assertThat(config.getRegion()).isEqualTo("us-east-1");
+    assertThat(config.getMaxConnections()).isEqualTo(3L);
+    assertThat(config.getRequestTimeout()).isEqualTo(1500L);
+    assertThat(config.getRecordMaxBufferedTime()).isEqualTo(250L);
   }
 
   @Test
   public void topicIsNotNull() {
     conf.set(STREAM.key(), STREAM_NAME);
-    assertThat(topic(conf), is(STREAM_NAME));
+    assertThat(topic(conf)).isEqualTo(STREAM_NAME);
   }
 
   @Test(expected = IllegalArgumentException.class)

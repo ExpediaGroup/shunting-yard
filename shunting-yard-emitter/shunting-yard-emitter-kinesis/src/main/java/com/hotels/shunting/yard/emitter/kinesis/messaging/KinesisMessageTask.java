@@ -22,6 +22,7 @@ import com.amazonaws.services.kinesis.producer.KinesisProducer;
 import com.amazonaws.services.kinesis.producer.UserRecord;
 import com.amazonaws.services.kinesis.producer.UserRecordResult;
 
+import com.hotels.shunting.yard.common.exception.ShuntingYardException;
 import com.hotels.shunting.yard.common.messaging.Message;
 import com.hotels.shunting.yard.common.messaging.MessageTask;
 
@@ -55,10 +56,11 @@ class KinesisMessageTask implements MessageTask {
         lastException = e;
       }
     }
+    String errorMessage = String.format("Unable to deliver message to stream '%s'", stream);
     if (lastException != null) {
-      throw new RuntimeException("Unable to deliver message to stream '" + stream + "'", lastException);
+      throw new ShuntingYardException(errorMessage, lastException);
     }
-    // TODO no exception and message not sent
+    throw new ShuntingYardException(errorMessage);
   }
 
 }
