@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import com.expedia.hdw.common.hive.metastore.CloseableMetaStoreClient;
 
+import com.hotels.shunting.yard.common.ShuntingYardException;
 import com.hotels.shunting.yard.common.event.SerializableAddPartitionEvent;
 import com.hotels.shunting.yard.common.event.SerializableAlterPartitionEvent;
 import com.hotels.shunting.yard.common.event.SerializableAlterTableEvent;
@@ -36,7 +37,6 @@ import com.hotels.shunting.yard.common.event.SerializableCreateTableEvent;
 import com.hotels.shunting.yard.common.event.SerializableDropPartitionEvent;
 import com.hotels.shunting.yard.common.event.SerializableDropTableEvent;
 import com.hotels.shunting.yard.common.event.SerializableInsertEvent;
-import com.hotels.shunting.yard.common.exception.ShuntingYardException;
 import com.hotels.shunting.yard.common.receiver.ShuntingYardMetaStoreEventListener;
 
 public class ThriftShuntingYardMetaStoreEventListener implements ShuntingYardMetaStoreEventListener {

@@ -41,7 +41,7 @@ import com.amazonaws.services.kinesis.producer.UserRecord;
 import com.amazonaws.services.kinesis.producer.UserRecordResult;
 import com.google.common.util.concurrent.ListenableFuture;
 
-import com.hotels.shunting.yard.common.exception.ShuntingYardException;
+import com.hotels.shunting.yard.common.ShuntingYardException;
 import com.hotels.shunting.yard.common.messaging.Message;
 
 @RunWith(MockitoJUnitRunner.class)

@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.Iterator;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hive.metastore.api.MetaException;
 
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
@@ -32,10 +31,10 @@ import com.amazonaws.services.sqs.model.DeleteMessageRequest;
 import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import com.google.common.annotations.VisibleForTesting;
-import com.sun.jersey.core.util.Base64;
 
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
+import com.hotels.shunting.yard.common.io.SerDeException;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
 
 public class SqsMessageReader implements MessageReader {
@@ -43,19 +42,26 @@ public class SqsMessageReader implements MessageReader {
   private final MetaStoreEventSerDe eventSerDe;
   private final int waitTimeSeconds;
   private final AmazonSQS consumer;
+  private final MessageDecoder messageDecoder;
   private Iterator<Message> records;
 
   public SqsMessageReader(Configuration conf, MetaStoreEventSerDe eventSerDe) {
     this(conf, eventSerDe,
-        AmazonSQSClientBuilder.standard().withRegion(region(conf)).withCredentials(credentials(conf)).build());
+        AmazonSQSClientBuilder.standard().withRegion(region(conf)).withCredentials(credentials(conf)).build(),
+        MessageDecoder.DEFAULT);
   }
 
   @VisibleForTesting
-  SqsMessageReader(Configuration conf, MetaStoreEventSerDe eventSerDe, AmazonSQS consumer) {
+  SqsMessageReader(
+      Configuration conf,
+      MetaStoreEventSerDe eventSerDe,
+      AmazonSQS consumer,
+      MessageDecoder messageDecoder) {
     queueUrl = queue(conf);
     waitTimeSeconds = waitTimeSeconds(conf);
-    this.consumer = consumer;
     this.eventSerDe = eventSerDe;
+    this.consumer = consumer;
+    this.messageDecoder = messageDecoder;
   }
 
   @Override
@@ -95,11 +101,12 @@ public class SqsMessageReader implements MessageReader {
     consumer.deleteMessage(request);
   }
 
-  private SerializableListenerEvent eventPayLoad(Message record) {
+  private SerializableListenerEvent eventPayLoad(Message message) {
     try {
-      return eventSerDe.unmarshall(Base64.decode(record.getBody().getBytes()));
-    } catch (MetaException e) {
-      throw new RuntimeException("Unable to unmarshall event", e);
+      return eventSerDe.unmarshall(messageDecoder.decode(message));
+    } catch (Exception e) {
+      // TODO this may be removed when we get rid off checked exceptions in the SerDe contract
+      throw new SerDeException("Unable to unmarshall event", e);
     }
   }
 

@@ -22,7 +22,7 @@ import com.amazonaws.services.kinesis.producer.KinesisProducer;
 import com.amazonaws.services.kinesis.producer.UserRecord;
 import com.amazonaws.services.kinesis.producer.UserRecordResult;
 
-import com.hotels.shunting.yard.common.exception.ShuntingYardException;
+import com.hotels.shunting.yard.common.ShuntingYardException;
 import com.hotels.shunting.yard.common.messaging.Message;
 import com.hotels.shunting.yard.common.messaging.MessageTask;
 
