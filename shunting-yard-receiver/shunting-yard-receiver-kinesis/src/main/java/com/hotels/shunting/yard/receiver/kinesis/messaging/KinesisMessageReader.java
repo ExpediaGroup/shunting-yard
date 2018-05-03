@@ -18,29 +18,27 @@ package com.hotels.shunting.yard.receiver.kinesis.messaging;
 import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hive.metastore.api.MetaException;
 
 import com.google.common.annotations.VisibleForTesting;
 
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
+import com.hotels.shunting.yard.common.io.SerDeException;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
 import com.hotels.shunting.yard.receiver.kinesis.adapter.DefaultKinesisConsumer;
 import com.hotels.shunting.yard.receiver.kinesis.adapter.KinesisConsumer;
 
 public class KinesisMessageReader implements MessageReader {
 
-  private final Configuration conf;
   private final KinesisConsumer consumer;
   private final MetaStoreEventSerDe eventSerDe;
 
   public KinesisMessageReader(Configuration conf, MetaStoreEventSerDe eventSerDe) {
-    this(conf, eventSerDe, new DefaultKinesisConsumer(conf));
+    this(eventSerDe, new DefaultKinesisConsumer(conf));
   }
 
   @VisibleForTesting
-  KinesisMessageReader(Configuration conf, MetaStoreEventSerDe eventSerDe, KinesisConsumer consumer) {
-    this.conf = conf;
+  KinesisMessageReader(MetaStoreEventSerDe eventSerDe, KinesisConsumer consumer) {
     this.consumer = consumer;
     this.eventSerDe = eventSerDe;
   }
@@ -52,7 +50,7 @@ public class KinesisMessageReader implements MessageReader {
 
   @Override
   public void remove() {
-    throw new UnsupportedOperationException("Cannot remove message from Kafka topic");
+    throw new UnsupportedOperationException("Cannot remove message from Kinesis stream");
   }
 
   @Override
@@ -68,8 +66,9 @@ public class KinesisMessageReader implements MessageReader {
   private SerializableListenerEvent eventPayLoad(byte[] data) {
     try {
       return eventSerDe.unmarshall(data);
-    } catch (MetaException e) {
-      throw new RuntimeException("Unable to unmarshall event", e);
+    } catch (Exception e) {
+      // TODO this may be removed when we get rid off checked exceptions in the SerDe contract
+      throw new SerDeException("Unable to unmarshall event", e);
     }
   }
 
