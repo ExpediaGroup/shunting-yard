@@ -25,8 +25,9 @@ import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 import com.hotels.shunting.yard.common.io.SerDeException;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
-import com.hotels.shunting.yard.receiver.kinesis.adapter.DefaultKinesisConsumer;
 import com.hotels.shunting.yard.receiver.kinesis.adapter.KinesisConsumer;
+import com.hotels.shunting.yard.receiver.kinesis.adapter.buffer.DefaultKinesisRecordBuffer;
+import com.hotels.shunting.yard.receiver.kinesis.adapter.consumer.DefaultKinesisConsumer;
 
 public class KinesisMessageReader implements MessageReader {
 
@@ -34,7 +35,7 @@ public class KinesisMessageReader implements MessageReader {
   private final MetaStoreEventSerDe eventSerDe;
 
   public KinesisMessageReader(Configuration conf, MetaStoreEventSerDe eventSerDe) {
-    this(eventSerDe, new DefaultKinesisConsumer(conf));
+    this(eventSerDe, new DefaultKinesisConsumer(conf, DefaultKinesisRecordBuffer.create(conf)));
   }
 
   @VisibleForTesting

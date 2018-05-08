@@ -62,7 +62,7 @@ public class CommonBeans {
   Configuration baseConfiguration(@Value("${instance.workspace}") String workspace) {
     checkNotNull(workspace, "instance.workspace is required");
     Configuration baseConf = new Configuration();
-    baseConf.set(WORKSPACE.varname, workspace);
+    baseConf.set(WORKSPACE.key(), workspace);
     return baseConf;
   }
 

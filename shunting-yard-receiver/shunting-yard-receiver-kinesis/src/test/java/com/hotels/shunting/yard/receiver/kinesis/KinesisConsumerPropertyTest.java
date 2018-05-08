@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static com.hotels.shunting.yard.receiver.kinesis.KinesisConsumerProperty.APPLICTION_ID;
 import static com.hotels.shunting.yard.receiver.kinesis.KinesisConsumerProperty.BUFFER_CAPACITY;
 import static com.hotels.shunting.yard.receiver.kinesis.KinesisConsumerProperty.MAX_RECORDS;
+import static com.hotels.shunting.yard.receiver.kinesis.KinesisConsumerProperty.POLLING_TIMEOUT_MS;
 import static com.hotels.shunting.yard.receiver.kinesis.KinesisConsumerProperty.REGION;
 import static com.hotels.shunting.yard.receiver.kinesis.KinesisConsumerProperty.STREAM;
 import static com.hotels.shunting.yard.receiver.kinesis.KinesisConsumerProperty.WORKER_ID;
@@ -34,7 +35,7 @@ public class KinesisConsumerPropertyTest {
 
   @Test
   public void numberOfProperties() {
-    assertThat(KinesisConsumerProperty.values().length).isEqualTo(6);
+    assertThat(KinesisConsumerProperty.values().length).isEqualTo(7);
   }
 
   @Test
@@ -77,6 +78,13 @@ public class KinesisConsumerPropertyTest {
     assertThat(BUFFER_CAPACITY.unPrefixedKey()).isEqualTo("buffer.capacity");
     assertThat(BUFFER_CAPACITY.key()).isEqualTo(prefixedKey("buffer.capacity"));
     assertThat(BUFFER_CAPACITY.defaultValue()).isEqualTo(100);
+  }
+
+  @Test
+  public void pollingTimeoutMs() {
+    assertThat(POLLING_TIMEOUT_MS.unPrefixedKey()).isEqualTo("polling.timeout.ms");
+    assertThat(POLLING_TIMEOUT_MS.key()).isEqualTo(prefixedKey("polling.timeout.ms"));
+    assertThat(POLLING_TIMEOUT_MS.defaultValue()).isEqualTo(30000L);
   }
 
 }

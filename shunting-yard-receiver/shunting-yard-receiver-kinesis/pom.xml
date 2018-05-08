@@ -11,6 +11,7 @@
 
   <properties>
     <spring-platform.version>2.0.3.RELEASE</spring-platform.version>
+    <httpclient.version>4.5.5</httpclient.version>
   </properties>
 
   <dependencies>
@@ -50,6 +51,12 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
+    </dependency>
+    <dependency>
+     <groupId>org.apache.httpcomponents</groupId>
+     <artifactId>httpclient</artifactId>
+     <version>${httpclient.version}</version>
+     <scope>test</scope>
     </dependency>
   </dependencies>
 

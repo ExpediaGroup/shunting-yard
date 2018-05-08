@@ -13,25 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.shunting.yard.receiver.kinesis.adapter;
+package com.hotels.shunting.yard.receiver.kinesis.adapter.buffer;
+
+import static com.hotels.shunting.yard.common.PropertyUtils.intProperty;
+import static com.hotels.shunting.yard.common.PropertyUtils.longProperty;
+import static com.hotels.shunting.yard.receiver.kinesis.KinesisConsumerProperty.BUFFER_CAPACITY;
+import static com.hotels.shunting.yard.receiver.kinesis.KinesisConsumerProperty.POLLING_TIMEOUT_MS;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.hadoop.conf.Configuration;
 
 import com.amazonaws.services.kinesis.model.Record;
 
-class DefaultKinesisRecordBuffer implements KinesisRecordBuffer {
+import com.hotels.shunting.yard.receiver.kinesis.adapter.KinesisRecordBuffer;
+
+public class DefaultKinesisRecordBuffer implements KinesisRecordBuffer {
+
+  public static DefaultKinesisRecordBuffer create(Configuration conf) {
+    return new DefaultKinesisRecordBuffer(intProperty(conf, BUFFER_CAPACITY), longProperty(conf, POLLING_TIMEOUT_MS));
+  }
 
   private final BlockingQueue<Record> messageQueue;
+  private final long blockingTimeout;
 
-  DefaultKinesisRecordBuffer(int capacity) {
+  private DefaultKinesisRecordBuffer(int capacity, long blockingTimeout) {
     messageQueue = new ArrayBlockingQueue<>(capacity);
+    this.blockingTimeout = blockingTimeout;
   }
 
   @Override
-  public void put(Record record) {
+  public boolean put(Record record) {
     try {
-      messageQueue.put(record);
+      return messageQueue.offer(record, blockingTimeout, TimeUnit.MILLISECONDS);
     } catch (InterruptedException e) {
       throw new RuntimeException("Unable to write record to blocking queue", e);
     }
@@ -40,7 +56,7 @@ class DefaultKinesisRecordBuffer implements KinesisRecordBuffer {
   @Override
   public Record get() {
     try {
-      return messageQueue.take();
+      return messageQueue.poll(blockingTimeout, TimeUnit.MILLISECONDS);
     } catch (InterruptedException e) {
       throw new RuntimeException("Unable to read record from blocking queue", e);
     }

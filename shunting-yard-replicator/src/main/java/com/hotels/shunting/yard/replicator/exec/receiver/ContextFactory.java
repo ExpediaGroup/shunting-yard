@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import com.expedia.hdw.common.hive.metastore.CloseableMetaStoreClient;
 
 import com.hotels.bdp.circustrain.core.conf.ReplicationMode;
+import com.hotels.shunting.yard.common.PropertyUtils;
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 import com.hotels.shunting.yard.replicator.exec.external.CircusTrainConfig;
 import com.hotels.shunting.yard.replicator.exec.external.Marshaller;
@@ -50,9 +51,9 @@ public class ContextFactory {
   private static final String TABLE_LOCATION_REGEX = "(.*)/(ct\\w-\\d{8}t\\d{6}\\.\\d{3}z-\\w{8}/?)";
   private static final Pattern TABLE_LOCATION_PATTERN = Pattern.compile(TABLE_LOCATION_REGEX);
 
-  private Configuration conf;
-  private CloseableMetaStoreClient metaStoreClient;
-  private Marshaller marshaller;
+  private final Configuration conf;
+  private final CloseableMetaStoreClient metaStoreClient;
+  private final Marshaller marshaller;
 
   public ContextFactory(Configuration conf, CloseableMetaStoreClient metaStoreClient, Marshaller marshaller) {
     this.conf = conf;
@@ -98,7 +99,7 @@ public class ContextFactory {
   }
 
   public Context createContext(SerializableListenerEvent event, Table table, List<Partition> partitions) {
-    File workspace = new File(conf.get(WORKSPACE.varname), dir(event));
+    File workspace = new File(PropertyUtils.stringProperty(conf, WORKSPACE), dir(event));
     workspace.mkdirs();
     File configLocation = new File(workspace, "replication.yaml");
 

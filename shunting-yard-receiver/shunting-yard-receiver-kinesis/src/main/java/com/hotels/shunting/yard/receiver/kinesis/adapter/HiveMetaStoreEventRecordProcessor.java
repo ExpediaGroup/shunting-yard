@@ -54,7 +54,9 @@ class HiveMetaStoreEventRecordProcessor implements IRecordProcessor {
   }
 
   private void processRecord(Record record) {
-    recordBuffer.put(record);
+    while (!recordBuffer.put(record)) {
+      log.debug("Could not put record in buffer... retrying");
+    }
   }
 
   @Override
@@ -79,6 +81,8 @@ class HiveMetaStoreEventRecordProcessor implements IRecordProcessor {
     } catch (InvalidStateException e) {
       // This indicates an issue with the DynamoDB table (check for table, provisioned IOPS).
       log.error("Cannot save checkpoint to the DynamoDB table used by the Amazon Kinesis Client Library.", e);
+    } catch (RuntimeException e) {
+      log.error("Unexpected exception.", e);
     }
   }
 

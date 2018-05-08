@@ -25,7 +25,8 @@ public enum KinesisConsumerProperty implements Property {
   APPLICTION_ID("application.id", null),
   WORKER_ID("worker.id", "CircusTrainEventDrivenReceiver"),
   MAX_RECORDS("max.records", 30),
-  BUFFER_CAPACITY("buffer.capacity", 100);
+  BUFFER_CAPACITY("buffer.capacity", 100),
+  POLLING_TIMEOUT_MS("polling.timeout.ms", 30 * 1000L); // 30 sec
 
   private static final String PROPERTY_PREFIX = "com.hotels.shunting.yard.event.receiver.kinesis.";
 

@@ -19,16 +19,10 @@ import static com.hotels.shunting.yard.common.Preconditions.checkNotNull;
 import static com.hotels.shunting.yard.common.PropertyUtils.intProperty;
 import static com.hotels.shunting.yard.common.PropertyUtils.stringProperty;
 import static com.hotels.shunting.yard.receiver.kinesis.KinesisConsumerProperty.APPLICTION_ID;
-import static com.hotels.shunting.yard.receiver.kinesis.KinesisConsumerProperty.BUFFER_CAPACITY;
 import static com.hotels.shunting.yard.receiver.kinesis.KinesisConsumerProperty.MAX_RECORDS;
 import static com.hotels.shunting.yard.receiver.kinesis.KinesisConsumerProperty.REGION;
 import static com.hotels.shunting.yard.receiver.kinesis.KinesisConsumerProperty.STREAM;
 import static com.hotels.shunting.yard.receiver.kinesis.KinesisConsumerProperty.WORKER_ID;
-
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.hadoop.conf.Configuration;
 
@@ -36,46 +30,66 @@ import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.v2.IRecordProcessorFactory;
 import com.amazonaws.services.kinesis.clientlibrary.lib.worker.KinesisClientLibConfiguration;
 import com.amazonaws.services.kinesis.clientlibrary.lib.worker.Worker;
-import com.amazonaws.services.kinesis.model.Record;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 
-public class DefaultKinesisConsumer implements KinesisConsumer, Closeable {
+import com.hotels.shunting.yard.receiver.kinesis.adapter.buffer.DefaultKinesisRecordBuffer;
 
-  private final Configuration conf;
-  private KinesisRecordBuffer recordBuffer;
-  private final ExecutorService executor;
-  private Worker consumer;
+public class WorkerFactory {
 
-  public DefaultKinesisConsumer(Configuration conf) {
-    this.conf = conf;
-    executor = Executors.newSingleThreadExecutor();
-    init();
+  public static class Builder {
+    private final Configuration conf;
+    private KinesisRecordBuffer recordBuffer;
+    private IRecordProcessorFactory recordProcessorFactory;
+
+    private Builder(Configuration conf) {
+      Preconditions.checkNotNull(conf, "Configuration is required");
+      this.conf = conf;
+    }
+
+    public Builder recordBuffer(KinesisRecordBuffer recordBuffer) {
+      if (recordBuffer != null && recordProcessorFactory != null) {
+        throw new IllegalStateException("Cannot set both recordBuffer and recordProcessorFactory");
+      }
+      this.recordBuffer = recordBuffer;
+      return this;
+    }
+
+    public Builder recordProcessorFactory(IRecordProcessorFactory recordProcessorFactory) {
+      if (recordProcessorFactory != null && recordBuffer != null) {
+        throw new IllegalStateException("Cannot set both recordProcessorFactory and recordBuffer");
+      }
+      this.recordProcessorFactory = recordProcessorFactory;
+      return this;
+    }
+
+    public WorkerFactory build() {
+      if (recordBuffer == null) {
+        recordBuffer = DefaultKinesisRecordBuffer.create(conf);
+      }
+      if (recordProcessorFactory == null) {
+        recordProcessorFactory = new KinesisRecordProcessorFactory(recordBuffer);
+      }
+      return new WorkerFactory(this);
+    }
   }
 
-  private void init() {
-    int bufferCapacity = intProperty(conf, BUFFER_CAPACITY);
-    recordBuffer = new DefaultKinesisRecordBuffer(bufferCapacity);
-
-    consumer = newWorker(conf);
-    executor.execute(consumer);
+  public static Builder builder(Configuration conf) {
+    return new Builder(conf);
   }
 
-  @Override
-  public Record next() {
-    return recordBuffer.get();
+  private final KinesisClientLibConfiguration kinesisProperties;
+  private final IRecordProcessorFactory recordProcessorFactory;
+
+  public WorkerFactory(Builder builder) {
+    kinesisProperties = kinesisProperties(builder.conf);
+    recordProcessorFactory = builder.recordProcessorFactory;
   }
 
-  @Override
-  public void close() throws IOException {
-    consumer.shutdown();
-    executor.shutdown();
-  }
-
-  private Worker newWorker(Configuration conf) {
-    IRecordProcessorFactory recordProcessorFactory = new KinesisRecordProcessorFactory(recordBuffer);
+  public Worker newWorker() {
     Worker worker = new Worker.Builder()
         .recordProcessorFactory(recordProcessorFactory)
-        .config(kinesisProperties(conf))
+        .config(kinesisProperties)
         .build();
     return worker;
   }
@@ -85,9 +99,8 @@ public class DefaultKinesisConsumer implements KinesisConsumer, Closeable {
     String applicationName = checkNotNull(stringProperty(conf, APPLICTION_ID),
         "Property " + APPLICTION_ID + " is not set");
     String streamName = checkNotNull(stringProperty(conf, STREAM), "Property " + STREAM + " is not set");
-    String workerId = checkNotNull(stringProperty(conf, WORKER_ID), "Property " + WORKER_ID + " is not set");
     KinesisClientLibConfiguration config = new KinesisClientLibConfiguration(applicationName, streamName,
-        new DefaultAWSCredentialsProviderChain(), workerId)
+        new DefaultAWSCredentialsProviderChain(), stringProperty(conf, WORKER_ID))
             .withMaxRecords(intProperty(conf, MAX_RECORDS))
             .withRegionName(checkNotNull(stringProperty(conf, REGION), "Property " + REGION + " is not set"));
     return config;

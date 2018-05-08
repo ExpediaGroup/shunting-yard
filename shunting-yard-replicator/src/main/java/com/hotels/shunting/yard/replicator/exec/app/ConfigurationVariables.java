@@ -15,18 +15,42 @@
  */
 package com.hotels.shunting.yard.replicator.exec.app;
 
-class Constants {
-  static final String PREFIX = "com.hotels.bdp.circus.train.event.receiver.exec.app.";
-}
+import com.hotels.shunting.yard.common.Property;
 
-public enum ConfigurationVariables {
+class Constants {}
 
-  WORKSPACE(Constants.PREFIX + "workspace");
+public enum ConfigurationVariables implements Property {
 
-  public final String varname;
+  WORKSPACE("workspace", null);
 
-  private ConfigurationVariables(String varname) {
-    this.varname = varname;
+  private static final String PROPERTY_PREFIX = "com.hotels.shunting.yard.replicator.exec.app.";
+
+  private final String unPrefixedKey;
+  private final Object defaultValue;
+
+  private ConfigurationVariables(String unPrefixedKey, Object defaultValue) {
+    this.unPrefixedKey = unPrefixedKey;
+    this.defaultValue = defaultValue;
+  }
+
+  @Override
+  public String key() {
+    return new StringBuffer(PROPERTY_PREFIX).append(unPrefixedKey).toString();
+  }
+
+  @Override
+  public String unPrefixedKey() {
+    return unPrefixedKey;
+  }
+
+  @Override
+  public Object defaultValue() {
+    return defaultValue;
+  }
+
+  @Override
+  public String toString() {
+    return key();
   }
 
 }

@@ -15,12 +15,29 @@
  */
 package com.hotels.shunting.yard.receiver.kinesis.adapter;
 
-import com.amazonaws.services.kinesis.model.Record;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public interface KinesisRecordBuffer {
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
-  boolean put(Record record);
+@RunWith(MockitoJUnitRunner.class)
+public class KinesisRecordProcessorFactoryTest {
 
-  Record get();
+  private @Mock KinesisRecordBuffer buffer;
+
+  private KinesisRecordProcessorFactory factory;
+
+  @Before
+  public void init() {
+    factory = new KinesisRecordProcessorFactory(buffer);
+  }
+
+  @Test
+  public void createProcessor() {
+    assertThat(factory.createProcessor()).isInstanceOf(HiveMetaStoreEventRecordProcessor.class);
+  }
 
 }
