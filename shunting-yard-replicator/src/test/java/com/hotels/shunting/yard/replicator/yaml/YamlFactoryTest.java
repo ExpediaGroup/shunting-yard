@@ -22,6 +22,7 @@ import java.io.StringWriter;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 
+import com.hotels.bdp.circustrain.core.conf.ReplicationMode;
 import com.hotels.shunting.yard.replicator.exec.external.CircusTrainConfig;
 
 public class YamlFactoryTest {
@@ -36,12 +37,30 @@ public class YamlFactoryTest {
         .append("  disable-snapshots: false\n")
         .append("  hive-metastore-uris: sourceMetaStoreUri\n")
         .append("  name: source\n")
+        .append("table-replications:\n")
+        .append("- partition-fetcher-buffer-size: 1000\n")
+        .append("  partition-iterator-batch-size: 1000\n")
+        .append("  qualified-replica-name: databasename.tablename\n")
+        .append("  replica-database-name: databasename\n")
+        .append("  replica-table:\n")
+        .append("    database-name: databaseName\n")
+        .append("    table-location: replicaTableLocation\n")
+        .append("    table-name: tableName\n")
+        .append("  replica-table-name: tablename\n")
+        .append("  replication-mode: FULL\n")
+        .append("  source-table:\n")
+        .append("    database-name: databaseName\n")
+        .append("    generate-partition-filter: true\n")
+        .append("    partition-limit: 32767\n")
+        .append("    qualified-name: databasename.tablename\n")
+        .append("    table-name: tableName\n")
         .toString();
     StringWriter sw = new StringWriter();
     CircusTrainConfig circusTrainConfig = CircusTrainConfig
         .builder()
         .sourceMetaStoreUri("sourceMetaStoreUri")
         .replicaMetaStoreUri("replicaMetaStoreUri")
+        .replication(ReplicationMode.FULL, "databaseName", "tableName", "replicaTableLocation")
         .build();
     Yaml yaml = YamlFactory.newYaml();
     yaml.dump(circusTrainConfig, sw);
