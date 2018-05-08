@@ -124,7 +124,7 @@ public class ThriftShuntingYardMetaStoreEventListenerTest {
   public void cannotReplicateTableMetastoreClientThrowsException() throws Exception {
     when(targetTableParameters.get(REPLICATION_EVENT)).thenReturn("123");
     when(metaStoreClient.getTable(DATABASE, TABLE)).thenThrow(TException.class);
-    assertThat(listener.canReplicate(sourceTable)).isTrue();
+    listener.canReplicate(sourceTable);
   }
 
   @Test
@@ -149,7 +149,7 @@ public class ThriftShuntingYardMetaStoreEventListenerTest {
   public void cannotReplicatePartitionIfMetastoreClientThrowsException() throws Exception {
     when(targetTableParameters.get(REPLICATION_EVENT)).thenReturn("123");
     when(metaStoreClient.getTable(DATABASE, TABLE)).thenThrow(TException.class);
-    assertThat(listener.canReplicate(sourcePartition)).isTrue();
+    listener.canReplicate(sourcePartition);
   }
 
   @Test
