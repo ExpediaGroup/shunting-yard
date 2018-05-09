@@ -1,0 +1,7 @@
+replica-catalog:
+  name: aws-data-warehouse
+  hive-metastore-uris: thrift://localhost:9083
+event-receiver:
+  configuration-properties:
+    com.hotels.bdp.circus.train.event.common.aws.sqs.queue: https://sqs.us-west-2.amazonaws.com/440407435941/circus-train-event-driven-poc-queue.fifo
+    com.hotels.bdp.circus.train.event.common.aws.sqs.wait.time.seconds: 15
