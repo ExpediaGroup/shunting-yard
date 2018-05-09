@@ -40,6 +40,7 @@ import com.expedia.hdw.common.hive.metastore.CloseableMetaStoreClient;
 
 import com.hotels.bdp.circustrain.core.conf.ReplicationMode;
 import com.hotels.shunting.yard.common.PropertyUtils;
+import com.hotels.shunting.yard.common.ShuntingYardException;
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 import com.hotels.shunting.yard.replicator.exec.external.CircusTrainConfig;
 import com.hotels.shunting.yard.replicator.exec.external.Marshaller;
@@ -90,7 +91,7 @@ public class ContextFactory {
       URI tableLocation = URI.create(db.getLocationUri() + "/" + table.getTableName());
       return tableLocation.toString();
     } catch (TException e) {
-      throw new RuntimeException("Unable to work replica location out", e);
+      throw new ShuntingYardException("Unable to work replica location out", e);
     }
   }
 
@@ -101,7 +102,7 @@ public class ContextFactory {
   public Context createContext(SerializableListenerEvent event, Table table, List<Partition> partitions) {
     File workspace = new File(PropertyUtils.stringProperty(conf, WORKSPACE), dir(event));
     workspace.mkdirs();
-    File configLocation = new File(workspace, "replication.yaml");
+    File configLocation = new File(workspace, "replication.yml");
 
     CircusTrainConfig circusTrainConfig = generateConfiguration(getSourceMetaStoreUri(event), table, partitions);
 

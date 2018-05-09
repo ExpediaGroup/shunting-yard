@@ -96,6 +96,12 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
+        <groupId>org.apache.hive</groupId>
+        <artifactId>hive-exec</artifactId>
+        <version>${hive.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
         <groupId>org.apache.hive.hcatalog</groupId>
         <artifactId>hive-webhcat-java-client</artifactId>
         <version>${hive.version}</version>

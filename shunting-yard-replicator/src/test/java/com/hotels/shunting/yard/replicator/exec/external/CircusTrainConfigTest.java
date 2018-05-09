@@ -33,7 +33,7 @@ public class CircusTrainConfigTest {
   public @Rule ExpectedException expectedException = ExpectedException.none();
 
   @Test
-  public void withPartitionFilter() {
+  public void withSingleValuePartitionFilter() {
     CircusTrainConfig config = CircusTrainConfig
         .builder()
         .sourceName("sourceName")
@@ -57,6 +57,40 @@ public class CircusTrainConfigTest {
     assertThat(replication.getSourceTable().getDatabaseName()).isEqualTo("databaseName");
     assertThat(replication.getSourceTable().getTableName()).isEqualTo("tableName");
     assertThat(replication.getSourceTable().getPartitionFilter()).isEqualTo("(part='partval')");
+    assertThat(replication.getSourceTable().isGeneratePartitionFilter()).isEqualTo(false);
+    assertThat(replication.getSourceTable().getPartitionLimit()).isEqualTo(Short.MAX_VALUE);
+    assertThat(replication.getReplicaTable().getDatabaseName()).isEqualTo("databaseName");
+    assertThat(replication.getReplicaTable().getTableName()).isEqualTo("tableName");
+    assertThat(replication.getReplicaTable().getTableLocation()).isEqualTo("replicaTableLocation");
+  }
+
+  @Test
+  public void withMultiValuePartitionFilter() {
+    CircusTrainConfig config = CircusTrainConfig
+        .builder()
+        .sourceName("sourceName")
+        .sourceMetaStoreUri("sourceMetaStoreUri")
+        .replicaName("replicaName")
+        .replicaMetaStoreUri("replicaMetaStoreUri")
+        .copierOption("p1", "val1")
+        .copierOption("p2", "val2")
+        .replication(ReplicationMode.FULL, "databaseName", "tableName", "replicaTableLocation",
+            Arrays.asList(new FieldSchema("part_a", "string", null), new FieldSchema("part_b", "integer", null)),
+            new List[] { Arrays.asList("a", "1"), Arrays.asList("a", "2") })
+        .build();
+    assertThat(config.getSourceCatalog().getName()).isEqualTo("sourceName");
+    assertThat(config.getSourceCatalog().getHiveMetastoreUris()).isEqualTo("sourceMetaStoreUri");
+    assertThat(config.getReplicaCatalog().getName()).isEqualTo("replicaName");
+    assertThat(config.getReplicaCatalog().getHiveMetastoreUris()).isEqualTo("replicaMetaStoreUri");
+    assertThat(config.getCopierOptions()).hasSize(2).containsEntry("p1", "val1").containsEntry("p2", "val2");
+    assertThat(config.getTableReplications()).hasSize(1);
+
+    TableReplication replication = config.getTableReplications().get(0);
+    assertThat(replication.getReplicationMode()).isEqualTo(ReplicationMode.FULL);
+    assertThat(replication.getSourceTable().getDatabaseName()).isEqualTo("databaseName");
+    assertThat(replication.getSourceTable().getTableName()).isEqualTo("tableName");
+    assertThat(replication.getSourceTable().getPartitionFilter())
+        .isEqualTo("(part_a='a' AND part_b=1) OR (part_a='a' AND part_b=2)");
     assertThat(replication.getSourceTable().isGeneratePartitionFilter()).isEqualTo(false);
     assertThat(replication.getSourceTable().getPartitionLimit()).isEqualTo(Short.MAX_VALUE);
     assertThat(replication.getReplicaTable().getDatabaseName()).isEqualTo("databaseName");
