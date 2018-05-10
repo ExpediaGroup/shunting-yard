@@ -17,8 +17,6 @@ package com.hotels.shunting.yard.replicator.exec.app;
 
 import com.hotels.shunting.yard.common.Property;
 
-class Constants {}
-
 public enum ConfigurationVariables implements Property {
 
   WORKSPACE("workspace", null);
