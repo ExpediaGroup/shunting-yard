@@ -42,7 +42,7 @@
     <aws.version>1.11.272</aws.version>
     <aws.kcl.version>1.9.0</aws.kcl.version>
     <aws.kpl.version>0.12.8</aws.kpl.version>
-    <circus.train.version>9.1.1</circus.train.version>
+    <circus.train.version>11.4.0</circus.train.version>
     <commons.lang3.version>3.7</commons.lang3.version>
 
     <junit.version>4.12</junit.version>
