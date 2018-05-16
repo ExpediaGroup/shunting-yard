@@ -15,10 +15,10 @@
  */
 package com.hotels.shunting.yard.receiver.sqs.messaging;
 
-import static com.hotels.shunting.yard.receiver.sqs.Utils.credentials;
-import static com.hotels.shunting.yard.receiver.sqs.Utils.queue;
-import static com.hotels.shunting.yard.receiver.sqs.Utils.region;
-import static com.hotels.shunting.yard.receiver.sqs.Utils.waitTimeSeconds;
+import static com.hotels.shunting.yard.receiver.sqs.SqsReceiverUtils.credentials;
+import static com.hotels.shunting.yard.receiver.sqs.SqsReceiverUtils.queue;
+import static com.hotels.shunting.yard.receiver.sqs.SqsReceiverUtils.region;
+import static com.hotels.shunting.yard.receiver.sqs.SqsReceiverUtils.waitTimeSeconds;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -105,7 +105,7 @@ public class SqsMessageReader implements MessageReader {
     try {
       return eventSerDe.unmarshall(messageDecoder.decode(message));
     } catch (Exception e) {
-      // TODO this may be removed when we get rid off checked exceptions in the SerDe contract
+      // TODO this may be removed when we get rid of checked exceptions in the SerDe contract
       throw new SerDeException("Unable to unmarshall event", e);
     }
   }

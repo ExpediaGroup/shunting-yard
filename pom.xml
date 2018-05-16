@@ -32,7 +32,6 @@
   <properties>
     <cobertura.version>2.0.3</cobertura.version>
     <cobertura.maven.plugin.version>2.6</cobertura.maven.plugin.version>
-    <maven.release.plugin.version>2.5.3</maven.release.plugin.version>
     <jdk.version>1.8</jdk.version>
     <slf4j.version>1.7.7</slf4j.version>
     <hadoop.version>2.7.2</hadoop.version>
@@ -43,7 +42,7 @@
     <aws.version>1.11.272</aws.version>
     <aws.kcl.version>1.9.0</aws.kcl.version>
     <aws.kpl.version>0.12.8</aws.kpl.version>
-    <circus.train.version>9.1.1</circus.train.version>
+    <circus.train.version>11.4.0</circus.train.version>
     <commons.lang3.version>3.7</commons.lang3.version>
     <thrift.version>0.10.0</thrift.version>
     <jackson.version>2.9.5</jackson.version>
@@ -156,18 +155,12 @@
       </dependency>
 
       <dependency>
-        <groupId>org.apache.thrift</groupId>
-        <artifactId>libthrift</artifactId>
-        <version>${thrift.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.hotels.bdp</groupId>
+        <groupId>com.hotels</groupId>
         <artifactId>circus-train-api</artifactId>
         <version>${circus.train.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.hotels.bdp</groupId>
+        <groupId>com.hotels</groupId>
         <artifactId>circus-train-core</artifactId>
         <version>${circus.train.version}</version>
       </dependency>
@@ -246,7 +239,6 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
-          <version>${maven.release.plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>com.mycila</groupId>

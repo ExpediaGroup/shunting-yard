@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.shunting.yard.emitter.sqs;
+package com.hotels.shunting.yard.receiver.sqs;
 
 import static com.hotels.shunting.yard.common.Preconditions.checkNotNull;
+import static com.hotels.shunting.yard.common.PropertyUtils.intProperty;
 import static com.hotels.shunting.yard.common.PropertyUtils.stringProperty;
-import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.GROUP_ID;
-import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.QUEUE;
-import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.REGION;
+import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.QUEUE;
+import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.REGION;
+import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.WAIT_TIME_SECONDS;
 
 import org.apache.hadoop.conf.Configuration;
 
@@ -28,11 +29,11 @@ import com.amazonaws.auth.AWSCredentialsProviderChain;
 import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 
-import com.hotels.shunting.yard.emitter.sqs.aws.ConfigurationAwsCredentialsProvider;
+import com.hotels.shunting.yard.receiver.sqs.aws.ConfigurationAwsCredentialsProvider;
 
-public final class Utils {
+public final class SqsReceiverUtils {
 
-  private Utils() {}
+  private SqsReceiverUtils() {}
 
   public static String queue(Configuration conf) {
     return checkNotNull(stringProperty(conf, QUEUE), "Property " + QUEUE + " is not set");
@@ -42,8 +43,8 @@ public final class Utils {
     return checkNotNull(stringProperty(conf, REGION), "Property " + REGION + " is not set");
   }
 
-  public static String groupId(Configuration conf) {
-    return checkNotNull(stringProperty(conf, GROUP_ID), "Property " + GROUP_ID + " is not set");
+  public static int waitTimeSeconds(Configuration conf) {
+    return checkNotNull(intProperty(conf, WAIT_TIME_SECONDS), "Property " + WAIT_TIME_SECONDS + " is not set");
   }
 
   public static AWSCredentialsProvider credentials(final Configuration conf) {

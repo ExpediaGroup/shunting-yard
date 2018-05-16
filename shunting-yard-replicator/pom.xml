@@ -130,11 +130,11 @@
 
     <!-- Circus Train -->
     <dependency>
-      <groupId>com.hotels.bdp</groupId>
+      <groupId>com.hotels</groupId>
       <artifactId>circus-train-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.hotels.bdp</groupId>
+      <groupId>com.hotels</groupId>
       <artifactId>circus-train-core</artifactId>
     </dependency>
 

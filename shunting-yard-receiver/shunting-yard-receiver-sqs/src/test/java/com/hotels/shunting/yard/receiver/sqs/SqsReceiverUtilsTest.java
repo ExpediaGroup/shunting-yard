@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.shunting.yard.emitter.sqs;
+package com.hotels.shunting.yard.receiver.sqs;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.GROUP_ID;
-import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.QUEUE;
-import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.REGION;
-import static com.hotels.shunting.yard.emitter.sqs.Utils.groupId;
-import static com.hotels.shunting.yard.emitter.sqs.Utils.queue;
-import static com.hotels.shunting.yard.emitter.sqs.Utils.region;
+import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.QUEUE;
+import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.REGION;
+import static com.hotels.shunting.yard.receiver.sqs.SqsReceiverUtils.queue;
+import static com.hotels.shunting.yard.receiver.sqs.SqsReceiverUtils.region;
 
 import org.apache.hadoop.conf.Configuration;
 import org.junit.Test;
 
-public class UtilsTest {
+public class SqsReceiverUtilsTest {
 
   private final Configuration conf = new Configuration();
 
@@ -53,18 +51,6 @@ public class UtilsTest {
   public void regionIsNull() {
     conf.set(REGION.key(), null);
     region(conf);
-  }
-
-  @Test
-  public void groupIdIsNotNull() {
-    conf.set(GROUP_ID.key(), "group");
-    assertThat(groupId(conf)).isEqualTo("group");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void groupIdIsNull() {
-    conf.set(GROUP_ID.key(), null);
-    groupId(conf);
   }
 
 }

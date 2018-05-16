@@ -15,6 +15,9 @@
  */
 package com.hotels.shunting.yard.emitter.kinesis;
 
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import com.amazonaws.regions.Regions;
 
 import com.hotels.shunting.yard.common.Property;
@@ -24,8 +27,8 @@ public enum KinesisProducerProperty implements Property {
   STREAM("stream", null),
   REGION("region", Regions.US_WEST_2.getName()),
   MAX_CONNECTIONS("max.connections", 1L),
-  REQUEST_TIMEOUT("request.timeout", 60000L),
-  RECORD_MAX_BUFFERED_TIME("record.max.buffered.time", 15000L),
+  REQUEST_TIMEOUT("request.timeout", MINUTES.toMillis(1)),
+  RECORD_MAX_BUFFERED_TIME("record.max.buffered.time", SECONDS.toMillis(15)),
   RETRIES("retries", 3),
   SERDE_CLASS("serde.class", JsonMetaStoreEventSerDe.class.getName());
 
