@@ -20,14 +20,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static com.hotels.shunting.yard.emitter.sqs.SqsProperty.GROUP_ID;
 import static com.hotels.shunting.yard.emitter.sqs.SqsProperty.QUEUE;
 import static com.hotels.shunting.yard.emitter.sqs.SqsProperty.REGION;
-import static com.hotels.shunting.yard.emitter.sqs.Utils.groupId;
-import static com.hotels.shunting.yard.emitter.sqs.Utils.queue;
-import static com.hotels.shunting.yard.emitter.sqs.Utils.region;
+import static com.hotels.shunting.yard.emitter.sqs.SqsEmitterUtils.groupId;
+import static com.hotels.shunting.yard.emitter.sqs.SqsEmitterUtils.queue;
+import static com.hotels.shunting.yard.emitter.sqs.SqsEmitterUtils.region;
 
 import org.apache.hadoop.conf.Configuration;
 import org.junit.Test;
 
-public class UtilsTest {
+public class SqsEmitterUtilsTest {
 
   private final Configuration conf = new Configuration();
 

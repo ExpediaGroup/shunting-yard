@@ -30,9 +30,9 @@ import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 
 import com.hotels.shunting.yard.emitter.sqs.aws.ConfigurationAwsCredentialsProvider;
 
-public final class Utils {
+public final class SqsEmitterUtils {
 
-  private Utils() {}
+  private SqsEmitterUtils() {}
 
   public static String queue(Configuration conf) {
     return checkNotNull(stringProperty(conf, QUEUE), "Property " + QUEUE + " is not set");

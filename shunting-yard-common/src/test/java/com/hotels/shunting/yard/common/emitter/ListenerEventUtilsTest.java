@@ -45,26 +45,26 @@ public class ListenerEventUtilsTest {
   }
 
   @Test
-  public void isCacade() {
+  public void isCascade() {
     when(properties.get(StatsSetupConst.CASCADE)).thenReturn("true");
     assertThat(ListenerEventUtils.isCascade(event)).isTrue();
   }
 
   @Test
-  public void isNotCacadeWhenContextIsNull() {
+  public void isNotCascadeWhenContextIsNull() {
     reset(event);
     assertThat(ListenerEventUtils.isCascade(event)).isFalse();
   }
 
   @Test
-  public void isNotCacadeWhenContextPropertiesAreNotSet() {
+  public void isNotCascadeWhenContextPropertiesAreNotSet() {
     reset(context);
     when(context.isSetProperties()).thenReturn(false);
     assertThat(ListenerEventUtils.isCascade(event)).isFalse();
   }
 
   @Test
-  public void isNotCacadeWhenContextPropertyIsNotCascade() {
+  public void isNotCascadeWhenContextPropertyIsNotCascade() {
     when(properties.get(StatsSetupConst.CASCADE)).thenReturn("other");
     assertThat(ListenerEventUtils.isCascade(event)).isFalse();
   }
