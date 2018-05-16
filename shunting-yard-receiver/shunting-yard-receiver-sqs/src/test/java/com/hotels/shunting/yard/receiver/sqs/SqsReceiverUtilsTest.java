@@ -19,13 +19,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import static com.hotels.shunting.yard.receiver.sqs.SqsProperty.QUEUE;
 import static com.hotels.shunting.yard.receiver.sqs.SqsProperty.REGION;
-import static com.hotels.shunting.yard.receiver.sqs.Utils.queue;
-import static com.hotels.shunting.yard.receiver.sqs.Utils.region;
+import static com.hotels.shunting.yard.receiver.sqs.SqsReceiverUtils.queue;
+import static com.hotels.shunting.yard.receiver.sqs.SqsReceiverUtils.region;
 
 import org.apache.hadoop.conf.Configuration;
 import org.junit.Test;
 
-public class UtilsTest {
+public class SqsReceiverUtilsTest {
 
   private final Configuration conf = new Configuration();
 

@@ -31,9 +31,9 @@ import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 
 import com.hotels.shunting.yard.receiver.sqs.aws.ConfigurationAwsCredentialsProvider;
 
-public final class Utils {
+public final class SqsReceiverUtils {
 
-  private Utils() {}
+  private SqsReceiverUtils() {}
 
   public static String queue(Configuration conf) {
     return checkNotNull(stringProperty(conf, QUEUE), "Property " + QUEUE + " is not set");
