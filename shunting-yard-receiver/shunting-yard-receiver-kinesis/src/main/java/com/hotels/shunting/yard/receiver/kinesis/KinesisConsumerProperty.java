@@ -15,6 +15,8 @@
  */
 package com.hotels.shunting.yard.receiver.kinesis;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import com.amazonaws.regions.Regions;
 
 import com.hotels.shunting.yard.common.Property;
@@ -26,7 +28,7 @@ public enum KinesisConsumerProperty implements Property {
   WORKER_ID("worker.id", "CircusTrainEventDrivenReceiver"),
   MAX_RECORDS("max.records", 30),
   BUFFER_CAPACITY("buffer.capacity", 100),
-  POLLING_TIMEOUT_MS("polling.timeout.ms", 30 * 1000L); // 30 sec
+  POLLING_TIMEOUT_MS("polling.timeout.ms", SECONDS.toMillis(30));
 
   private static final String PROPERTY_PREFIX = "com.hotels.shunting.yard.event.receiver.kinesis.";
 

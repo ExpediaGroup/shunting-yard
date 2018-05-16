@@ -147,12 +147,12 @@
       </dependency>
 
       <dependency>
-        <groupId>com.hotels.bdp</groupId>
+        <groupId>com.hotels</groupId>
         <artifactId>circus-train-api</artifactId>
         <version>${circus.train.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.hotels.bdp</groupId>
+        <groupId>com.hotels</groupId>
         <artifactId>circus-train-core</artifactId>
         <version>${circus.train.version}</version>
       </dependency>
