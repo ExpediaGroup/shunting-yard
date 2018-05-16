@@ -24,8 +24,8 @@ import com.google.common.annotations.VisibleForTesting;
 
 import com.hotels.shunting.yard.common.emitter.AbstractMetaStoreEventListener;
 import com.hotels.shunting.yard.common.event.SerializableListenerEventFactory;
-import com.hotels.shunting.yard.common.io.JavaSerializationMetaStoreEventSerDe;
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
+import com.hotels.shunting.yard.common.io.java.JavaSerializationMetaStoreEventSerDe;
 import com.hotels.shunting.yard.common.messaging.MessageTaskFactory;
 import com.hotels.shunting.yard.emitter.sqs.messaging.SqsMessageTaskFactory;
 

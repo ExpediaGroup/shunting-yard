@@ -19,11 +19,34 @@ package com.hotels.shunting.yard.common.event;
  * To make processing event in the receiver easier.
  */
 public enum EventType {
-  ON_CREATE_TABLE,
-  ON_ALTER_TABLE,
-  ON_DROP_TABLE,
-  ON_ADD_PARTITION,
-  ON_ALTER_PARTITION,
-  ON_DROP_PARTITION,
-  ON_INSERT;
+  ON_CREATE_TABLE(SerializableCreateTableEvent.class),
+  ON_ALTER_TABLE(SerializableAlterTableEvent.class),
+  ON_DROP_TABLE(SerializableDropTableEvent.class),
+  ON_ADD_PARTITION(SerializableAddPartitionEvent.class),
+  ON_ALTER_PARTITION(SerializableAlterPartitionEvent.class),
+  ON_DROP_PARTITION(SerializableDropPartitionEvent.class),
+  ON_INSERT(SerializableInsertEvent.class);
+
+  private final Class<? extends SerializableListenerEvent> eventClass;
+
+  private EventType(Class<? extends SerializableListenerEvent> eventClass) {
+    if (eventClass == null) {
+      throw new NullPointerException("Parameter eventClass is required");
+    }
+    this.eventClass = eventClass;
+  }
+
+  public Class<? extends SerializableListenerEvent> eventClass() {
+    return eventClass;
+  }
+
+  public static EventType forClass(Class<? extends SerializableListenerEvent> clazz) {
+    for (EventType e : values()) {
+      if (e.eventClass().equals(clazz)) {
+        return e;
+      }
+    }
+    throw new IllegalArgumentException("EventType not found for class " + clazz.getName());
+  }
+
 }

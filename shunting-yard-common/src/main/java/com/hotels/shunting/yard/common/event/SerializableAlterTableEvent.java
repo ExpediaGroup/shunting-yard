@@ -23,18 +23,15 @@ import org.apache.hadoop.hive.metastore.events.AlterTableEvent;
 public class SerializableAlterTableEvent extends SerializableListenerEvent {
   private static final long serialVersionUID = 1L;
 
-  private final Table oldTable;
-  private final Table newTable;
+  private Table oldTable;
+  private Table newTable;
+
+  SerializableAlterTableEvent() {}
 
   public SerializableAlterTableEvent(AlterTableEvent event) {
     super(event);
     oldTable = event.getOldTable();
     newTable = event.getNewTable();
-  }
-
-  @Override
-  public EventType getEventType() {
-    return EventType.ON_ALTER_TABLE;
   }
 
   @Override

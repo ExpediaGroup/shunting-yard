@@ -20,20 +20,19 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
+import static com.hotels.shunting.yard.common.io.SerDeTestUtils.DATABASE;
+import static com.hotels.shunting.yard.common.io.SerDeTestUtils.TABLE;
+import static com.hotels.shunting.yard.common.io.SerDeTestUtils.createEnvironmentContext;
+import static com.hotels.shunting.yard.common.io.SerDeTestUtils.createPartition;
+import static com.hotels.shunting.yard.common.io.SerDeTestUtils.createTable;
+
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 
 import org.apache.hadoop.hive.metastore.HiveMetaStore.HMSHandler;
 import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.apache.hadoop.hive.metastore.api.GetTableRequest;
 import org.apache.hadoop.hive.metastore.api.GetTableResult;
 import org.apache.hadoop.hive.metastore.api.InsertEventRequestData;
-import org.apache.hadoop.hive.metastore.api.Partition;
-import org.apache.hadoop.hive.metastore.api.StorageDescriptor;
-import org.apache.hadoop.hive.metastore.api.Table;
 import org.apache.hadoop.hive.metastore.events.AddPartitionEvent;
 import org.apache.hadoop.hive.metastore.events.AlterPartitionEvent;
 import org.apache.hadoop.hive.metastore.events.AlterTableEvent;
@@ -57,12 +56,7 @@ import com.hotels.shunting.yard.common.event.SerializableInsertEvent;
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 
 @RunWith(Parameterized.class)
-public class JavaSerializationMetaStoreEventSerDeTest {
-
-  private static final String DATABASE = "test_db";
-  private static final String TABLE = "test_table";
-  private static final List<FieldSchema> DATA_COLS = Arrays.asList(new FieldSchema("col", "integer", "comment"));
-  private static final List<FieldSchema> PARTITION_COLS = Arrays.asList(new FieldSchema("part", "string", "comment"));
+public abstract class AbstractMetaStoreEventSerDeTest {
 
   private static InsertEventRequestData mockInsertEventRequestData() {
     InsertEventRequestData eventRequestData = mock(InsertEventRequestData.class);
@@ -78,60 +72,70 @@ public class JavaSerializationMetaStoreEventSerDeTest {
     return handler;
   }
 
-  private static Table createTable(FieldSchema... moreCols) {
-    Table table = new Table();
-    table.setDbName(DATABASE);
-    table.setTableName(TABLE);
-    table.setPartitionKeys(PARTITION_COLS);
-    table.setSd(new StorageDescriptor());
-    List<FieldSchema> cols = new ArrayList<>(DATA_COLS);
-    if (moreCols != null) {
-      Collections.addAll(cols, moreCols);
-    }
-    table.getSd().setCols(cols);
-    table.getSd().setLocation("hdfs://server:8020/foo/bar/");
-    table.setParameters(new HashMap<String, String>());
-    table.getParameters().put("foo", "bar");
-    return table;
+  private static SerializableCreateTableEvent serializableCreateTableEvent() throws Exception {
+    CreateTableEvent event = new CreateTableEvent(createTable(), true, mockHandler());
+    event.setEnvironmentContext(createEnvironmentContext());
+    return new SerializableCreateTableEvent(event);
   }
 
-  private static Partition createPartition(String value) {
-    Partition partition = new Partition();
-    partition.setDbName(DATABASE);
-    partition.setTableName(TABLE);
-    partition.setValues(Arrays.asList(value));
-    partition.setSd(new StorageDescriptor());
-    partition.getSd().setCols(DATA_COLS);
-    partition.getSd().setLocation("hdfs://server:8020/foo/bar/part=a");
-    partition.setParameters(new HashMap<String, String>());
-    partition.getParameters().put("foo", "bazz");
-    return partition;
+  private static SerializableAlterTableEvent serializableAlterTableEvent() throws Exception {
+    AlterTableEvent event = new AlterTableEvent(createTable(), createTable(new FieldSchema("new_col", "string", null)),
+        true, mockHandler());
+    event.setEnvironmentContext(createEnvironmentContext());
+    return new SerializableAlterTableEvent(event);
   }
 
-  @Parameters
+  private static SerializableDropTableEvent serializableDropTableEvent() throws Exception {
+    DropTableEvent event = new DropTableEvent(createTable(), true, false, mockHandler());
+    event.setEnvironmentContext(createEnvironmentContext());
+    return new SerializableDropTableEvent(event);
+  }
+
+  private static SerializableAddPartitionEvent serializableAddPartitionEvent() throws Exception {
+    AddPartitionEvent event = new AddPartitionEvent(createTable(), createPartition("a"), true, mockHandler());
+    event.setEnvironmentContext(createEnvironmentContext());
+    return new SerializableAddPartitionEvent(event);
+  }
+
+  private static SerializableAlterPartitionEvent serializableAlterPartitionEvent() throws Exception {
+    AlterPartitionEvent event = new AlterPartitionEvent(createPartition("a"), createPartition("b"), createTable(), true,
+        mockHandler());
+    event.setEnvironmentContext(createEnvironmentContext());
+    return new SerializableAlterPartitionEvent(event);
+  }
+
+  private static SerializableDropPartitionEvent serializableDropPartitionEvent() throws Exception {
+    DropPartitionEvent event = new DropPartitionEvent(createTable(), createPartition("a"), true, false, mockHandler());
+    event.setEnvironmentContext(createEnvironmentContext());
+    return new SerializableDropPartitionEvent(event);
+  }
+
+  private static SerializableInsertEvent serializableInsertEvent() throws Exception {
+    InsertEvent event = new InsertEvent(DATABASE, TABLE, Arrays.asList("a"), mockInsertEventRequestData(), true,
+        mockHandler());
+    event.setEnvironmentContext(createEnvironmentContext());
+    return new SerializableInsertEvent(event);
+  }
+
+  @Parameters(name = "{index}: {0}")
   public static SerializableListenerEvent[] data() throws Exception {
     return new SerializableListenerEvent[] {
-        new SerializableCreateTableEvent(new CreateTableEvent(createTable(), true, mockHandler())),
-        new SerializableAlterTableEvent(new AlterTableEvent(createTable(),
-            createTable(new FieldSchema("new_col", "string", null)), true, mockHandler())),
-        new SerializableDropTableEvent(new DropTableEvent(createTable(), true, false, mockHandler())),
-        new SerializableAddPartitionEvent(
-            new AddPartitionEvent(createTable(), createPartition("a"), true, mockHandler())),
-        new SerializableAlterPartitionEvent(
-            new AlterPartitionEvent(createPartition("a"), createPartition("b"), createTable(), true, mockHandler())),
-        new SerializableDropPartitionEvent(
-            new DropPartitionEvent(createTable(), createPartition("a"), true, false, mockHandler())),
-        new SerializableInsertEvent(
-            new InsertEvent(DATABASE, TABLE, Arrays.asList("a"), mockInsertEventRequestData(), true, mockHandler())) };
+        serializableCreateTableEvent(),
+        serializableAlterTableEvent(),
+        serializableDropTableEvent(),
+        serializableAddPartitionEvent(),
+        serializableAlterPartitionEvent(),
+        serializableDropPartitionEvent(),
+        serializableInsertEvent() };
   }
 
   public @Parameter SerializableListenerEvent event;
 
-  private final JavaSerializationMetaStoreEventSerDe serDe = new JavaSerializationMetaStoreEventSerDe();
+  protected abstract MetaStoreEventSerDe serDe();
 
   @Test
   public void typical() throws Exception {
-    SerializableListenerEvent processedEvent = serDe.unmarshall(serDe.marshall(event));
+    SerializableListenerEvent processedEvent = serDe().unmarshall(serDe().marshall(event));
     assertThat(processedEvent).isEqualTo(event);
   }
 

@@ -23,18 +23,15 @@ import org.apache.hadoop.hive.metastore.events.DropTableEvent;
 public class SerializableDropTableEvent extends SerializableListenerEvent {
   private static final long serialVersionUID = 1L;
 
-  private final Table table;
-  private final boolean deleteData;
+  private Table table;
+  private boolean deleteData;
+
+  SerializableDropTableEvent() {}
 
   public SerializableDropTableEvent(DropTableEvent event) {
     super(event);
     deleteData = event.getDeleteData();
     table = event.getTable();
-  }
-
-  @Override
-  public EventType getEventType() {
-    return EventType.ON_DROP_TABLE;
   }
 
   @Override

@@ -24,34 +24,31 @@ import org.apache.hadoop.hive.metastore.events.InsertEvent;
 public class SerializableInsertEvent extends SerializableListenerEvent {
   private static final long serialVersionUID = 1L;
 
-  private final String db;
-  private final String table;
-  private final Map<String, String> keyValues;
-  private final List<String> files;
-  private final List<String> fileChecksums;
+  private String databaseName;
+  private String tableName;
+  private Map<String, String> keyValues;
+  private List<String> files;
+  private List<String> fileChecksums;
+
+  SerializableInsertEvent() {}
 
   public SerializableInsertEvent(InsertEvent event) {
     super(event);
-    db = event.getDb();
-    table = event.getTable();
+    databaseName = event.getDb();
+    tableName = event.getTable();
     keyValues = event.getPartitionKeyValues();
     files = event.getFiles();
     fileChecksums = event.getFileChecksums();
   }
 
   @Override
-  public EventType getEventType() {
-    return EventType.ON_INSERT;
-  }
-
-  @Override
   public String getDatabaseName() {
-    return db;
+    return databaseName;
   }
 
   @Override
   public String getTableName() {
-    return table;
+    return tableName;
   }
 
   public Map<String, String> getKeyValues() {
@@ -76,8 +73,8 @@ public class SerializableInsertEvent extends SerializableListenerEvent {
     }
     SerializableInsertEvent other = (SerializableInsertEvent) obj;
     return super.equals(other)
-        && Objects.equals(db, other.db)
-        && Objects.equals(table, other.table)
+        && Objects.equals(databaseName, other.databaseName)
+        && Objects.equals(tableName, other.tableName)
         && Objects.equals(keyValues, other.keyValues)
         && Objects.equals(files, other.files)
         && Objects.equals(fileChecksums, other.fileChecksums);

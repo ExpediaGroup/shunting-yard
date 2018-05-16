@@ -45,6 +45,8 @@
     <aws.kpl.version>0.12.8</aws.kpl.version>
     <circus.train.version>9.1.1</circus.train.version>
     <commons.lang3.version>3.7</commons.lang3.version>
+    <thrift.version>0.10.0</thrift.version>
+    <jackson.version>2.9.5</jackson.version>
 
     <junit.version>4.12</junit.version>
     <assertj.version>2.9.0</assertj.version>
@@ -115,6 +117,12 @@
       </dependency>
 
       <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+
+      <dependency>
         <groupId>com.expedia.hdw</groupId>
         <artifactId>common-hive</artifactId>
         <version>${common.hive.version}</version>
@@ -145,6 +153,12 @@
         <groupId>com.amazonaws</groupId>
         <artifactId>amazon-kinesis-producer</artifactId>
         <version>${aws.kpl.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.thrift</groupId>
+        <artifactId>libthrift</artifactId>
+        <version>${thrift.version}</version>
       </dependency>
 
       <dependency>

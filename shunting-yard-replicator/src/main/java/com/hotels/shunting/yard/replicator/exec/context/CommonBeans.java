@@ -41,7 +41,7 @@ import com.expedia.hdw.common.hive.conf.HiveConfFactory;
 import com.expedia.hdw.common.hive.metastore.CloseableMetaStoreClient;
 import com.expedia.hdw.common.hive.metastore.MetaStoreClientFactory;
 
-import com.hotels.shunting.yard.common.io.JavaSerializationMetaStoreEventSerDe;
+import com.hotels.shunting.yard.common.io.java.JavaSerializationMetaStoreEventSerDe;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
 import com.hotels.shunting.yard.common.receiver.ShuntingYardMetaStoreEventListener;
 import com.hotels.shunting.yard.receiver.kinesis.messaging.KinesisMessageReader;
@@ -117,6 +117,7 @@ public class CommonBeans {
 
   @Bean
   MessageReader messageReader(HiveConf replicaHiveConf) {
+    // TODO select base on app property
     // return new SqsMessageReader(replicaHiveConf, new JavaSerializationMetaStoreEventSerDe());
     return new KinesisMessageReader(replicaHiveConf, new JavaSerializationMetaStoreEventSerDe());
   }

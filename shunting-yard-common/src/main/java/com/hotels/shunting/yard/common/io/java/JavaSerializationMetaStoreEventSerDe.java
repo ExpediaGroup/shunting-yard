@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.shunting.yard.common.io;
+package com.hotels.shunting.yard.common.io.java;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -26,35 +26,34 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
+import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 
 public class JavaSerializationMetaStoreEventSerDe implements MetaStoreEventSerDe {
-  private static final Logger LOG = LoggerFactory.getLogger(JavaSerializationMetaStoreEventSerDe.class);
+  private static final Logger log = LoggerFactory.getLogger(JavaSerializationMetaStoreEventSerDe.class);
 
   @Override
   public byte[] marshall(SerializableListenerEvent listenerEvent) throws MetaException {
     ByteArrayOutputStream buffer = new ByteArrayOutputStream();
     try (ObjectOutputStream out = new ObjectOutputStream(buffer)) {
       out.writeObject(listenerEvent);
+      return buffer.toByteArray();
     } catch (IOException e) {
       String message = "Unable to serialize event " + listenerEvent;
-      LOG.info(message, e);
+      log.error(message, e);
       throw new MetaException(message);
     }
-    return buffer.toByteArray();
   }
 
   @Override
   public <T extends SerializableListenerEvent> T unmarshall(byte[] payload) throws MetaException {
     ByteArrayInputStream buffer = new ByteArrayInputStream(payload);
-    T t = null;
     try (ObjectInputStream in = new ObjectInputStream(buffer)) {
-      t = (T) in.readObject();
+      return (T) in.readObject();
     } catch (Exception e) {
       String message = "Unable to deserialize event from payload";
-      LOG.info(message, e);
+      log.error(message, e);
       throw new MetaException(message);
     }
-    return t;
   }
 
 }
