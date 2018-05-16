@@ -18,6 +18,7 @@ package com.hotels.shunting.yard.emitter.kinesis;
 import com.amazonaws.regions.Regions;
 
 import com.hotels.shunting.yard.common.Property;
+import com.hotels.shunting.yard.common.io.jackson.JsonMetaStoreEventSerDe;
 
 public enum KinesisProducerProperty implements Property {
   STREAM("stream", null),
@@ -25,7 +26,8 @@ public enum KinesisProducerProperty implements Property {
   MAX_CONNECTIONS("max.connections", 1L),
   REQUEST_TIMEOUT("request.timeout", 60000L),
   RECORD_MAX_BUFFERED_TIME("record.max.buffered.time", 15000L),
-  RETRIES("retries", 3);
+  RETRIES("retries", 3),
+  SERDE_CLASS("serde.class", JsonMetaStoreEventSerDe.class.getName());
 
   private static final String PROPERTY_PREFIX = "com.hotels.shunting.yard.event.emitter.kinesis.";
 

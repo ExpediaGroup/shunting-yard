@@ -17,8 +17,8 @@ package com.hotels.shunting.yard.receiver.sqs.aws;
 
 import static com.hotels.shunting.yard.common.Preconditions.checkNotNull;
 import static com.hotels.shunting.yard.common.PropertyUtils.stringProperty;
-import static com.hotels.shunting.yard.receiver.sqs.SqsProperty.AWS_ACCESS_KEY;
-import static com.hotels.shunting.yard.receiver.sqs.SqsProperty.AWS_SECRET_KEY;
+import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.AWS_ACCESS_KEY;
+import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.AWS_SECRET_KEY;
 
 import java.io.IOException;
 
@@ -28,7 +28,7 @@ import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 
-import com.hotels.shunting.yard.receiver.sqs.SqsProperty;
+import com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty;
 
 public class ConfigurationAwsCredentialsProvider implements AWSCredentialsProvider {
 
@@ -46,7 +46,7 @@ public class ConfigurationAwsCredentialsProvider implements AWSCredentialsProvid
   @Override
   public void refresh() {}
 
-  private String secret(SqsProperty property) {
+  private String secret(SqsConsumerProperty property) {
     String key = checkNotNull(stringProperty(conf, property), "Property " + property + " is not set");
     try {
       return new String(conf.getPassword(key));

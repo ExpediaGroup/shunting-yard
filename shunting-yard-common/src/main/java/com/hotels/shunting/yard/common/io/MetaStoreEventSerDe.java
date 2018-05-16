@@ -17,9 +17,19 @@ package com.hotels.shunting.yard.common.io;
 
 import org.apache.hadoop.hive.metastore.api.MetaException;
 
+import com.hotels.shunting.yard.common.ShuntingYardException;
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 
 public interface MetaStoreEventSerDe {
+
+  static <T extends MetaStoreEventSerDe> T serDeForClassName(String className) {
+    try {
+      Class<T> clazz = (Class<T>) Class.forName(className);
+      return clazz.newInstance();
+    } catch (Exception e) {
+      throw new ShuntingYardException("Unable to instantiate MetaStoreEventSerDe of class " + className, e);
+    }
+  }
 
   byte[] marshall(SerializableListenerEvent listenerEvent) throws MetaException;
 

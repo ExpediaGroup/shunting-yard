@@ -20,8 +20,8 @@ import static java.lang.Boolean.TRUE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import static com.hotels.shunting.yard.emitter.sqs.SqsProperty.AWS_ACCESS_KEY;
-import static com.hotels.shunting.yard.emitter.sqs.SqsProperty.AWS_SECRET_KEY;
+import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.AWS_ACCESS_KEY;
+import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.AWS_SECRET_KEY;
 
 import java.io.IOException;
 

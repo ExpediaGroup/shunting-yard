@@ -22,9 +22,12 @@ import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.R
 import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.REGION;
 import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.REQUEST_TIMEOUT;
 import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.RETRIES;
+import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.SERDE_CLASS;
 import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.STREAM;
 
 import org.junit.Test;
+
+import com.hotels.shunting.yard.common.io.jackson.JsonMetaStoreEventSerDe;
 
 public class KinesisProducerPropertyTest {
 
@@ -34,7 +37,7 @@ public class KinesisProducerPropertyTest {
 
   @Test
   public void numberOfProperties() {
-    assertThat(KinesisProducerProperty.values().length).isEqualTo(6);
+    assertThat(KinesisProducerProperty.values().length).isEqualTo(7);
   }
 
   @Test
@@ -77,6 +80,13 @@ public class KinesisProducerPropertyTest {
     assertThat(RETRIES.unPrefixedKey()).isEqualTo("retries");
     assertThat(RETRIES.key()).isEqualTo(prefixedKey("retries"));
     assertThat(RETRIES.defaultValue()).isEqualTo(3);
+  }
+
+  @Test
+  public void serdeClass() {
+    assertThat(SERDE_CLASS.unPrefixedKey()).isEqualTo("serde.class");
+    assertThat(SERDE_CLASS.key()).isEqualTo(prefixedKey("serde.class"));
+    assertThat(SERDE_CLASS.defaultValue()).isEqualTo(JsonMetaStoreEventSerDe.class.getName());
   }
 
 }

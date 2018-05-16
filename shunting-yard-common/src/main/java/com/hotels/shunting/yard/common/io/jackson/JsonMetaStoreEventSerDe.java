@@ -36,12 +36,12 @@ import com.hotels.shunting.yard.common.event.EventType;
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 
-public class JsonSerializationMetaStoreEventSerDe implements MetaStoreEventSerDe {
-  private static final Logger log = LoggerFactory.getLogger(JsonSerializationMetaStoreEventSerDe.class);
+public class JsonMetaStoreEventSerDe implements MetaStoreEventSerDe {
+  private static final Logger log = LoggerFactory.getLogger(JsonMetaStoreEventSerDe.class);
 
   private final ObjectMapper mapper;
 
-  public JsonSerializationMetaStoreEventSerDe() {
+  public JsonMetaStoreEventSerDe() {
     SimpleModule thriftModule = new SimpleModule("ThriftModule");
     registerSerializers(thriftModule);
     registerDeserializers(thriftModule);

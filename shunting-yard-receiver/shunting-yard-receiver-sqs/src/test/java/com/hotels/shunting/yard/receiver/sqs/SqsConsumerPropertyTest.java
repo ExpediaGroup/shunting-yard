@@ -13,27 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.shunting.yard.emitter.sqs;
+package com.hotels.shunting.yard.receiver.sqs;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import static com.hotels.shunting.yard.emitter.sqs.SqsProperty.AWS_ACCESS_KEY;
-import static com.hotels.shunting.yard.emitter.sqs.SqsProperty.AWS_SECRET_KEY;
-import static com.hotels.shunting.yard.emitter.sqs.SqsProperty.GROUP_ID;
-import static com.hotels.shunting.yard.emitter.sqs.SqsProperty.QUEUE;
-import static com.hotels.shunting.yard.emitter.sqs.SqsProperty.REGION;
+import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.AWS_ACCESS_KEY;
+import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.AWS_SECRET_KEY;
+import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.QUEUE;
+import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.REGION;
+import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.WAIT_TIME_SECONDS;
 
 import org.junit.Test;
 
-public class SqsPropertyTest {
+public class SqsConsumerPropertyTest {
 
   private static String prefixedKey(String key) {
-    return "com.hotels.shunting.yard.event.emitter.sqs." + key;
+    return "com.hotels.shunting.yard.event.receiver.sqs." + key;
   }
 
   @Test
   public void numberOfProperties() {
-    assertThat(SqsProperty.values().length).isEqualTo(5);
+    assertThat(SqsConsumerProperty.values().length).isEqualTo(5);
   }
 
   @Test
@@ -51,10 +51,10 @@ public class SqsPropertyTest {
   }
 
   @Test
-  public void groupId() {
-    assertThat(GROUP_ID.unPrefixedKey()).isEqualTo("group.id");
-    assertThat(GROUP_ID.key()).isEqualTo(prefixedKey("group.id"));
-    assertThat(GROUP_ID.defaultValue()).isNull();
+  public void waitTimeSeconds() {
+    assertThat(WAIT_TIME_SECONDS.unPrefixedKey()).isEqualTo("wait.time.seconds");
+    assertThat(WAIT_TIME_SECONDS.key()).isEqualTo(prefixedKey("wait.time.seconds"));
+    assertThat(WAIT_TIME_SECONDS.defaultValue()).isEqualTo(10);
   }
 
   @Test

@@ -18,9 +18,9 @@ package com.hotels.shunting.yard.common.io.java;
 import com.hotels.shunting.yard.common.io.AbstractMetaStoreEventSerDeTest;
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 
-public class JavaSerializationMetaStoreEventSerDeTest extends AbstractMetaStoreEventSerDeTest {
+public class JavaMetaStoreEventSerDeTest extends AbstractMetaStoreEventSerDeTest {
 
-  private final JavaSerializationMetaStoreEventSerDe serDe = new JavaSerializationMetaStoreEventSerDe();
+  private final JavaMetaStoreEventSerDe serDe = new JavaMetaStoreEventSerDe();
 
   @Override
   protected MetaStoreEventSerDe serDe() {

@@ -28,8 +28,8 @@ import org.slf4j.LoggerFactory;
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 
-public class JavaSerializationMetaStoreEventSerDe implements MetaStoreEventSerDe {
-  private static final Logger log = LoggerFactory.getLogger(JavaSerializationMetaStoreEventSerDe.class);
+public class JavaMetaStoreEventSerDe implements MetaStoreEventSerDe {
+  private static final Logger log = LoggerFactory.getLogger(JavaMetaStoreEventSerDe.class);
 
   @Override
   public byte[] marshall(SerializableListenerEvent listenerEvent) throws MetaException {

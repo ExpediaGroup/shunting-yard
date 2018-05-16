@@ -15,6 +15,10 @@
  */
 package com.hotels.shunting.yard.emitter.kafka.listener;
 
+import static com.hotels.shunting.yard.common.PropertyUtils.stringProperty;
+import static com.hotels.shunting.yard.common.io.MetaStoreEventSerDe.serDeForClassName;
+import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.SERDE_CLASS;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -25,7 +29,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.hotels.shunting.yard.common.emitter.AbstractMetaStoreEventListener;
 import com.hotels.shunting.yard.common.event.SerializableListenerEventFactory;
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
-import com.hotels.shunting.yard.common.io.java.JavaSerializationMetaStoreEventSerDe;
 import com.hotels.shunting.yard.common.messaging.MessageTaskFactory;
 import com.hotels.shunting.yard.emitter.kafka.messaging.KafkaMessageTaskFactory;
 
@@ -35,7 +38,7 @@ public class KafkaMetaStoreEventListener extends AbstractMetaStoreEventListener 
   private final MessageTaskFactory messageTaskFactory;
 
   public KafkaMetaStoreEventListener(Configuration config) {
-    this(config, new SerializableListenerEventFactory(config), new JavaSerializationMetaStoreEventSerDe(),
+    this(config, new SerializableListenerEventFactory(config), serDeForClassName(stringProperty(config, SERDE_CLASS)),
         new KafkaMessageTaskFactory(config), Executors.newSingleThreadExecutor());
   }
 

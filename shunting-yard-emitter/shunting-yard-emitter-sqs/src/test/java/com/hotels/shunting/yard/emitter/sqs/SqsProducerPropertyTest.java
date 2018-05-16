@@ -13,27 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.shunting.yard.receiver.sqs;
+package com.hotels.shunting.yard.emitter.sqs;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import static com.hotels.shunting.yard.receiver.sqs.SqsProperty.AWS_ACCESS_KEY;
-import static com.hotels.shunting.yard.receiver.sqs.SqsProperty.AWS_SECRET_KEY;
-import static com.hotels.shunting.yard.receiver.sqs.SqsProperty.QUEUE;
-import static com.hotels.shunting.yard.receiver.sqs.SqsProperty.REGION;
-import static com.hotels.shunting.yard.receiver.sqs.SqsProperty.WAIT_TIME_SECONDS;
+import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.AWS_ACCESS_KEY;
+import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.AWS_SECRET_KEY;
+import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.GROUP_ID;
+import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.QUEUE;
+import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.REGION;
+import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.SERDE_CLASS;
 
 import org.junit.Test;
 
-public class SqsPropertyTest {
+import com.hotels.shunting.yard.common.io.jackson.JsonMetaStoreEventSerDe;
+
+public class SqsProducerPropertyTest {
 
   private static String prefixedKey(String key) {
-    return "com.hotels.shunting.yard.event.receiver.sqs." + key;
+    return "com.hotels.shunting.yard.event.emitter.sqs." + key;
   }
 
   @Test
   public void numberOfProperties() {
-    assertThat(SqsProperty.values().length).isEqualTo(5);
+    assertThat(SqsProducerProperty.values().length).isEqualTo(6);
   }
 
   @Test
@@ -51,10 +54,10 @@ public class SqsPropertyTest {
   }
 
   @Test
-  public void waitTimeSeconds() {
-    assertThat(WAIT_TIME_SECONDS.unPrefixedKey()).isEqualTo("wait.time.seconds");
-    assertThat(WAIT_TIME_SECONDS.key()).isEqualTo(prefixedKey("wait.time.seconds"));
-    assertThat(WAIT_TIME_SECONDS.defaultValue()).isEqualTo(10);
+  public void groupId() {
+    assertThat(GROUP_ID.unPrefixedKey()).isEqualTo("group.id");
+    assertThat(GROUP_ID.key()).isEqualTo(prefixedKey("group.id"));
+    assertThat(GROUP_ID.defaultValue()).isNull();
   }
 
   @Test
@@ -69,6 +72,13 @@ public class SqsPropertyTest {
     assertThat(AWS_SECRET_KEY.unPrefixedKey()).isEqualTo("aws.secret.key");
     assertThat(AWS_SECRET_KEY.key()).isEqualTo(prefixedKey("aws.secret.key"));
     assertThat(AWS_SECRET_KEY.defaultValue()).isNull();
+  }
+
+  @Test
+  public void serdeClass() {
+    assertThat(SERDE_CLASS.unPrefixedKey()).isEqualTo("serde.class");
+    assertThat(SERDE_CLASS.key()).isEqualTo(prefixedKey("serde.class"));
+    assertThat(SERDE_CLASS.defaultValue()).isEqualTo(JsonMetaStoreEventSerDe.class.getName());
   }
 
 }

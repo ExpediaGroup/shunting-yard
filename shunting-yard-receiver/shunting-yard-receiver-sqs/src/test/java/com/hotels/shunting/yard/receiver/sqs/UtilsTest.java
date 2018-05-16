@@ -17,8 +17,8 @@ package com.hotels.shunting.yard.receiver.sqs;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import static com.hotels.shunting.yard.receiver.sqs.SqsProperty.QUEUE;
-import static com.hotels.shunting.yard.receiver.sqs.SqsProperty.REGION;
+import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.QUEUE;
+import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.REGION;
 import static com.hotels.shunting.yard.receiver.sqs.Utils.queue;
 import static com.hotels.shunting.yard.receiver.sqs.Utils.region;
 

@@ -21,8 +21,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static com.hotels.shunting.yard.receiver.sqs.SqsProperty.QUEUE;
-import static com.hotels.shunting.yard.receiver.sqs.SqsProperty.WAIT_TIME_SECONDS;
+import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.QUEUE;
+import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.WAIT_TIME_SECONDS;
 
 import java.util.Iterator;
 import java.util.List;

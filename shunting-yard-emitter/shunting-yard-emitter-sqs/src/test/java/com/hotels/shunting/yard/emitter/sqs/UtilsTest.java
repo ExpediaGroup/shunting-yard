@@ -17,9 +17,9 @@ package com.hotels.shunting.yard.emitter.sqs;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import static com.hotels.shunting.yard.emitter.sqs.SqsProperty.GROUP_ID;
-import static com.hotels.shunting.yard.emitter.sqs.SqsProperty.QUEUE;
-import static com.hotels.shunting.yard.emitter.sqs.SqsProperty.REGION;
+import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.GROUP_ID;
+import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.QUEUE;
+import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.REGION;
 import static com.hotels.shunting.yard.emitter.sqs.Utils.groupId;
 import static com.hotels.shunting.yard.emitter.sqs.Utils.queue;
 import static com.hotels.shunting.yard.emitter.sqs.Utils.region;

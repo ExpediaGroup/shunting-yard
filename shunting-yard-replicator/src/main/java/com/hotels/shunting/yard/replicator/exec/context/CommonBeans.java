@@ -42,7 +42,7 @@ import com.expedia.hdw.common.hive.metastore.CloseableMetaStoreClient;
 import com.expedia.hdw.common.hive.metastore.MetaStoreClientFactory;
 
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
-import com.hotels.shunting.yard.common.io.jackson.JsonSerializationMetaStoreEventSerDe;
+import com.hotels.shunting.yard.common.io.jackson.JsonMetaStoreEventSerDe;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
 import com.hotels.shunting.yard.common.receiver.ShuntingYardMetaStoreEventListener;
 import com.hotels.shunting.yard.receiver.kinesis.messaging.KinesisMessageReader;
@@ -118,7 +118,7 @@ public class CommonBeans {
 
   @Bean
   MetaStoreEventSerDe metaStoreEventSerDe() {
-    return new JsonSerializationMetaStoreEventSerDe();
+    return new JsonMetaStoreEventSerDe();
   }
 
   @Bean
