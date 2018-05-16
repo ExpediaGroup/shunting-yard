@@ -52,7 +52,7 @@ public class MetaStoreEventReplication {
           .properties("spring.config.location:${config:null}")
           .properties("instance.home:${user.home}")
           .properties("instance.name:${replica-catalog.name}")
-          .properties("instance.workspace:${instance.home}/.circus-train-event-driven")
+          .properties("instance.workspace:${instance.home}/.shunting-yard")
           .registerShutdownHook(true)
           .listeners(new ConfigFileValidationApplicationListener())
           .build()

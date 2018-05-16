@@ -15,16 +15,16 @@
  */
 package com.hotels.shunting.yard.emitter.kinesis.messaging;
 
-import static com.hotels.shunting.yard.common.Utils.checkNotNull;
+import static com.hotels.shunting.yard.common.Preconditions.checkNotNull;
+import static com.hotels.shunting.yard.common.PropertyUtils.intProperty;
+import static com.hotels.shunting.yard.common.PropertyUtils.longProperty;
+import static com.hotels.shunting.yard.common.PropertyUtils.stringProperty;
 import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.MAX_CONNECTIONS;
 import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.RECORD_MAX_BUFFERED_TIME;
 import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.REGION;
 import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.REQUEST_TIMEOUT;
 import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.RETRIES;
 import static com.hotels.shunting.yard.emitter.kinesis.KinesisProducerProperty.STREAM;
-import static com.hotels.shunting.yard.emitter.kinesis.Utils.intProperty;
-import static com.hotels.shunting.yard.emitter.kinesis.Utils.longProperty;
-import static com.hotels.shunting.yard.emitter.kinesis.Utils.stringProperty;
 
 import org.apache.hadoop.conf.Configuration;
 

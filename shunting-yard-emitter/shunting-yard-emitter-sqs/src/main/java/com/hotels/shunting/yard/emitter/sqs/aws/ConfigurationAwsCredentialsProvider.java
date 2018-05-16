@@ -15,10 +15,10 @@
  */
 package com.hotels.shunting.yard.emitter.sqs.aws;
 
-import static com.hotels.shunting.yard.common.Utils.checkNotNull;
+import static com.hotels.shunting.yard.common.Preconditions.checkNotNull;
+import static com.hotels.shunting.yard.common.PropertyUtils.stringProperty;
 import static com.hotels.shunting.yard.emitter.sqs.SqsProperty.AWS_ACCESS_KEY;
 import static com.hotels.shunting.yard.emitter.sqs.SqsProperty.AWS_SECRET_KEY;
-import static com.hotels.shunting.yard.emitter.sqs.Utils.stringProperty;
 
 import java.io.IOException;
 

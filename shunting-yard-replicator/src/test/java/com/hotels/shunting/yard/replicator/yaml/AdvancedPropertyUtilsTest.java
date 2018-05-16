@@ -15,9 +15,7 @@
  */
 package com.hotels.shunting.yard.replicator.yaml;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.beans.Transient;
 import java.util.Iterator;
@@ -27,8 +25,6 @@ import org.junit.Test;
 import org.yaml.snakeyaml.error.YAMLException;
 import org.yaml.snakeyaml.introspector.BeanAccess;
 import org.yaml.snakeyaml.introspector.Property;
-
-import com.hotels.shunting.yard.replicator.yaml.AdvancedPropertyUtils;
 
 public class AdvancedPropertyUtilsTest {
 
@@ -61,15 +57,15 @@ public class AdvancedPropertyUtilsTest {
   @Test
   public void regularPropertyName() throws Exception {
     Property property = properyUtils.getProperty(TestBean.class, "longPropertyName");
-    assertThat(property, is(notNullValue()));
-    assertThat(property.getName(), is("longPropertyName"));
+    assertThat(property).isNotNull();
+    assertThat(property.getName()).isEqualTo("longPropertyName");
   }
 
   @Test
   public void lowerHyphenPropertyName() throws Exception {
     Property property = properyUtils.getProperty(TestBean.class, "long-property-name");
-    assertThat(property, is(notNullValue()));
-    assertThat(property.getName(), is("longPropertyName"));
+    assertThat(property).isNotNull();
+    assertThat(property.getName()).isEqualTo("longPropertyName");
   }
 
   @Test(expected = YAMLException.class)
@@ -80,24 +76,24 @@ public class AdvancedPropertyUtilsTest {
   @Test
   public void createPropertySetWithDefaultBeanAccess() throws Exception {
     Set<Property> properties = properyUtils.createPropertySet(TestBean.class, BeanAccess.DEFAULT);
-    assertThat(properties.size(), is(1));
-    assertThat(properties.iterator().next().getName(), is("longPropertyName"));
+    assertThat(properties.size()).isEqualTo(1);
+    assertThat(properties.iterator().next().getName()).isEqualTo("longPropertyName");
   }
 
   @Test
   public void createPropertySetWithFieldBeanAccess() throws Exception {
     Set<Property> properties = properyUtils.createPropertySet(TestBean.class, BeanAccess.FIELD);
-    assertThat(properties.size(), is(2));
+    assertThat(properties.size()).isEqualTo(2);
     Iterator<Property> iterator = properties.iterator();
-    assertThat(iterator.next().getName(), is("longPropertyName"));
-    assertThat(iterator.next().getName(), is("transientProperty"));
+    assertThat(iterator.next().getName()).isEqualTo("longPropertyName");
+    assertThat(iterator.next().getName()).isEqualTo("transientProperty");
   }
 
   @Test
   public void createPropertySetWithPropertyBeanAccess() throws Exception {
     Set<Property> properties = properyUtils.createPropertySet(TestBean.class, BeanAccess.PROPERTY);
-    assertThat(properties.size(), is(1));
-    assertThat(properties.iterator().next().getName(), is("longPropertyName"));
+    assertThat(properties.size()).isEqualTo(1);
+    assertThat(properties.iterator().next().getName()).isEqualTo("longPropertyName");
   }
 
 }

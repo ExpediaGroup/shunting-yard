@@ -16,9 +16,10 @@
 package com.hotels.shunting.yard.replicator.exec.external;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -64,7 +65,7 @@ public class CircusTrainConfig {
   public static class Builder {
     private final SourceCatalog sourceCatalog = new SourceCatalog();
     private final ReplicaCatalog replicaCatalog = new ReplicaCatalog();
-    private final Map<String, String> copierOptions = new HashMap<>();
+    private final Map<String, String> copierOptions = new LinkedHashMap<>();
     private final List<TableReplication> tableReplications = new ArrayList<>();
 
     private Builder() {
@@ -137,10 +138,13 @@ public class CircusTrainConfig {
     }
 
     public CircusTrainConfig build() {
-      // TODO validate
+      checkState(sourceCatalog.getName() != null, "sourceName is not set");
+      checkState(sourceCatalog.getHiveMetastoreUris() != null, "sourceMetaStoreUri is not set");
+      checkState(replicaCatalog.getName() != null, "replicaName is not set");
+      checkState(replicaCatalog.getHiveMetastoreUris() != null, "replicaMetaStoreUri is not set");
+      checkState(tableReplications.size() > 0, "tableReplications is not set");
       return new CircusTrainConfig(this);
     }
-
   }
 
   public static Builder builder() {

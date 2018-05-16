@@ -61,11 +61,11 @@ public class SerializableListenerEventFactory {
   }
 
   public SerializableDropPartitionEvent create(DropPartitionEvent event) {
-    return new SerializableDropPartitionEvent(event);
+    return new SerializableDropPartitionEvent(addParams(event));
   }
 
   public SerializableInsertEvent create(InsertEvent event) {
-    return new SerializableInsertEvent(event);
+    return new SerializableInsertEvent(addParams(event));
   }
 
 }

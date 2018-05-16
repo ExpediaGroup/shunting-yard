@@ -19,7 +19,7 @@ import com.amazonaws.services.kinesis.model.Record;
 
 public interface KinesisRecordBuffer {
 
-  void put(Record record);
+  boolean put(Record record);
 
   Record get();
 

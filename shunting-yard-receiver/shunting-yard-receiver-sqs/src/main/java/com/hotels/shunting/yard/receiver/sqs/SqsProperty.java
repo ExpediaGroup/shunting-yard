@@ -17,7 +17,9 @@ package com.hotels.shunting.yard.receiver.sqs;
 
 import com.amazonaws.regions.Regions;
 
-public enum SqsProperty {
+import com.hotels.shunting.yard.common.Property;
+
+public enum SqsProperty implements Property {
   QUEUE("queue", null),
   REGION("region", Regions.US_WEST_2.getName()),
   WAIT_TIME_SECONDS("wait.time.seconds", 10),
@@ -34,14 +36,17 @@ public enum SqsProperty {
     this.defaultValue = defaultValue;
   }
 
+  @Override
   public String key() {
     return new StringBuffer(PROPERTY_PREFIX).append(unPrefixedKey).toString();
   }
 
+  @Override
   public String unPrefixedKey() {
     return unPrefixedKey;
   }
 
+  @Override
   public Object defaultValue() {
     return defaultValue;
   }

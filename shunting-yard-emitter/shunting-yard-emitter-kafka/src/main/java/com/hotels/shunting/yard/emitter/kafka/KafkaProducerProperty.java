@@ -15,7 +15,9 @@
  */
 package com.hotels.shunting.yard.emitter.kafka;
 
-public enum KafkaProducerProperty {
+import com.hotels.shunting.yard.common.Property;
+
+public enum KafkaProducerProperty implements Property {
   TOPIC("topic", null),
   BOOTSTRAP_SERVERS("bootstrap.servers", null),
   CLIENT_ID("client.id", "CircusTrainEventDrivenEmitter"),
@@ -36,14 +38,17 @@ public enum KafkaProducerProperty {
     this.defaultValue = defaultValue;
   }
 
+  @Override
   public String key() {
     return new StringBuffer(PROPERTY_PREFIX).append(unPrefixedKey).toString();
   }
 
+  @Override
   public String unPrefixedKey() {
     return unPrefixedKey;
   }
 
+  @Override
   public Object defaultValue() {
     return defaultValue;
   }

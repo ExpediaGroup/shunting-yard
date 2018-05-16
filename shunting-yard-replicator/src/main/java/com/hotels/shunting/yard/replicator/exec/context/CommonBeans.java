@@ -41,7 +41,7 @@ import com.expedia.hdw.common.hive.conf.HiveConfFactory;
 import com.expedia.hdw.common.hive.metastore.CloseableMetaStoreClient;
 import com.expedia.hdw.common.hive.metastore.MetaStoreClientFactory;
 
-import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
+import com.hotels.shunting.yard.common.io.JavaSerializationMetaStoreEventSerDe;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
 import com.hotels.shunting.yard.common.receiver.ShuntingYardMetaStoreEventListener;
 import com.hotels.shunting.yard.receiver.kinesis.messaging.KinesisMessageReader;
@@ -62,7 +62,7 @@ public class CommonBeans {
   Configuration baseConfiguration(@Value("${instance.workspace}") String workspace) {
     checkNotNull(workspace, "instance.workspace is required");
     Configuration baseConf = new Configuration();
-    baseConf.set(WORKSPACE.varname, workspace);
+    baseConf.set(WORKSPACE.key(), workspace);
     return baseConf;
   }
 
@@ -117,8 +117,8 @@ public class CommonBeans {
 
   @Bean
   MessageReader messageReader(HiveConf replicaHiveConf) {
-    // return new SqsMessageReader(replicaHiveConf, new MetaStoreEventSerDe());
-    return new KinesisMessageReader(replicaHiveConf, new MetaStoreEventSerDe());
+    // return new SqsMessageReader(replicaHiveConf, new JavaSerializationMetaStoreEventSerDe());
+    return new KinesisMessageReader(replicaHiveConf, new JavaSerializationMetaStoreEventSerDe());
   }
 
 }

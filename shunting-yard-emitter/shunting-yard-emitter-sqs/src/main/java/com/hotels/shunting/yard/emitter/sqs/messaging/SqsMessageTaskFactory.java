@@ -15,10 +15,10 @@
  */
 package com.hotels.shunting.yard.emitter.sqs.messaging;
 
-import static com.hotels.shunting.yard.emitter.sqs.Utils.credentials;
-import static com.hotels.shunting.yard.emitter.sqs.Utils.groupId;
-import static com.hotels.shunting.yard.emitter.sqs.Utils.queue;
-import static com.hotels.shunting.yard.emitter.sqs.Utils.region;
+import static com.hotels.shunting.yard.emitter.sqs.SqsEmitterUtils.credentials;
+import static com.hotels.shunting.yard.emitter.sqs.SqsEmitterUtils.groupId;
+import static com.hotels.shunting.yard.emitter.sqs.SqsEmitterUtils.queue;
+import static com.hotels.shunting.yard.emitter.sqs.SqsEmitterUtils.region;
 
 import org.apache.hadoop.conf.Configuration;
 

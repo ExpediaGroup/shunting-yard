@@ -16,7 +16,7 @@
 package com.hotels.shunting.yard.replicator.exec.receiver;
 
 import static com.hotels.bdp.circustrain.api.CircusTrainTableParameter.REPLICATION_EVENT;
-import static com.hotels.shunting.yard.common.receiver.thrift.Utils.toObjectPairs;
+import static com.hotels.shunting.yard.common.receiver.thrift.ThriftListenerUtils.toObjectPairs;
 
 import java.util.Arrays;
 
@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import com.expedia.hdw.common.hive.metastore.CloseableMetaStoreClient;
 
+import com.hotels.shunting.yard.common.ShuntingYardException;
 import com.hotels.shunting.yard.common.event.SerializableAddPartitionEvent;
 import com.hotels.shunting.yard.common.event.SerializableAlterPartitionEvent;
 import com.hotels.shunting.yard.common.event.SerializableAlterTableEvent;
@@ -74,8 +75,8 @@ public class ReplicationCircusTrainMetaStoreEventListener implements ShuntingYar
     } catch (NoSuchObjectException e) {
       return true;
     } catch (TException e) {
-      throw new RuntimeException(String.format("Cannot check whether table %s.%s can be replicated", dbName, tableName),
-          e);
+      throw new ShuntingYardException(
+          String.format("Cannot check whether table %s.%s can be replicated", dbName, tableName), e);
     }
   }
 
@@ -83,6 +84,7 @@ public class ReplicationCircusTrainMetaStoreEventListener implements ShuntingYar
   public void onCreateTable(SerializableCreateTableEvent event) {
     if (!canReplicate(event.getTable())) {
       LOG.info("Skipping create table: {}.{}", event.getTable().getDbName(), event.getTable().getTableName());
+      return;
     }
 
     Context context = contextFactory.createContext(event, event.getTable());
@@ -93,13 +95,14 @@ public class ReplicationCircusTrainMetaStoreEventListener implements ShuntingYar
   public void onDropTable(SerializableDropTableEvent event) {
     if (!canReplicate(event.getTable())) {
       LOG.info("Skipping drop table: {}.{}", event.getTable().getDbName(), event.getTable().getTableName());
+      return;
     }
 
     try {
       metaStoreClient.dropTable(event.getTable().getDbName(), event.getTable().getTableName(), event.getDeleteData(),
           ifExists());
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new ShuntingYardException("Cannot drop table", e);
     }
   }
 
@@ -107,6 +110,7 @@ public class ReplicationCircusTrainMetaStoreEventListener implements ShuntingYar
   public void onAlterTable(SerializableAlterTableEvent event) {
     if (!canReplicate(event.getOldTable())) {
       LOG.info("Skipping alter table {}.{}", event.getOldTable().getDbName(), event.getOldTable().getTableName());
+      return;
     }
 
     Context context = contextFactory.createContext(event, event.getNewTable());
@@ -120,7 +124,7 @@ public class ReplicationCircusTrainMetaStoreEventListener implements ShuntingYar
       metaStoreClient.alter_table_with_environmentContext(newReplicaTable.getDbName(), newReplicaTable.getTableName(),
           newReplicaTable, event.getEnvironmentContext());
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new ShuntingYardException("Cannot alter table", e);
     }
   }
 
@@ -128,6 +132,7 @@ public class ReplicationCircusTrainMetaStoreEventListener implements ShuntingYar
   public void onAddPartition(SerializableAddPartitionEvent event) {
     if (!canReplicate(event.getTable())) {
       LOG.info("Skipping add partition on table: {}.{}", event.getTable().getDbName(), event.getTable().getTableName());
+      return;
     }
 
     Context context = contextFactory.createContext(event, event.getTable(), event.getPartitions());
@@ -139,13 +144,14 @@ public class ReplicationCircusTrainMetaStoreEventListener implements ShuntingYar
     if (!canReplicate(event.getTable())) {
       LOG.info("Skipping drop partition on table: {}.{}", event.getTable().getDbName(),
           event.getTable().getTableName());
+      return;
     }
 
     try {
       metaStoreClient.dropPartitions(event.getTable().getDbName(), event.getTable().getTableName(),
           toObjectPairs(event.getTable(), event.getPartitions()), event.getDeleteData(), ifExists(), false);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new ShuntingYardException("Cannot drop partitions", e);
     }
   }
 
@@ -154,6 +160,7 @@ public class ReplicationCircusTrainMetaStoreEventListener implements ShuntingYar
     if (!canReplicate(event.getTable())) {
       LOG.info("Skipping alter partition on table: {}.{}", event.getTable().getDbName(),
           event.getTable().getTableName());
+      return;
     }
 
     Context context = contextFactory.createContext(event, event.getTable(), Arrays.asList(event.getNewPartition()));

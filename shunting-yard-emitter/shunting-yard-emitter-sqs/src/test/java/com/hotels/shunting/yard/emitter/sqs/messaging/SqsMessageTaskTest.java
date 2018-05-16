@@ -15,8 +15,7 @@
  */
 package com.hotels.shunting.yard.emitter.sqs.messaging;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -32,10 +31,10 @@ import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.util.Base64;
 
 import com.hotels.shunting.yard.common.messaging.Message;
-import com.hotels.shunting.yard.emitter.sqs.messaging.SqsMessageTask;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SqsMessageTaskTest {
+
   private static final String TOPIC_URL = "topic";
   private static final String GROUP_ID = "group";
   private static final byte[] PAYLOAD = "payload".getBytes();
@@ -57,8 +56,8 @@ public class SqsMessageTaskTest {
 
     sqsTask.run();
     verify(producer).sendMessage(captor.capture());
-    assertThat(captor.getValue().getQueueUrl(), is(TOPIC_URL));
-    assertThat(captor.getValue().getMessageBody(), is(new String(Base64.encode(PAYLOAD))));
+    assertThat(captor.getValue().getQueueUrl()).isEqualTo(TOPIC_URL);
+    assertThat(captor.getValue().getMessageBody()).isEqualTo(new String(Base64.encode(PAYLOAD)));
   }
 
 }

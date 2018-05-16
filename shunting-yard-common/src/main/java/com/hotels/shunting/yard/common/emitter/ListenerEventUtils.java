@@ -16,7 +16,6 @@
 package com.hotels.shunting.yard.common.emitter;
 
 import org.apache.hadoop.hive.common.StatsSetupConst;
-import org.apache.hadoop.hive.metastore.HiveAlterHandler;
 import org.apache.hadoop.hive.metastore.events.ListenerEvent;
 
 public final class ListenerEventUtils {
@@ -24,7 +23,7 @@ public final class ListenerEventUtils {
   private ListenerEventUtils() {}
 
   /**
-   * This code is borrowed from {@link HiveAlterHandler}.
+   * This code is borrowed from {@link org.apache.hadoop.hive.metastore.HiveAlterHandler}.
    *
    * @param event Listener event
    * @return {@code true} if the event refers to a CASCADE command, {@code false} otherwise.

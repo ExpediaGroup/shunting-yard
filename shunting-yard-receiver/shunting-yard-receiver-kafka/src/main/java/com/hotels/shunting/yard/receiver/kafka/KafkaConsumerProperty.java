@@ -15,14 +15,19 @@
  */
 package com.hotels.shunting.yard.receiver.kafka;
 
-public enum KafkaConsumerProperty {
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
+
+import com.hotels.shunting.yard.common.Property;
+
+public enum KafkaConsumerProperty implements Property {
   TOPIC("topic", null),
   BOOTSTRAP_SERVERS("bootstrap.servers", null),
   GROUP_ID("group.id", null),
   CLIENT_ID("client.id", "CircusTrainEventDrivenReceiver"),
   SESSION_TIMEOUT_MS("session.timeout.ms", 30000),
-  CONNECTIONS_MAX_IDLE_MS("connections.max.idle.ms", 540000L),
-  RECONNECT_BACKOFF_MAX_MS("reconnect.backoff.max.ms", 1000L),
+  CONNECTIONS_MAX_IDLE_MS("connections.max.idle.ms", MINUTES.toMillis(9)),
+  RECONNECT_BACKOFF_MAX_MS("reconnect.backoff.max.ms", SECONDS.toMillis(1)),
   RECONNECT_BACKOFF_MS("reconnect.backoff.ms", 50L),
   RETRY_BACKOFF_MS("retry.backoff.ms", 100L),
   MAX_POLL_INTERVAL_MS("max.poll.interval.ms", 300000),
@@ -42,14 +47,17 @@ public enum KafkaConsumerProperty {
     this.defaultValue = defaultValue;
   }
 
+  @Override
   public String key() {
     return new StringBuffer(PROPERTY_PREFIX).append(unPrefixedKey).toString();
   }
 
+  @Override
   public String unPrefixedKey() {
     return unPrefixedKey;
   }
 
+  @Override
   public Object defaultValue() {
     return defaultValue;
   }

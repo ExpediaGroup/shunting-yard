@@ -15,16 +15,15 @@
  */
 package com.hotels.shunting.yard.receiver.kafka.messaging;
 
-import static com.hotels.shunting.yard.common.Utils.checkNotNull;
+import static com.hotels.shunting.yard.common.Preconditions.checkNotNull;
+import static com.hotels.shunting.yard.common.PropertyUtils.stringProperty;
 import static com.hotels.shunting.yard.receiver.kafka.KafkaConsumerProperty.TOPIC;
-import static com.hotels.shunting.yard.receiver.kafka.Utils.stringProperty;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hive.metastore.api.MetaException;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 
@@ -32,6 +31,7 @@ import com.google.common.annotations.VisibleForTesting;
 
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
+import com.hotels.shunting.yard.common.io.SerDeException;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
 
 public class KafkaMessageReader implements MessageReader {
@@ -86,11 +86,12 @@ public class KafkaMessageReader implements MessageReader {
     }
   }
 
-  private SerializableListenerEvent eventPayLoad(ConsumerRecord<Long, byte[]> record) {
+  private SerializableListenerEvent eventPayLoad(ConsumerRecord<Long, byte[]> message) {
     try {
-      return eventSerDe.unmarshall(record.value());
-    } catch (MetaException e) {
-      throw new RuntimeException("Unable to unmarshall event", e);
+      return eventSerDe.unmarshall(message.value());
+    } catch (Exception e) {
+      // TODO this may be removed when we get rid of checked exceptions in the SerDe contract
+      throw new SerDeException("Unable to unmarshall event", e);
     }
   }
 

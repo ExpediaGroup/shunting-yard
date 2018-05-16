@@ -20,11 +20,13 @@ import java.util.List;
 
 import org.springframework.validation.ObjectError;
 
-class ConfigFileValidationException extends RuntimeException {
+import com.hotels.shunting.yard.common.ShuntingYardException;
+
+class ConfigFileValidationException extends ShuntingYardException {
 
   private static final long serialVersionUID = 1L;
 
-  private List<ObjectError> errors = new ArrayList<>();
+  private final List<ObjectError> errors = new ArrayList<>();
 
   ConfigFileValidationException(List<String> errors) {
     super("Error reading config file(s).");

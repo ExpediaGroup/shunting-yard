@@ -15,7 +15,7 @@
  */
 package com.hotels.shunting.yard.common.receiver.thrift;
 
-import static com.hotels.shunting.yard.common.receiver.thrift.Utils.toObjectPairs;
+import static com.hotels.shunting.yard.common.receiver.thrift.ThriftListenerUtils.toObjectPairs;
 
 import java.util.List;
 import java.util.Map;
@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import com.expedia.hdw.common.hive.metastore.CloseableMetaStoreClient;
 
+import com.hotels.shunting.yard.common.ShuntingYardException;
 import com.hotels.shunting.yard.common.event.SerializableAddPartitionEvent;
 import com.hotels.shunting.yard.common.event.SerializableAlterPartitionEvent;
 import com.hotels.shunting.yard.common.event.SerializableAlterTableEvent;
@@ -98,8 +99,8 @@ public class ThriftShuntingYardMetaStoreEventListener implements ShuntingYardMet
     } catch (NoSuchObjectException e) {
       return true;
     } catch (TException e) {
-      throw new RuntimeException(String.format("Cannot check whether table %s.%s can be replicated", dbName, tableName),
-          e);
+      throw new ShuntingYardException(
+          String.format("Cannot check whether table %s.%s can be replicated", dbName, tableName), e);
     }
   }
 
@@ -107,12 +108,13 @@ public class ThriftShuntingYardMetaStoreEventListener implements ShuntingYardMet
   public void onCreateTable(SerializableCreateTableEvent event) {
     if (!canReplicate(event.getTable())) {
       LOG.info("Skipping create table: {}.{}", event.getTable().getDbName(), event.getTable().getTableName());
+      return;
     }
     tagReplication(event.getTable());
     try {
       metaStoreClient.createTable(event.getTable());
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new ShuntingYardException("Unable to create table", e);
     }
   }
 
@@ -120,13 +122,14 @@ public class ThriftShuntingYardMetaStoreEventListener implements ShuntingYardMet
   public void onDropTable(SerializableDropTableEvent event) {
     if (!canReplicate(event.getTable())) {
       LOG.info("Skipping drop table: {}.{}", event.getTable().getDbName(), event.getTable().getTableName());
+      return;
     }
     // Tagging is not needed here
     try {
       metaStoreClient.dropTable(event.getTable().getDbName(), event.getTable().getTableName(), event.getDeleteData(),
           ifExists());
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new ShuntingYardException("Unable to drop table", e);
     }
   }
 
@@ -134,13 +137,14 @@ public class ThriftShuntingYardMetaStoreEventListener implements ShuntingYardMet
   public void onAlterTable(SerializableAlterTableEvent event) {
     if (!canReplicate(event.getOldTable())) {
       LOG.info("Skipping alter table {}.{}", event.getOldTable().getDbName(), event.getOldTable().getTableName());
+      return;
     }
     tagReplication(event.getNewTable());
     try {
       metaStoreClient.alter_table_with_environmentContext(event.getOldTable().getDbName(),
           event.getOldTable().getTableName(), event.getNewTable(), event.getEnvironmentContext());
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new ShuntingYardException("Unable to alter table", e);
     }
   }
 
@@ -148,12 +152,13 @@ public class ThriftShuntingYardMetaStoreEventListener implements ShuntingYardMet
   public void onAddPartition(SerializableAddPartitionEvent event) {
     if (!canReplicate(event.getTable())) {
       LOG.info("Skipping add partition on table: {}.{}", event.getTable().getDbName(), event.getTable().getTableName());
+      return;
     }
     tagReplication(event.getPartitions());
     try {
       metaStoreClient.add_partitions(event.getPartitions());
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new ShuntingYardException("Unable to add partitions", e);
     }
   }
 
@@ -162,13 +167,14 @@ public class ThriftShuntingYardMetaStoreEventListener implements ShuntingYardMet
     if (!canReplicate(event.getTable())) {
       LOG.info("Skipping drop partition on table: {}.{}", event.getTable().getDbName(),
           event.getTable().getTableName());
+      return;
     }
     // Tagging is not needed here
     try {
       metaStoreClient.dropPartitions(event.getTable().getDbName(), event.getTable().getTableName(),
           toObjectPairs(event.getTable(), event.getPartitions()), event.getDeleteData(), ifExists(), false);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new ShuntingYardException("Unable to drop partitions", e);
     }
   }
 
@@ -177,13 +183,14 @@ public class ThriftShuntingYardMetaStoreEventListener implements ShuntingYardMet
     if (!canReplicate(event.getTable())) {
       LOG.info("Skipping alter partition on table: {}.{}", event.getTable().getDbName(),
           event.getTable().getTableName());
+      return;
     }
     tagReplication(event.getNewPartition());
     try {
       metaStoreClient.alter_partition(event.getTable().getDbName(), event.getTable().getTableName(),
           event.getNewPartition(), event.getEnvironmentContext());
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new ShuntingYardException("Unable to alter partition", e);
     }
   }
 
