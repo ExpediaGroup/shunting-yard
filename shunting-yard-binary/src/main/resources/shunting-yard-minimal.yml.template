@@ -2,6 +2,7 @@ replica-catalog:
   name: aws-data-warehouse
   hive-metastore-uris: thrift://domain-name.eu-west-1.compute.amazonaws.com:9083
 event-receiver:
+  ser-de-class: JSON
   configuration-properties:
     # Kafka properties
     com.hotels.bdp.circus.train.event.receiver.kafka.topic: topic
