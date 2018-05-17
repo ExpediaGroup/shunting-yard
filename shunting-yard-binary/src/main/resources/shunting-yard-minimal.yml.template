@@ -6,12 +6,12 @@ event-receiver:
   message-reader-class: com.hotels.shunting.yard.receiver.kafka.KafkaMessageReader
   configuration-properties:
     # Kafka properties
-    com.hotels.bdp.circus.train.event.receiver.kafka.topic: topic
-    com.hotels.bdp.circus.train.event.receiver.kafka.bootstrap.servers: localhost:9092
-    com.hotels.bdp.circus.train.event.receiver.kafka.group.id: groupid
+    com.hotels.shunting.yard.event.receiver.kafka.topic: topic
+    com.hotels.shunting.yard.event.receiver.kafka.bootstrap.servers: localhost:9092
+    com.hotels.shunting.yard.event.receiver.kafka.group.id: groupid
     # Kinesis properties
-    com.hotels.bdp.circus.train.event.receiver.kinesis.stream: stream
-    com.hotels.bdp.circus.train.event.receiver.kinesis.application.id: team_application-id
+    com.hotels.shunting.yard.event.receiver.kinesis.stream: stream
+    com.hotels.shunting.yard.event.receiver.kinesis.application.id: team_application-id
     # SQS properties
-    com.hotels.bdp.circus.train.event.common.aws.sqs.queue: https://sqs.us-west-2.amazonaws.com/1234567/queue.fifo
-    com.hotels.bdp.circus.train.event.common.aws.sqs.wait.time.seconds: 15
+    com.hotels.shunting.yard.event.receiver.sqs.queue: https://sqs.us-west-2.amazonaws.com/1234567/queue.fifo
+    com.hotels.shunting.yard.event.receiver.sqs.wait.time.seconds: 15
