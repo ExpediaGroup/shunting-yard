@@ -15,24 +15,25 @@
  */
 package com.hotels.shunting.yard.common.messaging;
 
-import java.io.Closeable;
-import java.util.Iterator;
+import java.io.IOException;
 
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 
-/**
- * A {@code MessageReader} is in charge of retrieving events from the messaging infrastructure.
- * <p>
- * Contractually, it must provide at least one public constructor which takes a
- * {@link org.apache.hadoop.conf.Configuration} and a {@link com.hotels.shunting.yard.common.io.MetaStoreEventSerDe},
- * this is:
- * <p>
- * <code>
- *   public MessageReader(Configuration conf, MetaStoreEventSerDe eventSerDe) {
- *     ...
- *   }
- * </code>
- */
-public interface MessageReader extends Iterator<SerializableListenerEvent>, Closeable {
+class NonCompliantMessageReader implements MessageReader {
+
+  public NonCompliantMessageReader(Object anyClass) {}
+
+  @Override
+  public boolean hasNext() {
+    return false;
+  }
+
+  @Override
+  public SerializableListenerEvent next() {
+    return null;
+  }
+
+  @Override
+  public void close() throws IOException {}
 
 }

@@ -19,14 +19,14 @@ import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 import com.hotels.shunting.yard.common.io.jackson.JsonMetaStoreEventSerDe;
 import com.hotels.shunting.yard.common.io.java.JavaMetaStoreEventSerDe;
 
-public enum SerDeClass {
+public enum SerDeType {
 
   JAVA(JavaMetaStoreEventSerDe.class),
   JSON(JsonMetaStoreEventSerDe.class);
 
   private final Class<? extends MetaStoreEventSerDe> serDeClass;
 
-  private SerDeClass(Class<? extends MetaStoreEventSerDe> serDeClass) {
+  private SerDeType(Class<? extends MetaStoreEventSerDe> serDeClass) {
     this.serDeClass = serDeClass;
   }
 
