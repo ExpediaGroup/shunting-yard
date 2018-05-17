@@ -80,7 +80,7 @@ public class SqsMessageReaderTest {
     when(messageIterator.next()).thenReturn(message).thenThrow(NoSuchElementException.class);
     when(message.getReceiptHandle()).thenReturn(RECEIPT_HANDLER);
     when(decoder.decode(message)).thenReturn(MESSAGE_CONTENT);
-    when(serDe.unmarshall(MESSAGE_CONTENT)).thenReturn(event);
+    when(serDe.unmarshal(MESSAGE_CONTENT)).thenReturn(event);
     conf.set(QUEUE.key(), QUEUE_NAME);
     conf.set(WAIT_TIME_SECONDS.key(), String.valueOf(WAIT_TIME));
     reader = new SqsMessageReader(conf, serDe, consumer, decoder);
@@ -112,7 +112,7 @@ public class SqsMessageReaderTest {
     assertThat(deleteMessageRequestCaptor.getValue().getQueueUrl()).isEqualTo(QUEUE_NAME);
     assertThat(deleteMessageRequestCaptor.getValue().getReceiptHandle()).isEqualTo(RECEIPT_HANDLER);
     verify(decoder).decode(message);
-    verify(serDe).unmarshall(MESSAGE_CONTENT);
+    verify(serDe).unmarshal(MESSAGE_CONTENT);
   }
 
   @Test
@@ -122,7 +122,7 @@ public class SqsMessageReaderTest {
     verify(consumer, times(2)).receiveMessage(any(ReceiveMessageRequest.class));
     verify(consumer).deleteMessage(any(DeleteMessageRequest.class));
     verify(decoder).decode(message);
-    verify(serDe).unmarshall(MESSAGE_CONTENT);
+    verify(serDe).unmarshal(MESSAGE_CONTENT);
   }
 
   @Test(expected = SerDeException.class)
@@ -133,7 +133,7 @@ public class SqsMessageReaderTest {
 
   @Test(expected = SerDeException.class)
   public void unmarhsallThrowsException() throws Exception {
-    when(serDe.unmarshall(any(byte[].class))).thenThrow(RuntimeException.class);
+    when(serDe.unmarshal(any(byte[].class))).thenThrow(RuntimeException.class);
     reader.next();
   }
 

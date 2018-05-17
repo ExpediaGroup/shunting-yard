@@ -32,7 +32,7 @@ public class JavaMetaStoreEventSerDe implements MetaStoreEventSerDe {
   private static final Logger log = LoggerFactory.getLogger(JavaMetaStoreEventSerDe.class);
 
   @Override
-  public byte[] marshall(SerializableListenerEvent listenerEvent) throws MetaException {
+  public byte[] marshal(SerializableListenerEvent listenerEvent) throws MetaException {
     ByteArrayOutputStream buffer = new ByteArrayOutputStream();
     try (ObjectOutputStream out = new ObjectOutputStream(buffer)) {
       out.writeObject(listenerEvent);
@@ -45,7 +45,7 @@ public class JavaMetaStoreEventSerDe implements MetaStoreEventSerDe {
   }
 
   @Override
-  public <T extends SerializableListenerEvent> T unmarshall(byte[] payload) throws MetaException {
+  public <T extends SerializableListenerEvent> T unmarshal(byte[] payload) throws MetaException {
     ByteArrayInputStream buffer = new ByteArrayInputStream(payload);
     try (ObjectInputStream in = new ObjectInputStream(buffer)) {
       return (T) in.readObject();

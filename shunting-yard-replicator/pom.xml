@@ -129,6 +129,7 @@
     </dependency>
 
     <!-- Circus Train -->
+    <!-- TODO we should only required the API artifact -->
     <dependency>
       <groupId>com.hotels</groupId>
       <artifactId>circus-train-api</artifactId>

@@ -17,13 +17,13 @@ package com.hotels.shunting.yard.receiver.kinesis;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-import com.amazonaws.regions.Regions;
+import static com.amazonaws.regions.Regions.US_WEST_2;
 
 import com.hotels.shunting.yard.common.Property;
 
 public enum KinesisConsumerProperty implements Property {
   STREAM("stream", null),
-  REGION("region", Regions.US_WEST_2.getName()),
+  REGION("region", US_WEST_2.getName()),
   APPLICTION_ID("application.id", null),
   WORKER_ID("worker.id", "CircusTrainEventDrivenReceiver"),
   MAX_RECORDS("max.records", 30),

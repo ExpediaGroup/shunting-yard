@@ -69,7 +69,7 @@ public class KafkaMessageReaderTest {
     messages = new ConsumerRecords<>(messageMap);
     when(consumer.poll(anyLong())).thenReturn(messages);
     when(message.value()).thenReturn(MESSAGE_CONTENT);
-    when(serDe.unmarshall(MESSAGE_CONTENT)).thenReturn(event);
+    when(serDe.unmarshal(MESSAGE_CONTENT)).thenReturn(event);
     conf.set(TOPIC.key(), TOPIC_NAME);
     reader = new KafkaMessageReader(conf, serDe, consumer);
   }
@@ -94,7 +94,7 @@ public class KafkaMessageReaderTest {
   public void nextReadsRecordsFromQueue() throws Exception {
     assertThat(reader.next()).isSameAs(event);
     verify(consumer).poll(anyLong());
-    verify(serDe).unmarshall(MESSAGE_CONTENT);
+    verify(serDe).unmarshal(MESSAGE_CONTENT);
   }
 
   @Test
@@ -102,12 +102,12 @@ public class KafkaMessageReaderTest {
     when(consumer.poll(anyLong())).thenReturn(ConsumerRecords.<Long, byte[]> empty()).thenReturn(messages);
     reader.next();
     verify(consumer, times(2)).poll(anyLong());
-    verify(serDe).unmarshall(MESSAGE_CONTENT);
+    verify(serDe).unmarshal(MESSAGE_CONTENT);
   }
 
   @Test(expected = SerDeException.class)
   public void unmarhsallThrowsException() throws Exception {
-    when(serDe.unmarshall(any(byte[].class))).thenThrow(RuntimeException.class);
+    when(serDe.unmarshal(any(byte[].class))).thenThrow(RuntimeException.class);
     reader.next();
   }
 

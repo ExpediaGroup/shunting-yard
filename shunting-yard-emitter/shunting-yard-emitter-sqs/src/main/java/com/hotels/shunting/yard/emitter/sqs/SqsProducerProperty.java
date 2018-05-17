@@ -15,14 +15,14 @@
  */
 package com.hotels.shunting.yard.emitter.sqs;
 
-import com.amazonaws.regions.Regions;
+import static com.amazonaws.regions.Regions.US_WEST_2;
 
 import com.hotels.shunting.yard.common.Property;
 import com.hotels.shunting.yard.common.io.jackson.JsonMetaStoreEventSerDe;
 
 public enum SqsProducerProperty implements Property {
   QUEUE("queue", null),
-  REGION("region", Regions.US_WEST_2.getName()),
+  REGION("region", US_WEST_2.getName()),
   GROUP_ID("group.id", null),
   AWS_ACCESS_KEY("aws.access.key", null),
   AWS_SECRET_KEY("aws.secret.key", null),

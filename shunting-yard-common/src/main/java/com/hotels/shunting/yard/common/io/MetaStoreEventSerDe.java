@@ -31,8 +31,8 @@ public interface MetaStoreEventSerDe {
     }
   }
 
-  byte[] marshall(SerializableListenerEvent listenerEvent) throws MetaException;
+  byte[] marshal(SerializableListenerEvent listenerEvent) throws MetaException;
 
-  <T extends SerializableListenerEvent> T unmarshall(byte[] payload) throws MetaException;
+  <T extends SerializableListenerEvent> T unmarshal(byte[] payload) throws MetaException;
 
 }

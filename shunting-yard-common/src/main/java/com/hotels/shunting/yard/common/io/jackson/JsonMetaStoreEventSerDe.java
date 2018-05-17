@@ -60,30 +60,41 @@ public class JsonMetaStoreEventSerDe implements MetaStoreEventSerDe {
   }
 
   @Override
-  public byte[] marshall(SerializableListenerEvent listenerEvent) throws MetaException {
+  public byte[] marshal(SerializableListenerEvent listenerEvent) throws MetaException {
     try {
+      log.debug("Marshalling event: {}", listenerEvent);
       ByteArrayOutputStream buffer = new ByteArrayOutputStream();
       mapper.writer().writeValue(buffer, listenerEvent);
-      return buffer.toByteArray();
+      byte[] bytes = buffer.toByteArray();
+      if (log.isDebugEnabled()) {
+        log.debug("Marshalled event is: {}", new String(bytes));
+      }
+      return bytes;
     } catch (IOException e) {
-      String message = "Unable to serialize event " + listenerEvent;
+      String message = "Unable to marhsal event " + listenerEvent;
       log.error(message, e);
       throw new MetaException(message);
     }
   }
 
   @Override
-  public <T extends SerializableListenerEvent> T unmarshall(byte[] payload) throws MetaException {
+  public <T extends SerializableListenerEvent> T unmarshal(byte[] payload) throws MetaException {
     try {
+      if (log.isDebugEnabled()) {
+        log.debug("Marshalled event is: {}", new String(payload));
+      }
       ByteArrayInputStream buffer = new ByteArrayInputStream(payload);
       // As we don't know the type in advanced we can only deserialize the event twice:
       // 1. Create a dummy object just to find out the type
       T genericEvent = mapper.readerFor(HeplerSerializableListenerEvent.class).readValue(buffer);
+      log.debug("Umarshall event of type: {}", genericEvent.getEventType());
       // 2. Deserialize the actual object
       buffer.reset();
-      return mapper.readerFor(genericEvent.getEventType().eventClass()).readValue(buffer);
+      T event = mapper.readerFor(genericEvent.getEventType().eventClass()).readValue(buffer);
+      log.debug("Umarshalled event is: {}", event);
+      return event;
     } catch (Exception e) {
-      String message = "Unable to deserialize event from payload";
+      String message = "Unable to unmarshal event from payload";
       log.error(message, e);
       throw new MetaException(message);
     }

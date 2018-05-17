@@ -135,7 +135,7 @@ public abstract class AbstractMetaStoreEventSerDeTest {
 
   @Test
   public void typical() throws Exception {
-    SerializableListenerEvent processedEvent = serDe().unmarshall(serDe().marshall(event));
+    SerializableListenerEvent processedEvent = serDe().unmarshal(serDe().marshal(event));
     assertThat(processedEvent).isEqualTo(event);
   }
 
