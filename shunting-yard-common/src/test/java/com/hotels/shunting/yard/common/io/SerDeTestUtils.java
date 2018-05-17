@@ -91,9 +91,10 @@ public class SerDeTestUtils {
     storageDescriptor.setSerdeInfo(new SerDeInfo());
     storageDescriptor.getSerdeInfo().setName(SERDE_INFO_NAME);
     storageDescriptor.getSerdeInfo().setSerializationLib(SERIALIZATION_LIB);
-    storageDescriptor.getSerdeInfo().setParameters(ImmutableMap.of("serde_foo", "serde_bar"));
+    storageDescriptor.getSerdeInfo().setParameters(ImmutableMap.of("serde_info_foo", "serde_info_bar"));
     storageDescriptor.setBucketCols(BUCKET_COLS);
     storageDescriptor.setSortCols(SORT_COLS);
+    storageDescriptor.setParameters(ImmutableMap.of("serde_foo", "serde_bar"));
     storageDescriptor.setSkewedInfo(new SkewedInfo());
     storageDescriptor.getSkewedInfo().setSkewedColNames(SKEWED_COL_NAMES);
     storageDescriptor.getSkewedInfo().setSkewedColValues(SKEWED_COL_VALUES);
