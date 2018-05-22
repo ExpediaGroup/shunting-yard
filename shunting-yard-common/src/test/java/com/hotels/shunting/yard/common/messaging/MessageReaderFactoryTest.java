@@ -53,9 +53,9 @@ public class MessageReaderFactoryTest {
   }
 
   @Test
-  public void boggus() {
+  public void bogus() {
     expectedException.expect(ShuntingYardException.class);
-    factory.create(BoggusMessageReader.class.getName(), conf, metaStoreEventSerDe);
+    factory.create(BogusMessageReader.class.getName(), conf, metaStoreEventSerDe);
   }
 
   @Test

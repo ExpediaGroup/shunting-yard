@@ -22,9 +22,9 @@ import org.apache.hadoop.conf.Configuration;
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 
-class BoggusMessageReader implements MessageReader {
+class BogusMessageReader implements MessageReader {
 
-  public BoggusMessageReader(Configuration conf, MetaStoreEventSerDe serDe) {
+  public BogusMessageReader(Configuration conf, MetaStoreEventSerDe serDe) {
     throw new RuntimeException("You cannot construct me");
   }
 
