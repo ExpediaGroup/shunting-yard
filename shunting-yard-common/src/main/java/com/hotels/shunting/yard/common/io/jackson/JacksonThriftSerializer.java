@@ -24,6 +24,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
+import com.hotels.shunting.yard.common.io.SerDeException;
+
 @SuppressWarnings("rawtypes")
 public class JacksonThriftSerializer<T extends TBase> extends StdSerializer<T> {
   private static final long serialVersionUID = 1L;
@@ -34,12 +36,11 @@ public class JacksonThriftSerializer<T extends TBase> extends StdSerializer<T> {
 
   @Override
   public void serialize(T t, JsonGenerator generator, SerializerProvider serializers) throws IOException {
-    TFieldIdEnum[] fields = fields(t);
-    if (fields != null) {
-      serialize(t, fields, generator, serializers);
-    } else {
-      generator.writeObject(t);
+    TFieldIdEnum[] fields = ThriftSerDeUtils.fields(t.getClass());
+    if (fields == null) {
+      throw new SerDeException("Unable to read TBase fields from class " + handledType().getName());
     }
+    serialize(t, fields, generator, serializers);
   }
 
   private void serialize(T t, TFieldIdEnum[] fields, JsonGenerator generator, SerializerProvider serializers)
@@ -51,15 +52,6 @@ public class JacksonThriftSerializer<T extends TBase> extends StdSerializer<T> {
       generator.writeObjectField(name, value);
     }
     generator.writeEndObject();
-  }
-
-  private <E extends TFieldIdEnum> E[] fields(T value) {
-    for (Class<?> clazz : value.getClass().getDeclaredClasses()) {
-      if (TFieldIdEnum.class.isAssignableFrom(clazz)) {
-        return (E[]) clazz.getEnumConstants();
-      }
-    }
-    return null;
   }
 
 }

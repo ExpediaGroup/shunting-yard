@@ -16,6 +16,7 @@
 package com.hotels.shunting.yard.common.io.jackson;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.instanceOf;
 
 import static com.hotels.shunting.yard.common.io.SerDeTestUtils.createEnvironmentContext;
 import static com.hotels.shunting.yard.common.io.SerDeTestUtils.createPartition;
@@ -27,12 +28,20 @@ import org.apache.hadoop.hive.metastore.api.Partition;
 import org.apache.hadoop.hive.metastore.api.Table;
 import org.apache.thrift.TBase;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
+import com.hotels.shunting.yard.common.io.SerDeException;
+
 public class JacksonThriftSerializerTest {
+
+  public @Rule ExpectedException expectedException = ExpectedException.none();
+
   private ObjectMapper mapper;
 
   @Before
@@ -42,6 +51,14 @@ public class JacksonThriftSerializerTest {
     testModule.addSerializer(serializer);
     mapper = new ObjectMapper();
     mapper.registerModule(testModule);
+  }
+
+  @Test
+  public void serializeInvalidTBase() throws Exception {
+    expectedException.expect(JsonMappingException.class);
+    expectedException.expectCause(instanceOf(SerDeException.class));
+    InvalidTBase invalidTBase = new InvalidTBase();
+    mapper.writerWithDefaultPrettyPrinter().writeValueAsString(invalidTBase);
   }
 
   @Test
