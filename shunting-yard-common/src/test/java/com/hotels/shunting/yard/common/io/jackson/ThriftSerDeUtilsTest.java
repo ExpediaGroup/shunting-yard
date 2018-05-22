@@ -23,20 +23,6 @@ import org.junit.Test;
 
 public class ThriftSerDeUtilsTest {
 
-  public enum Fields implements TFieldIdEnum {
-    IGNORE;
-
-    @Override
-    public short getThriftFieldId() {
-      return 0;
-    }
-
-    @Override
-    public String getFieldName() {
-      return null;
-    }
-  }
-
   @Test
   public void returnFields() {
     TFieldIdEnum[] fields = ThriftSerDeUtils.fields(Table.class);
