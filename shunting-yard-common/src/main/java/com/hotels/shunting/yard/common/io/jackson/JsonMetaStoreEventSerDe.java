@@ -52,7 +52,7 @@ public class JsonMetaStoreEventSerDe implements MetaStoreEventSerDe {
 
   private void registerSerializers(SimpleModule module) {
     module.addSerializer(new SkewedInfoSerializer());
-    module.addSerializer(new JacksonThriftSerializerAdapter<>(TBase.class));
+    module.addSerializer(new JacksonThriftSerializer<>(TBase.class));
   }
 
   private void registerDeserializers(SimpleModule module) {

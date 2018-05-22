@@ -25,10 +25,10 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 @SuppressWarnings("rawtypes")
-public class JacksonThriftSerializerAdapter<T extends TBase> extends StdSerializer<T> {
+public class JacksonThriftSerializer<T extends TBase> extends StdSerializer<T> {
   private static final long serialVersionUID = 1L;
 
-  protected JacksonThriftSerializerAdapter(Class<T> clazz) {
+  protected JacksonThriftSerializer(Class<T> clazz) {
     super(clazz);
   }
 

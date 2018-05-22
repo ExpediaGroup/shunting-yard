@@ -32,12 +32,12 @@ import org.junit.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-public class JacksonThriftSerializerAdapterTest {
+public class JacksonThriftSerializerTest {
   private ObjectMapper mapper;
 
   @Before
   public void init() {
-    JacksonThriftSerializerAdapter<TBase> serializer = new JacksonThriftSerializerAdapter<>(TBase.class);
+    JacksonThriftSerializer<TBase> serializer = new JacksonThriftSerializer<>(TBase.class);
     SimpleModule testModule = new SimpleModule("testModule");
     testModule.addSerializer(serializer);
     mapper = new ObjectMapper();
