@@ -36,6 +36,7 @@ import org.apache.hadoop.hive.metastore.events.DropPartitionEvent;
 import org.apache.hadoop.hive.metastore.events.DropTableEvent;
 import org.apache.hadoop.hive.metastore.events.InsertEvent;
 import org.apache.hadoop.hive.metastore.events.ListenerEvent;
+import org.apache.hive.common.util.HiveVersionInfo;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -77,7 +78,9 @@ public class SerializableListenerEventFactoryTest {
 
   private void assertCommon(SerializableListenerEvent event) {
     assertThat(event.getStatus()).isTrue();
-    assertThat(parameters).containsEntry(METASTOREURIS.varname, METASTORE_URIS);
+    // We don't use event.getParameters() here because is being deferred to parameters in the stub
+    assertThat(parameters).containsEntry(METASTOREURIS.varname, METASTORE_URIS).containsEntry(
+        CustomEventParameters.HIVE_VERSION.varname(), HiveVersionInfo.getVersion());
   }
 
   @Test

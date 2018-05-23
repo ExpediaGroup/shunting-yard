@@ -13,34 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.shunting.yard.common.io.jackson;
+package com.hotels.shunting.yard.common.event;
 
-import java.util.Map;
+public enum CustomEventParameters {
 
-public class DummyMapEntry<K, V> implements Map.Entry<K, V> {
+  HIVE_VERSION("hive.version");
 
-  private K key;
-  private V value;
+  private final String varname;
 
-  @Override
-  public K getKey() {
-    return key;
+  private CustomEventParameters(String varname) {
+    this.varname = varname;
   }
 
-  public void setKey(K key) {
-    this.key = key;
-  }
-
-  @Override
-  public V getValue() {
-    return value;
-  }
-
-  @Override
-  public V setValue(V value) {
-    V old = this.value;
-    this.value = value;
-    return old;
+  public String varname() {
+    return varname;
   }
 
 }
