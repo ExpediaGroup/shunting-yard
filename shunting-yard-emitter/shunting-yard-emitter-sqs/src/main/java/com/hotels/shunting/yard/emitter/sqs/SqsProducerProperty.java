@@ -13,25 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.shunting.yard.receiver.sqs;
+package com.hotels.shunting.yard.emitter.sqs;
 
-import com.amazonaws.regions.Regions;
+import static com.amazonaws.regions.Regions.US_WEST_2;
 
 import com.hotels.shunting.yard.common.Property;
+import com.hotels.shunting.yard.common.io.jackson.JsonMetaStoreEventSerDe;
 
-public enum SqsProperty implements Property {
+public enum SqsProducerProperty implements Property {
   QUEUE("queue", null),
-  REGION("region", Regions.US_WEST_2.getName()),
-  WAIT_TIME_SECONDS("wait.time.seconds", 10),
+  REGION("region", US_WEST_2.getName()),
+  GROUP_ID("group.id", null),
   AWS_ACCESS_KEY("aws.access.key", null),
-  AWS_SECRET_KEY("aws.secret.key", null);
+  AWS_SECRET_KEY("aws.secret.key", null),
+  SERDE_CLASS("serde.class", JsonMetaStoreEventSerDe.class.getName());
 
-  private static final String PROPERTY_PREFIX = "com.hotels.shunting.yard.event.receiver.sqs.";
+  private static final String PROPERTY_PREFIX = "com.hotels.shunting.yard.event.emitter.sqs.";
 
   private final String unPrefixedKey;
   private final Object defaultValue;
 
-  private SqsProperty(String unPrefixedKey, Object defaultValue) {
+  private SqsProducerProperty(String unPrefixedKey, Object defaultValue) {
     this.unPrefixedKey = unPrefixedKey;
     this.defaultValue = defaultValue;
   }

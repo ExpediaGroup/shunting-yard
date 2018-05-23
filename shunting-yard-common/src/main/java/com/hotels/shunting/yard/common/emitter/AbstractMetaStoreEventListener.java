@@ -75,7 +75,7 @@ public abstract class AbstractMetaStoreEventListener extends MetaStoreEventListe
         .builder()
         .database(event.getDatabaseName())
         .table(event.getTableName())
-        .payload(getMetaStoreEventSerDe().marshall(event))
+        .payload(getMetaStoreEventSerDe().marshal(event))
         .build();
   }
 

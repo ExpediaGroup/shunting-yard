@@ -35,25 +35,29 @@ public abstract class SerializableListenerEvent implements Serializable {
   /**
    * Status of the event in {@link ListenerEvent}
    */
-  private final boolean status;
+  private boolean status;
 
   /**
    * Unmodifiable parameters in {@link ListenerEvent}
    */
-  private final Map<String, String> parameters;
+  private Map<String, String> parameters;
 
   /**
    * Properties passed by the client, to be used in execution hooks. EnvironmentContext in {@link ListenerEvent}
    */
-  private final EnvironmentContext environmentContext;
+  private EnvironmentContext environmentContext;
 
-  SerializableListenerEvent(ListenerEvent event) {
+  protected SerializableListenerEvent() {}
+
+  protected SerializableListenerEvent(ListenerEvent event) {
     status = event.getStatus();
     parameters = event.getParameters();
     environmentContext = event.getEnvironmentContext();
   }
 
-  public abstract EventType getEventType();
+  public EventType getEventType() {
+    return EventType.forClass(this.getClass());
+  }
 
   public abstract String getDatabaseName();
 

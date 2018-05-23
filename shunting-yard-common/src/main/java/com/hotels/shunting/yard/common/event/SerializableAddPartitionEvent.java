@@ -27,8 +27,10 @@ import org.apache.hadoop.hive.metastore.events.AddPartitionEvent;
 public class SerializableAddPartitionEvent extends SerializableListenerEvent {
   private static final long serialVersionUID = 1L;
 
-  private final Table table;
-  private final List<Partition> partitions;
+  private Table table;
+  private List<Partition> partitions;
+
+  SerializableAddPartitionEvent() {}
 
   public SerializableAddPartitionEvent(AddPartitionEvent event) {
     super(event);
@@ -38,11 +40,6 @@ public class SerializableAddPartitionEvent extends SerializableListenerEvent {
     while (iterator.hasNext()) {
       partitions.add(iterator.next());
     }
-  }
-
-  @Override
-  public EventType getEventType() {
-    return EventType.ON_ADD_PARTITION;
   }
 
   @Override

@@ -27,9 +27,11 @@ import org.apache.hadoop.hive.metastore.events.DropPartitionEvent;
 public class SerializableDropPartitionEvent extends SerializableListenerEvent {
   private static final long serialVersionUID = 1L;
 
-  private final Table table;
-  private final List<Partition> partitions;
-  private final boolean deleteData;
+  private Table table;
+  private List<Partition> partitions;
+  private boolean deleteData;
+
+  SerializableDropPartitionEvent() {}
 
   public SerializableDropPartitionEvent(DropPartitionEvent event) {
     super(event);
@@ -40,11 +42,6 @@ public class SerializableDropPartitionEvent extends SerializableListenerEvent {
     while (iterator.hasNext()) {
       partitions.add(iterator.next());
     }
-  }
-
-  @Override
-  public EventType getEventType() {
-    return EventType.ON_DROP_PARTITION;
   }
 
   @Override

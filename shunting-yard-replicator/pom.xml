@@ -133,6 +133,7 @@
       <groupId>com.hotels</groupId>
       <artifactId>circus-train-api</artifactId>
     </dependency>
+    <!-- TODO we should be able to remove dependency on core at some point -->
     <dependency>
       <groupId>com.hotels</groupId>
       <artifactId>circus-train-core</artifactId>

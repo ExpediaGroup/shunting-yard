@@ -18,17 +18,19 @@ package com.hotels.shunting.yard.emitter.kinesis;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-import com.amazonaws.regions.Regions;
+import static com.amazonaws.regions.Regions.US_WEST_2;
 
 import com.hotels.shunting.yard.common.Property;
+import com.hotels.shunting.yard.common.io.jackson.JsonMetaStoreEventSerDe;
 
 public enum KinesisProducerProperty implements Property {
   STREAM("stream", null),
-  REGION("region", Regions.US_WEST_2.getName()),
+  REGION("region", US_WEST_2.getName()),
   MAX_CONNECTIONS("max.connections", 1L),
   REQUEST_TIMEOUT("request.timeout", MINUTES.toMillis(1)),
   RECORD_MAX_BUFFERED_TIME("record.max.buffered.time", SECONDS.toMillis(15)),
-  RETRIES("retries", 3);
+  RETRIES("retries", 3),
+  SERDE_CLASS("serde.class", JsonMetaStoreEventSerDe.class.getName());
 
   private static final String PROPERTY_PREFIX = "com.hotels.shunting.yard.event.emitter.kinesis.";
 

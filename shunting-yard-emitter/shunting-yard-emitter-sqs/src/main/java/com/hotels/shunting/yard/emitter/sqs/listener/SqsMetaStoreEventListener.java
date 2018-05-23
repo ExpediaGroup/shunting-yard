@@ -15,6 +15,10 @@
  */
 package com.hotels.shunting.yard.emitter.sqs.listener;
 
+import static com.hotels.shunting.yard.common.PropertyUtils.stringProperty;
+import static com.hotels.shunting.yard.common.io.MetaStoreEventSerDe.serDeForClassName;
+import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.SERDE_CLASS;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -24,7 +28,6 @@ import com.google.common.annotations.VisibleForTesting;
 
 import com.hotels.shunting.yard.common.emitter.AbstractMetaStoreEventListener;
 import com.hotels.shunting.yard.common.event.SerializableListenerEventFactory;
-import com.hotels.shunting.yard.common.io.JavaSerializationMetaStoreEventSerDe;
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 import com.hotels.shunting.yard.common.messaging.MessageTaskFactory;
 import com.hotels.shunting.yard.emitter.sqs.messaging.SqsMessageTaskFactory;
@@ -35,7 +38,7 @@ public class SqsMetaStoreEventListener extends AbstractMetaStoreEventListener {
   private final MessageTaskFactory messageTaskFactory;
 
   public SqsMetaStoreEventListener(Configuration config) {
-    this(config, new SerializableListenerEventFactory(config), new JavaSerializationMetaStoreEventSerDe(),
+    this(config, new SerializableListenerEventFactory(config), serDeForClassName(stringProperty(config, SERDE_CLASS)),
         new SqsMessageTaskFactory(config), Executors.newSingleThreadExecutor());
   }
 

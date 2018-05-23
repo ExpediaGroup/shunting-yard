@@ -17,9 +17,9 @@ package com.hotels.shunting.yard.emitter.sqs;
 
 import static com.hotels.shunting.yard.common.Preconditions.checkNotNull;
 import static com.hotels.shunting.yard.common.PropertyUtils.stringProperty;
-import static com.hotels.shunting.yard.emitter.sqs.SqsProperty.GROUP_ID;
-import static com.hotels.shunting.yard.emitter.sqs.SqsProperty.QUEUE;
-import static com.hotels.shunting.yard.emitter.sqs.SqsProperty.REGION;
+import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.GROUP_ID;
+import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.QUEUE;
+import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.REGION;
 
 import org.apache.hadoop.conf.Configuration;
 

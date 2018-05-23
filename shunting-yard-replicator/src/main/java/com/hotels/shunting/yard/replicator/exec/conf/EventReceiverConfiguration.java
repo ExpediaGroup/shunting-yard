@@ -15,16 +15,24 @@
  */
 package com.hotels.shunting.yard.replicator.exec.conf;
 
+import static com.hotels.shunting.yard.replicator.exec.conf.SerDeType.JSON;
+
 import java.util.Map;
+
+import javax.validation.constraints.NotNull;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+
+import com.hotels.shunting.yard.receiver.kinesis.messaging.KinesisMessageReaderFactory;
 
 @Configuration
 @ConfigurationProperties(prefix = "event-receiver")
 public class EventReceiverConfiguration {
 
   private Map<String, String> configurationProperties;
+  private @NotNull String messageReaderFactoryClass = KinesisMessageReaderFactory.class.getName();
+  private @NotNull SerDeType serDeType = JSON;
 
   public Map<String, String> getConfigurationProperties() {
     return configurationProperties;
@@ -32,6 +40,22 @@ public class EventReceiverConfiguration {
 
   public void setConfigurationProperties(Map<String, String> configurationProperties) {
     this.configurationProperties = configurationProperties;
+  }
+
+  public String getMessageReaderFactoryClass() {
+    return messageReaderFactoryClass;
+  }
+
+  public void setMessageReaderClass(String messageReaderFactoryClass) {
+    this.messageReaderFactoryClass = messageReaderFactoryClass;
+  }
+
+  public SerDeType getSerDeType() {
+    return serDeType;
+  }
+
+  public void setSerDeType(SerDeType serDeType) {
+    this.serDeType = serDeType;
   }
 
 }

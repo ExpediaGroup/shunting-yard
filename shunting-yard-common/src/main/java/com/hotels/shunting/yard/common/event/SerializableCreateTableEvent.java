@@ -23,16 +23,13 @@ import org.apache.hadoop.hive.metastore.events.CreateTableEvent;
 public class SerializableCreateTableEvent extends SerializableListenerEvent {
   private static final long serialVersionUID = 1L;
 
-  private final Table table;
+  private Table table;
+
+  SerializableCreateTableEvent() {}
 
   public SerializableCreateTableEvent(CreateTableEvent event) {
     super(event);
     table = event.getTable();
-  }
-
-  @Override
-  public EventType getEventType() {
-    return EventType.ON_CREATE_TABLE;
   }
 
   @Override

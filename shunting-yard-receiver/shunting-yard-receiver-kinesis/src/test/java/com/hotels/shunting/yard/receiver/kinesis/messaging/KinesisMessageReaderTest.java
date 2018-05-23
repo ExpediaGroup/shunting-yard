@@ -53,7 +53,7 @@ public class KinesisMessageReaderTest {
   public void init() throws Exception {
     when(consumer.next()).thenReturn(record);
     when(record.getData()).thenReturn(RECORD_DATA);
-    when(serDe.unmarshall(MESSAGE_CONTENT)).thenReturn(event);
+    when(serDe.unmarshal(MESSAGE_CONTENT)).thenReturn(event);
     reader = new KinesisMessageReader(serDe, consumer);
   }
 
@@ -77,7 +77,7 @@ public class KinesisMessageReaderTest {
   public void nextReadsRecordsFromQueue() throws Exception {
     assertThat(reader.next()).isSameAs(event);
     verify(consumer).next();
-    verify(serDe).unmarshall(MESSAGE_CONTENT);
+    verify(serDe).unmarshal(MESSAGE_CONTENT);
   }
 
   @Test(expected = NullPointerException.class)
@@ -88,7 +88,7 @@ public class KinesisMessageReaderTest {
 
   @Test(expected = SerDeException.class)
   public void unmarhsallThrowsException() throws Exception {
-    when(serDe.unmarshall(any(byte[].class))).thenThrow(RuntimeException.class);
+    when(serDe.unmarshal(any(byte[].class))).thenThrow(RuntimeException.class);
     reader.next();
   }
 

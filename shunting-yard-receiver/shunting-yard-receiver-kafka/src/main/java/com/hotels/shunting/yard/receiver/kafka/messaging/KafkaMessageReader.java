@@ -88,7 +88,7 @@ public class KafkaMessageReader implements MessageReader {
 
   private SerializableListenerEvent eventPayLoad(ConsumerRecord<Long, byte[]> message) {
     try {
-      return eventSerDe.unmarshall(message.value());
+      return eventSerDe.unmarshal(message.value());
     } catch (Exception e) {
       // TODO this may be removed when we get rid of checked exceptions in the SerDe contract
       throw new SerDeException("Unable to unmarshall event", e);

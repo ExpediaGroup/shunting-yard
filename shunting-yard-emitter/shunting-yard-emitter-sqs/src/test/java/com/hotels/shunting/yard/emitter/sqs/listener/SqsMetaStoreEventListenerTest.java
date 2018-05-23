@@ -83,7 +83,7 @@ public class SqsMetaStoreEventListenerTest {
 
   @Before
   public void init() throws Exception {
-    when(eventSerDe.marshall(any(SerializableListenerEvent.class))).thenReturn(PAYLOAD);
+    when(eventSerDe.marshal(any(SerializableListenerEvent.class))).thenReturn(PAYLOAD);
     when(messageTaskFactory.newTask(any(Message.class))).thenReturn(messageTask);
     listener = new SqsMetaStoreEventListener(config, serializableListenerEventFactory, eventSerDe, messageTaskFactory,
         executorService);
@@ -170,63 +170,63 @@ public class SqsMetaStoreEventListenerTest {
   public void onConfigChange() throws Exception {
     listener.onConfigChange(mock(ConfigChangeEvent.class));
     verify(executorService, never()).submit(any(Runnable.class));
-    verify(eventSerDe, never()).marshall(any(SerializableListenerEvent.class));
+    verify(eventSerDe, never()).marshal(any(SerializableListenerEvent.class));
   }
 
   @Test
   public void onCreateDatabase() throws Exception {
     listener.onCreateDatabase(mock(CreateDatabaseEvent.class));
     verify(executorService, never()).submit(any(Runnable.class));
-    verify(eventSerDe, never()).marshall(any(SerializableListenerEvent.class));
+    verify(eventSerDe, never()).marshal(any(SerializableListenerEvent.class));
   }
 
   @Test
   public void onDropDatabase() throws Exception {
     listener.onDropDatabase(mock(DropDatabaseEvent.class));
     verify(executorService, never()).submit(any(Runnable.class));
-    verify(eventSerDe, never()).marshall(any(SerializableListenerEvent.class));
+    verify(eventSerDe, never()).marshal(any(SerializableListenerEvent.class));
   }
 
   @Test
   public void onLoadPartitionDone() throws Exception {
     listener.onLoadPartitionDone(mock(LoadPartitionDoneEvent.class));
     verify(executorService, never()).submit(any(Runnable.class));
-    verify(eventSerDe, never()).marshall(any(SerializableListenerEvent.class));
+    verify(eventSerDe, never()).marshal(any(SerializableListenerEvent.class));
   }
 
   @Test
   public void onAddIndex() throws Exception {
     listener.onAddIndex(mock(AddIndexEvent.class));
     verify(executorService, never()).submit(any(Runnable.class));
-    verify(eventSerDe, never()).marshall(any(SerializableListenerEvent.class));
+    verify(eventSerDe, never()).marshal(any(SerializableListenerEvent.class));
   }
 
   @Test
   public void onDropIndex() throws Exception {
     listener.onDropIndex(mock(DropIndexEvent.class));
     verify(executorService, never()).submit(any(Runnable.class));
-    verify(eventSerDe, never()).marshall(any(SerializableListenerEvent.class));
+    verify(eventSerDe, never()).marshal(any(SerializableListenerEvent.class));
   }
 
   @Test
   public void onAlterIndex() throws Exception {
     listener.onAlterIndex(mock(AlterIndexEvent.class));
     verify(executorService, never()).submit(any(Runnable.class));
-    verify(eventSerDe, never()).marshall(any(SerializableListenerEvent.class));
+    verify(eventSerDe, never()).marshal(any(SerializableListenerEvent.class));
   }
 
   @Test
   public void onCreateFunction() throws Exception {
     listener.onCreateFunction(mock(CreateFunctionEvent.class));
     verify(executorService, never()).submit(any(Runnable.class));
-    verify(eventSerDe, never()).marshall(any(SerializableListenerEvent.class));
+    verify(eventSerDe, never()).marshal(any(SerializableListenerEvent.class));
   }
 
   @Test
   public void onDropFunction() throws Exception {
     listener.onDropFunction(mock(DropFunctionEvent.class));
     verify(executorService, never()).submit(any(Runnable.class));
-    verify(eventSerDe, never()).marshall(any(SerializableListenerEvent.class));
+    verify(eventSerDe, never()).marshal(any(SerializableListenerEvent.class));
   }
 
 }

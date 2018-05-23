@@ -18,9 +18,9 @@ package com.hotels.shunting.yard.receiver.sqs;
 import static com.hotels.shunting.yard.common.Preconditions.checkNotNull;
 import static com.hotels.shunting.yard.common.PropertyUtils.intProperty;
 import static com.hotels.shunting.yard.common.PropertyUtils.stringProperty;
-import static com.hotels.shunting.yard.receiver.sqs.SqsProperty.QUEUE;
-import static com.hotels.shunting.yard.receiver.sqs.SqsProperty.REGION;
-import static com.hotels.shunting.yard.receiver.sqs.SqsProperty.WAIT_TIME_SECONDS;
+import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.QUEUE;
+import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.REGION;
+import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.WAIT_TIME_SECONDS;
 
 import org.apache.hadoop.conf.Configuration;
 

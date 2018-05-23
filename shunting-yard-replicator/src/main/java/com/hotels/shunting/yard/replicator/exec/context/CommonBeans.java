@@ -41,10 +41,10 @@ import com.expedia.hdw.common.hive.conf.HiveConfFactory;
 import com.expedia.hdw.common.hive.metastore.CloseableMetaStoreClient;
 import com.expedia.hdw.common.hive.metastore.MetaStoreClientFactory;
 
-import com.hotels.shunting.yard.common.io.JavaSerializationMetaStoreEventSerDe;
+import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
+import com.hotels.shunting.yard.common.messaging.MessageReaderFactory;
 import com.hotels.shunting.yard.common.receiver.ShuntingYardMetaStoreEventListener;
-import com.hotels.shunting.yard.receiver.kinesis.messaging.KinesisMessageReader;
 import com.hotels.shunting.yard.replicator.exec.conf.EventReceiverConfiguration;
 import com.hotels.shunting.yard.replicator.exec.conf.ReplicaCatalog;
 import com.hotels.shunting.yard.replicator.exec.external.Marshaller;
@@ -116,9 +116,17 @@ public class CommonBeans {
   }
 
   @Bean
-  MessageReader messageReader(HiveConf replicaHiveConf) {
-    // return new SqsMessageReader(replicaHiveConf, new JavaSerializationMetaStoreEventSerDe());
-    return new KinesisMessageReader(replicaHiveConf, new JavaSerializationMetaStoreEventSerDe());
+  MetaStoreEventSerDe metaStoreEventSerDe(EventReceiverConfiguration messageReaderConfig) {
+    return messageReaderConfig.getSerDeType().instantiate();
+  }
+
+  @Bean
+  MessageReader messageReader(
+      HiveConf replicaHiveConf,
+      MetaStoreEventSerDe metaStoreEventSerDe,
+      EventReceiverConfiguration messageReaderConfig) {
+    return MessageReaderFactory.newInstance(messageReaderConfig.getMessageReaderFactoryClass()).newInstance(
+        replicaHiveConf, metaStoreEventSerDe);
   }
 
 }

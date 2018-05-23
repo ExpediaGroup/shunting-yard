@@ -25,9 +25,12 @@ import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.CLIEN
 import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.LINGER_MS;
 import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION;
 import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.RETRIES;
+import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.SERDE_CLASS;
 import static com.hotels.shunting.yard.emitter.kafka.KafkaProducerProperty.TOPIC;
 
 import org.junit.Test;
+
+import com.hotels.shunting.yard.common.io.jackson.JsonMetaStoreEventSerDe;
 
 public class KafkaProducerPropertyTest {
 
@@ -37,7 +40,7 @@ public class KafkaProducerPropertyTest {
 
   @Test
   public void numberOfProperties() {
-    assertThat(KafkaProducerProperty.values().length).isEqualTo(9);
+    assertThat(KafkaProducerProperty.values().length).isEqualTo(10);
   }
 
   @Test
@@ -103,6 +106,13 @@ public class KafkaProducerPropertyTest {
     assertThat(BUFFER_MEMORY.unPrefixedKey()).isEqualTo("buffer.memory");
     assertThat(BUFFER_MEMORY.key()).isEqualTo(prefixedKey("buffer.memory"));
     assertThat(BUFFER_MEMORY.defaultValue()).isEqualTo(33554432L);
+  }
+
+  @Test
+  public void serdeClass() {
+    assertThat(SERDE_CLASS.unPrefixedKey()).isEqualTo("serde.class");
+    assertThat(SERDE_CLASS.key()).isEqualTo(prefixedKey("serde.class"));
+    assertThat(SERDE_CLASS.defaultValue()).isEqualTo(JsonMetaStoreEventSerDe.class.getName());
   }
 
 }

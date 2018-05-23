@@ -20,6 +20,9 @@ import java.util.Iterator;
 
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 
+/**
+ * A {@code MessageReader} is in charge of retrieving events from the messaging infrastructure.
+ */
 public interface MessageReader extends Iterator<SerializableListenerEvent>, Closeable {
 
 }

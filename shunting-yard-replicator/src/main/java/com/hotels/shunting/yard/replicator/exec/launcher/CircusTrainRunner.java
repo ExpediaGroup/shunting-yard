@@ -40,7 +40,7 @@ import com.hotels.bdp.circustrain.api.CircusTrainException;
 import com.hotels.shunting.yard.replicator.exec.receiver.Context;
 
 public class CircusTrainRunner {
-  private static final Logger LOG = LoggerFactory.getLogger(CircusTrainRunner.class);
+  private static final Logger log = LoggerFactory.getLogger(CircusTrainRunner.class);
 
   public void run(Context context) {
     try (OutputStream out = outStream(context); OutputStream err = errStream(context)) {
@@ -53,16 +53,14 @@ public class CircusTrainRunner {
       executor.setWorkingDirectory(new File(context.getWorkspace()));
       executor.setStreamHandler(new PumpStreamHandler(out, err));
 
-      LOG.debug("Executing {} with environment {}", cli, getProcEnvironment());
+      log.debug("Executing {} with environment {}", cli, getProcEnvironment());
       int returnValue = executor.execute(cli, getProcEnvironment());
-      LOG.debug("Command exited with value {} ", returnValue);
+      log.debug("Command exited with value {} ", returnValue);
       if (returnValue != 0) {
         throw new CircusTrainException("Circus Train exited with error value " + returnValue);
       }
-    } catch (CircusTrainException e) {
-      throw e;
     } catch (Throwable e) {
-      throw new CircusTrainException("Unable to execute Circus Train", e);
+      log.error("Unable to execute Circus Train", e);
     }
   }
 

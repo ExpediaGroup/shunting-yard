@@ -24,20 +24,17 @@ import org.apache.hadoop.hive.metastore.events.AlterPartitionEvent;
 public class SerializableAlterPartitionEvent extends SerializableListenerEvent {
   private static final long serialVersionUID = 1L;
 
-  private final Table table;
-  private final Partition oldPartition;
-  private final Partition newPartition;
+  private Table table;
+  private Partition oldPartition;
+  private Partition newPartition;
+
+  SerializableAlterPartitionEvent() {}
 
   public SerializableAlterPartitionEvent(AlterPartitionEvent event) {
     super(event);
     table = event.getTable();
     oldPartition = event.getOldPartition();
     newPartition = event.getNewPartition();
-  }
-
-  @Override
-  public EventType getEventType() {
-    return EventType.ON_ALTER_PARTITION;
   }
 
   @Override
