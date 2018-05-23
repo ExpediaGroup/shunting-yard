@@ -15,8 +15,6 @@
  */
 package com.hotels.shunting.yard.common.messaging;
 
-import java.lang.reflect.Constructor;
-
 import org.apache.hadoop.conf.Configuration;
 
 import com.hotels.shunting.yard.common.ShuntingYardException;
@@ -24,22 +22,19 @@ import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 
 public interface MessageReaderFactory {
 
-  final static MessageReaderFactory DEFAULT = new MessageReaderFactory() {
-    @Override
-    public MessageReader newInstance(String className, Configuration conf, MetaStoreEventSerDe metaStoreEventSerDe) {
-      try {
-        @SuppressWarnings("unchecked")
-        Class<? extends MessageReader> clazz = (Class<? extends MessageReader>) Class.forName(className);
-        Constructor<? extends MessageReader> constructor = clazz.getConstructor(Configuration.class,
-            MetaStoreEventSerDe.class);
-        return constructor.newInstance(conf, metaStoreEventSerDe);
-      } catch (Exception e) {
-        throw new ShuntingYardException("Unable to instantiate a MessageReader of class " + className, e);
-      }
+  static <T extends MessageReaderFactory> T newInstance(String messageReaderFactoryClassName) {
+    try {
+      Class<T> clazz = (Class<T>) Class.forName(messageReaderFactoryClassName);
+      return clazz.newInstance();
+    } catch (ClassCastException e) {
+      throw new ShuntingYardException(
+          "Class " + messageReaderFactoryClassName + " does not seem to be a MessageReaderFactory implementation", e);
+    } catch (Exception e) {
+      throw new ShuntingYardException(
+          "Unable to instantiate a MessageReaderFactory of class " + messageReaderFactoryClassName, e);
     }
+  }
 
-  };
-
-  MessageReader newInstance(String className, Configuration conf, MetaStoreEventSerDe metaStoreEventSerDe);
+  MessageReader newInstance(Configuration conf, MetaStoreEventSerDe metaStoreEventSerDe);
 
 }

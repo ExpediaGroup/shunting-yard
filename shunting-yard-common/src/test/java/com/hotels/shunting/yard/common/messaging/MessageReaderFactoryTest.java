@@ -18,50 +18,43 @@ package com.hotels.shunting.yard.common.messaging;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.instanceOf;
 
-import org.apache.hadoop.conf.Configuration;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.hotels.shunting.yard.common.ShuntingYardException;
-import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MessageReaderFactoryTest {
 
   public @Rule ExpectedException expectedException = ExpectedException.none();
 
-  private @Mock Configuration conf;
-  private @Mock MetaStoreEventSerDe metaStoreEventSerDe;
-
-  private final MessageReaderFactory factory = MessageReaderFactory.DEFAULT;
-
   @Test
   public void compliant() {
-    MessageReader reader = factory.newInstance(CompliantMessageReader.class.getName(), conf, metaStoreEventSerDe);
-    assertThat(reader).isNotNull().isExactlyInstanceOf(CompliantMessageReader.class);
+    MessageReaderFactory factory = MessageReaderFactory.newInstance(SomeMessageReaderFactory.class.getName());
+    assertThat(factory).isNotNull().isExactlyInstanceOf(SomeMessageReaderFactory.class);
   }
 
   @Test
-  public void nonCompliant() {
+  public void classDoesNotImplementMessageReader() {
     expectedException.expect(ShuntingYardException.class);
-    expectedException.expectCause(instanceOf(NoSuchMethodException.class));
-    factory.newInstance(NonCompliantMessageReader.class.getName(), conf, metaStoreEventSerDe);
+    expectedException.expectCause(instanceOf(ClassCastException.class));
+    MessageReaderFactory.newInstance(NotReallyAMessageReaderFactory.class.getName());
   }
 
   @Test
   public void bogus() {
     expectedException.expect(ShuntingYardException.class);
-    factory.newInstance(BogusMessageReader.class.getName(), conf, metaStoreEventSerDe);
+    MessageReaderFactory.newInstance(BogusMessageReaderFactory.class.getName());
   }
 
   @Test
   public void messageReaderClassNotFound() {
     expectedException.expect(ShuntingYardException.class);
     expectedException.expectCause(instanceOf(ClassNotFoundException.class));
-    factory.newInstance("com.hotels.shunting.yard.common.messaging.UnknownMessageReader", conf, metaStoreEventSerDe);
+    MessageReaderFactory.newInstance("com.hotels.shunting.yard.common.messaging.UnknownMessageReaderFactory");
   }
+
 }

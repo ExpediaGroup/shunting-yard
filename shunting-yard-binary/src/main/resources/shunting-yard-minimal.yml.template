@@ -3,7 +3,7 @@ replica-catalog:
   hive-metastore-uris: thrift://domain-name.eu-west-1.compute.amazonaws.com:9083
 event-receiver:
   ser-de-type: json
-  message-reader-class: com.hotels.shunting.yard.receiver.kafka.KafkaMessageReader
+  message-reader-factory-class: com.hotels.shunting.yard.receiver.kafka.messaging.KafkaMessageReaderFactory
   configuration-properties:
     # Kafka properties
     com.hotels.shunting.yard.event.receiver.kafka.topic: topic

@@ -15,25 +15,4 @@
  */
 package com.hotels.shunting.yard.common.messaging;
 
-import java.io.IOException;
-
-import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
-
-class NonCompliantMessageReader implements MessageReader {
-
-  public NonCompliantMessageReader(Object anyClass) {}
-
-  @Override
-  public boolean hasNext() {
-    return false;
-  }
-
-  @Override
-  public SerializableListenerEvent next() {
-    return null;
-  }
-
-  @Override
-  public void close() throws IOException {}
-
-}
+class NotReallyAMessageReaderFactory {}

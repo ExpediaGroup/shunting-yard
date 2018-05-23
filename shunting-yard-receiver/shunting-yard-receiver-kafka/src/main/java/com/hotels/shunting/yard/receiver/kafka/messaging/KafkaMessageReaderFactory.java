@@ -13,30 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.shunting.yard.common.messaging;
-
-import java.io.IOException;
+package com.hotels.shunting.yard.receiver.kafka.messaging;
 
 import org.apache.hadoop.conf.Configuration;
 
-import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
+import com.hotels.shunting.yard.common.messaging.MessageReader;
+import com.hotels.shunting.yard.common.messaging.MessageReaderFactory;
 
-class CompliantMessageReader implements MessageReader {
-
-  public CompliantMessageReader(Configuration conf, MetaStoreEventSerDe serDe) {}
+public class KafkaMessageReaderFactory implements MessageReaderFactory {
 
   @Override
-  public boolean hasNext() {
-    return false;
+  public MessageReader newInstance(Configuration conf, MetaStoreEventSerDe metaStoreEventSerDe) {
+    return new KafkaMessageReader(conf, metaStoreEventSerDe);
   }
-
-  @Override
-  public SerializableListenerEvent next() {
-    return null;
-  }
-
-  @Override
-  public void close() throws IOException {}
 
 }

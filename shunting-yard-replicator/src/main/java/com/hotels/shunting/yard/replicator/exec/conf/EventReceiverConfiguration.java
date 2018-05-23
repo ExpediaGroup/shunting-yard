@@ -24,12 +24,14 @@ import javax.validation.constraints.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import com.hotels.shunting.yard.receiver.kinesis.messaging.KinesisMessageReaderFactory;
+
 @Configuration
 @ConfigurationProperties(prefix = "event-receiver")
 public class EventReceiverConfiguration {
 
   private Map<String, String> configurationProperties;
-  private @NotNull String messageReaderClass;
+  private @NotNull String messageReaderFactoryClass = KinesisMessageReaderFactory.class.getName();
   private @NotNull SerDeType serDeType = JSON;
 
   public Map<String, String> getConfigurationProperties() {
@@ -40,12 +42,12 @@ public class EventReceiverConfiguration {
     this.configurationProperties = configurationProperties;
   }
 
-  public String getMessageReaderClass() {
-    return messageReaderClass;
+  public String getMessageReaderFactoryClass() {
+    return messageReaderFactoryClass;
   }
 
-  public void setMessageReaderClass(String messageReaderClass) {
-    this.messageReaderClass = messageReaderClass;
+  public void setMessageReaderClass(String messageReaderFactoryClass) {
+    this.messageReaderFactoryClass = messageReaderFactoryClass;
   }
 
   public SerDeType getSerDeType() {

@@ -15,30 +15,19 @@
  */
 package com.hotels.shunting.yard.common.messaging;
 
-import java.io.IOException;
-
 import org.apache.hadoop.conf.Configuration;
 
-import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 
-class BogusMessageReader implements MessageReader {
+class BogusMessageReaderFactory implements MessageReaderFactory {
 
-  public BogusMessageReader(Configuration conf, MetaStoreEventSerDe serDe) {
-    throw new RuntimeException("You cannot construct me");
+  public BogusMessageReaderFactory() {
+    throw new RuntimeException("You cannot construct me!");
   }
 
   @Override
-  public boolean hasNext() {
-    return false;
-  }
-
-  @Override
-  public SerializableListenerEvent next() {
+  public MessageReader newInstance(Configuration conf, MetaStoreEventSerDe metaStoreEventSerDe) {
     return null;
   }
-
-  @Override
-  public void close() throws IOException {}
 
 }
