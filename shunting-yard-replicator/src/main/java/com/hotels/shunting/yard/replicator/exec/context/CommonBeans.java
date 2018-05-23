@@ -125,7 +125,8 @@ public class CommonBeans {
       HiveConf replicaHiveConf,
       MetaStoreEventSerDe metaStoreEventSerDe,
       EventReceiverConfiguration messageReaderConfig) {
-    return MessageReaderFactory.newInstance(messageReaderConfig.getMessageReaderFactoryClass());
+    return MessageReaderFactory.newInstance(messageReaderConfig.getMessageReaderFactoryClass()).newInstance(
+        replicaHiveConf, metaStoreEventSerDe);
   }
 
 }

@@ -22,16 +22,6 @@ import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 
 /**
  * A {@code MessageReader} is in charge of retrieving events from the messaging infrastructure.
- * <p>
- * Contractually, it must provide at least one public constructor which takes a
- * {@link org.apache.hadoop.conf.Configuration} and a {@link com.hotels.shunting.yard.common.io.MetaStoreEventSerDe},
- * this is:
- * <p>
- * <code>
- *   public MessageReader(Configuration conf, MetaStoreEventSerDe eventSerDe) {
- *     ...
- *   }
- * </code>
  */
 public interface MessageReader extends Iterator<SerializableListenerEvent>, Closeable {
 

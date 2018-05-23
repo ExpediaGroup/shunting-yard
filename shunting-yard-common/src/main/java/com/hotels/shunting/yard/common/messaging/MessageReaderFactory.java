@@ -22,9 +22,11 @@ import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 
 public interface MessageReaderFactory {
 
-  static <T extends MessageReaderFactory> T newInstance(String messageReaderFactoryClassName) {
+  static MessageReaderFactory newInstance(String messageReaderFactoryClassName) {
     try {
-      Class<T> clazz = (Class<T>) Class.forName(messageReaderFactoryClassName);
+      @SuppressWarnings("unchecked")
+      Class<? extends MessageReaderFactory> clazz = (Class<? extends MessageReaderFactory>) Class
+          .forName(messageReaderFactoryClassName);
       return clazz.newInstance();
     } catch (ClassCastException e) {
       throw new ShuntingYardException(
