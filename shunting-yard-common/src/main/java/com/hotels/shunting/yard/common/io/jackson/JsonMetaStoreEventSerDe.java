@@ -71,7 +71,7 @@ public class JsonMetaStoreEventSerDe implements MetaStoreEventSerDe {
       }
       return bytes;
     } catch (IOException e) {
-      String message = "Unable to marhsal event " + listenerEvent;
+      String message = "Unable to marshal event " + listenerEvent;
       log.error(message, e);
       throw new MetaException(message);
     }
