@@ -25,8 +25,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import com.expedia.hdw.common.hive.metastore.CloseableMetaStoreClient;
-import com.expedia.hdw.common.hive.metastore.MetaStoreClientFactory;
+import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
+import com.hotels.hcommon.hive.metastore.client.api.MetaStoreClientFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultMetaStoreClientSupplierTest {

@@ -37,10 +37,10 @@ import org.springframework.core.annotation.Order;
 
 import com.google.common.base.Supplier;
 
-import com.expedia.hdw.common.hive.conf.HiveConfFactory;
-import com.expedia.hdw.common.hive.metastore.CloseableMetaStoreClient;
-import com.expedia.hdw.common.hive.metastore.MetaStoreClientFactory;
-
+import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
+import com.hotels.hcommon.hive.metastore.client.api.MetaStoreClientFactory;
+import com.hotels.hcommon.hive.metastore.client.closeable.CloseableMetaStoreClientFactory;
+import com.hotels.hcommon.hive.metastore.conf.HiveConfFactory;
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
 import com.hotels.shunting.yard.common.messaging.MessageReaderFactory;
@@ -96,7 +96,7 @@ public class CommonBeans {
 
   @Bean
   MetaStoreClientFactory thriftMetaStoreClientFactory() {
-    return new MetaStoreClientFactory();
+    return new CloseableMetaStoreClientFactory();
   }
 
   @Bean

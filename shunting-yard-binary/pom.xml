@@ -101,7 +101,7 @@
                 <includes>
                   <include>com.hotels:shunting-yard-common*</include>
                   <include>com.hotels:shunting-yard-emitter*</include>
-                  <include>com.expedia.hdw:common-hive</include>
+                  <include>com.hotels:hcommon-hive-metastore</include>
                   <include>com.amazonaws:amazon-kinesis-producer</include>
                 </includes>
               </artifactSet>

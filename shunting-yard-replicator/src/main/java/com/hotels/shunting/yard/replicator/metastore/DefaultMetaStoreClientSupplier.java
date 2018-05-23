@@ -19,8 +19,8 @@ import org.apache.hadoop.hive.conf.HiveConf;
 
 import com.google.common.base.Supplier;
 
-import com.expedia.hdw.common.hive.metastore.CloseableMetaStoreClient;
-import com.expedia.hdw.common.hive.metastore.MetaStoreClientFactory;
+import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
+import com.hotels.hcommon.hive.metastore.client.api.MetaStoreClientFactory;
 
 /*
  * Based on Circus Train
