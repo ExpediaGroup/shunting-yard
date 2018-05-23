@@ -84,14 +84,14 @@ public class JsonMetaStoreEventSerDe implements MetaStoreEventSerDe {
         log.debug("Marshalled event is: {}", new String(payload));
       }
       ByteArrayInputStream buffer = new ByteArrayInputStream(payload);
-      // As we don't know the type in advanced we can only deserialize the event twice:
+      // As we don't know the type in advance we can only deserialize the event twice:
       // 1. Create a dummy object just to find out the type
       T genericEvent = mapper.readerFor(HeplerSerializableListenerEvent.class).readValue(buffer);
-      log.debug("Umarshall event of type: {}", genericEvent.getEventType());
+      log.debug("Umarshal event of type: {}", genericEvent.getEventType());
       // 2. Deserialize the actual object
       buffer.reset();
       T event = mapper.readerFor(genericEvent.getEventType().eventClass()).readValue(buffer);
-      log.debug("Umarshalled event is: {}", event);
+      log.debug("Unmarshalled event is: {}", event);
       return event;
     } catch (Exception e) {
       String message = "Unable to unmarshal event from payload";

@@ -26,7 +26,7 @@ On the source cluster, copy the file _shunting-yard-binary/target/shunting-yard-
     com.hotels.shunting.yard.event.emitter.sqs.queue = https://sqs.<region>.amazonaws.com/<account-id>/<topic-name>-queue.fifo
     com.hotels.shunting.yard.event.emitter.sqs.group.id = <group-id>
 
-For every emitter is also possible to set the serialization format to use. At the moment only JSON and Java are supported out of the box - the default is JSON. To set the SerDe class set the property `serde.class` for the specific emitter.
+For every emitter it is also possible to set the serialization format to use. At the moment only JSON and Java are supported out of the box - the default is JSON. To set the SerDe class set the property `serde.class` for the specific emitter.
 
 Once this is done restart Hive:
 

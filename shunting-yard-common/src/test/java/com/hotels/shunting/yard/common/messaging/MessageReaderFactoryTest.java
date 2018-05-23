@@ -41,7 +41,7 @@ public class MessageReaderFactoryTest {
 
   @Test
   public void compliant() {
-    MessageReader reader = factory.create(CompliantMessageReader.class.getName(), conf, metaStoreEventSerDe);
+    MessageReader reader = factory.newInstance(CompliantMessageReader.class.getName(), conf, metaStoreEventSerDe);
     assertThat(reader).isNotNull().isExactlyInstanceOf(CompliantMessageReader.class);
   }
 
@@ -49,19 +49,19 @@ public class MessageReaderFactoryTest {
   public void nonCompliant() {
     expectedException.expect(ShuntingYardException.class);
     expectedException.expectCause(instanceOf(NoSuchMethodException.class));
-    factory.create(NonCompliantMessageReader.class.getName(), conf, metaStoreEventSerDe);
+    factory.newInstance(NonCompliantMessageReader.class.getName(), conf, metaStoreEventSerDe);
   }
 
   @Test
   public void bogus() {
     expectedException.expect(ShuntingYardException.class);
-    factory.create(BogusMessageReader.class.getName(), conf, metaStoreEventSerDe);
+    factory.newInstance(BogusMessageReader.class.getName(), conf, metaStoreEventSerDe);
   }
 
   @Test
   public void messageReaderClassNotFound() {
     expectedException.expect(ShuntingYardException.class);
     expectedException.expectCause(instanceOf(ClassNotFoundException.class));
-    factory.create("com.hotels.shunting.yard.common.messaging.UnknownMessageReader", conf, metaStoreEventSerDe);
+    factory.newInstance("com.hotels.shunting.yard.common.messaging.UnknownMessageReader", conf, metaStoreEventSerDe);
   }
 }

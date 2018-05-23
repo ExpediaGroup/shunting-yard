@@ -26,7 +26,7 @@ public interface MessageReaderFactory {
 
   final static MessageReaderFactory DEFAULT = new MessageReaderFactory() {
     @Override
-    public MessageReader create(String className, Configuration conf, MetaStoreEventSerDe metaStoreEventSerDe) {
+    public MessageReader newInstance(String className, Configuration conf, MetaStoreEventSerDe metaStoreEventSerDe) {
       try {
         @SuppressWarnings("unchecked")
         Class<? extends MessageReader> clazz = (Class<? extends MessageReader>) Class.forName(className);
@@ -40,6 +40,6 @@ public interface MessageReaderFactory {
 
   };
 
-  MessageReader create(String className, Configuration conf, MetaStoreEventSerDe metaStoreEventSerDe);
+  MessageReader newInstance(String className, Configuration conf, MetaStoreEventSerDe metaStoreEventSerDe);
 
 }
