@@ -1,0 +1,312 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.hotels</groupId>
+    <artifactId>hotels-oss-parent</artifactId>
+    <version>2.0.7-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>shunting-yard</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>Shunting Yard Parent</name>
+  <url>https://stash/users/ddelcastilloperez/repos/shunting-yard</url>
+  <inceptionYear>2016</inceptionYear>
+
+  <scm>
+    <connection>scm:git:git@github.com:HotelsDotCom/shunting-yard.git</connection>
+    <developerConnection>scm:git:git@github.com:HotelsDotCom/shunting-yard.git</developerConnection>
+    <url>https://github.com/HotelsDotCom/shunting-yard</url>
+    <tag>HEAD</tag>
+  </scm>
+
+  <modules>
+    <module>shunting-yard-common</module>
+    <module>shunting-yard-emitter</module>
+    <module>shunting-yard-receiver</module>
+    <module>shunting-yard-replicator</module>
+    <module>shunting-yard-binary</module>
+  </modules>
+
+  <properties>
+    <cobertura.version>2.0.3</cobertura.version>
+    <cobertura.maven.plugin.version>2.6</cobertura.maven.plugin.version>
+    <jdk.version>1.8</jdk.version>
+    <slf4j.version>1.7.7</slf4j.version>
+    <hadoop.version>2.7.2</hadoop.version>
+    <hive.version>2.3.0</hive.version>
+    <common.hive.version>4.0.0</common.hive.version>
+    <derby.version>10.10.2.0</derby.version>
+    <kafka.version>0.11.0.1</kafka.version>
+    <aws.version>1.11.272</aws.version>
+    <aws.kcl.version>1.9.0</aws.kcl.version>
+    <aws.kpl.version>0.12.8</aws.kpl.version>
+    <circus.train.version>11.4.0</circus.train.version>
+    <commons.lang3.version>3.7</commons.lang3.version>
+    <thrift.version>0.10.0</thrift.version>
+    <jackson.version>2.9.5</jackson.version>
+
+    <junit.version>4.12</junit.version>
+    <assertj.version>2.9.0</assertj.version>
+    <mockito.version>2.10.0</mockito.version>
+    <powermock.version>2.0.0-beta.5</powermock.version>
+    <lastcommons.version>5.2.1</lastcommons.version>
+    <beeju.version>1.2.0</beeju.version>
+
+    <shade.prefix>${project.groupId}.shaded</shade.prefix>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-common</artifactId>
+        <version>${hadoop.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-mapreduce-client-core</artifactId>
+        <version>${hadoop.version}</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.hive</groupId>
+        <artifactId>hive-common</artifactId>
+        <version>${hive.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.hive</groupId>
+        <artifactId>hive-metastore</artifactId>
+        <version>${hive.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.hive</groupId>
+        <artifactId>hive-exec</artifactId>
+        <version>${hive.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.hive.hcatalog</groupId>
+        <artifactId>hive-webhcat-java-client</artifactId>
+        <version>${hive.version}</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>${commons.lang3.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.expedia.hdw</groupId>
+        <artifactId>common-hive</artifactId>
+        <version>${common.hive.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.kafka</groupId>
+        <artifactId>kafka-clients</artifactId>
+        <version>${kafka.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-java-sdk-core</artifactId>
+        <version>${aws.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-java-sdk-sqs</artifactId>
+        <version>${aws.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>amazon-kinesis-client</artifactId>
+        <version>${aws.kcl.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>amazon-kinesis-producer</artifactId>
+        <version>${aws.kpl.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.hotels</groupId>
+        <artifactId>circus-train-api</artifactId>
+        <version>${circus.train.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.hotels</groupId>
+        <artifactId>circus-train-core</artifactId>
+        <version>${circus.train.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${junit.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.assertj</groupId>
+        <artifactId>assertj-core</artifactId>
+        <version>${assertj.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>${mockito.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.powermock</groupId>
+        <artifactId>powermock-module-junit4</artifactId>
+        <version>${powermock.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.powermock</groupId>
+        <artifactId>powermock-api-mockito2</artifactId>
+        <version>${powermock.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>fm.last.commons</groupId>
+        <artifactId>lastcommons-test</artifactId>
+        <version>${lastcommons.version}</version>
+        <scope>test</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>com.hotels</groupId>
+        <artifactId>beeju</artifactId>
+        <version>${beeju.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.derby</groupId>
+        <artifactId>derby</artifactId>
+        <!-- we should use whatever hive-metastore is using. Cannot rely on the transitive dep because we want it test scoped. -->
+        <version>${derby.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+        </plugin>
+        <plugin>
+          <groupId>com.mycila</groupId>
+          <artifactId>license-maven-plugin</artifactId>
+          <version>${license.maven.plugin.version}</version>
+          <configuration>
+            <!-- excluding files that don't need a header update -->
+            <excludes>
+              <exclude>src/main/java/com/hotels/shunting/yard/common/receiver/thrift/EventIdFactory.java</exclude>
+              <exclude>src/test/java/com/hotels/shunting/yard/common/receiver/thrift/EventIdFactoryTest.java</exclude>
+              <exclude>src/main/java/com/hotels/shunting/yard/common/receiver/thrift/ExpressionBuilder.java</exclude>
+            </excludes>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>travis</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.eluder.coveralls</groupId>
+            <artifactId>coveralls-maven-plugin</artifactId>
+            <version>4.3.0</version>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>sonatype-oss-release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.6</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>doclint-java8-disable</id>
+      <activation>
+        <jdk>[1.8,)</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <configuration>
+              <additionalparam>-Xdoclint:none</additionalparam>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>

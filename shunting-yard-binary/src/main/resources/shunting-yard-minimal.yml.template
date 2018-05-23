@@ -1,0 +1,17 @@
+replica-catalog:
+  name: aws-data-warehouse
+  hive-metastore-uris: thrift://domain-name.eu-west-1.compute.amazonaws.com:9083
+event-receiver:
+  ser-de-type: json
+  message-reader-factory-class: com.hotels.shunting.yard.receiver.kafka.messaging.KafkaMessageReaderFactory
+  configuration-properties:
+    # Kafka properties
+    com.hotels.shunting.yard.event.receiver.kafka.topic: topic
+    com.hotels.shunting.yard.event.receiver.kafka.bootstrap.servers: localhost:9092
+    com.hotels.shunting.yard.event.receiver.kafka.group.id: groupid
+    # Kinesis properties
+    com.hotels.shunting.yard.event.receiver.kinesis.stream: stream
+    com.hotels.shunting.yard.event.receiver.kinesis.application.id: team_application-id
+    # SQS properties
+    com.hotels.shunting.yard.event.receiver.sqs.queue: https://sqs.us-west-2.amazonaws.com/1234567/queue.fifo
+    com.hotels.shunting.yard.event.receiver.sqs.wait.time.seconds: 15
