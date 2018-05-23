@@ -78,7 +78,7 @@ public class SerializableListenerEventFactoryTest {
 
   private void assertCommon(SerializableListenerEvent event) {
     assertThat(event.getStatus()).isTrue();
-    // We don't use event.getParameters() here because is being deferred to parameters in the stub
+    // We don't use event.getParameters() here because it is deferred to parameters in the stub
     assertThat(parameters).containsEntry(METASTOREURIS.varname, METASTORE_URIS).containsEntry(
         CustomEventParameters.HIVE_VERSION.varname(), HiveVersionInfo.getVersion());
   }
