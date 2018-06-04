@@ -9,5 +9,5 @@ cache:
 install:
   - mvn install -DskipTests=true -Dmaven.javadoc.skip=true --quiet --batch-mode --show-version --activate-profiles travis
 script:
-  - mvn cobertura:cobertura coveralls:report --batch-mode --activate-profiles travis -DrepoToken=${COVERALLS_REPO_TOKEN}
+  - mvn test jacoco:report coveralls:report --batch-mode --activate-profiles travis -DrepoToken=${COVERALLS_REPO_TOKEN}
 
