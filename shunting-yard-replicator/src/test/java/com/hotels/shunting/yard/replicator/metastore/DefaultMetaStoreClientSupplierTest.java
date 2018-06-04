@@ -16,6 +16,8 @@
 package com.hotels.shunting.yard.replicator.metastore;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import org.apache.hadoop.hive.conf.HiveConf;
@@ -44,13 +46,13 @@ public class DefaultMetaStoreClientSupplierTest {
 
   @Test
   public void get() {
-    when(metaStoreClientFactory.newCloseableInstance(hiveConf)).thenReturn(metaStoreClient);
+    when(metaStoreClientFactory.newInstance(eq(hiveConf), anyString())).thenReturn(metaStoreClient);
     assertThat(supplier.get()).isSameAs(metaStoreClient);
   }
 
   @Test(expected = NullPointerException.class)
   public void bubbleUpExceptions() {
-    when(metaStoreClientFactory.newCloseableInstance(hiveConf)).thenThrow(NullPointerException.class);
+    when(metaStoreClientFactory.newInstance(eq(hiveConf), anyString())).thenThrow(NullPointerException.class);
     supplier.get();
   }
 

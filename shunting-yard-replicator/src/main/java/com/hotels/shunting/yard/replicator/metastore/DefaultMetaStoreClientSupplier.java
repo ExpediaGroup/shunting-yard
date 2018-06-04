@@ -37,7 +37,7 @@ public class DefaultMetaStoreClientSupplier implements Supplier<CloseableMetaSto
 
   @Override
   public CloseableMetaStoreClient get() {
-    return metaStoreClientFactory.newCloseableInstance(hiveConf);
+    return metaStoreClientFactory.newInstance(hiveConf, "shunting-yard");
   }
 
 }
