@@ -19,21 +19,6 @@
     </dependency>
     <dependency>
       <groupId>com.hotels</groupId>
-      <artifactId>shunting-yard-emitter-kafka</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.hotels</groupId>
-      <artifactId>shunting-yard-emitter-kinesis</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.hotels</groupId>
-      <artifactId>shunting-yard-emitter-sqs</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.hotels</groupId>
       <artifactId>shunting-yard-receiver-kafka</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -82,29 +67,10 @@
               </artifactSet>
               <relocations>
                 <relocation>
-                  <pattern>com.google.common</pattern>
-                  <shadedPattern>${shade.prefix}.com.google.common</shadedPattern>
+                  <pattern>com.google</pattern>
+                  <shadedPattern>${shade.prefix}.com.google</shadedPattern>
                 </relocation>
               </relocations>
-            </configuration>
-          </execution>
-          <execution>
-            <id>emitter</id>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <configuration>
-              <shadedArtifactAttached>false</shadedArtifactAttached>
-              <outputFile>target/shunting-yard-emitter-${project.version}-all.jar</outputFile>
-              <artifactSet>
-                <includes>
-                  <include>com.hotels:shunting-yard-common*</include>
-                  <include>com.hotels:shunting-yard-emitter*</include>
-                  <include>com.hotels:hcommon-hive-metastore</include>
-                  <include>com.amazonaws:amazon-kinesis-producer</include>
-                </includes>
-              </artifactSet>
             </configuration>
           </execution>
         </executions>
