@@ -10,7 +10,7 @@ You can obtain Shunting Yard from Maven Central:
 
 ### How to install the emitter - SOURCE
 
-On the source cluster, copy the file _shunting-yard-binary/target/shunting-yard-emitter-0.0.1-SNAPSHOT-all.jar_ to _/usr/lib/hive/lib/_ and configure _/etc/hive/conf/hive-site.xml_ with the properties required by the listener to talk to the messaging infrastructure:
+On the source cluster, copy the file _shunting-yard-binary/target/shunting-yard-emitter-<version>-all.jar_ to _/usr/lib/hive/lib/_ and configure _/etc/hive/conf/hive-site.xml_ with the properties required by the listener to talk to the messaging infrastructure:
 
 #### Kafka
     hive.metastore.event.listeners = com.hotels.shunting.yard.event.emitter.kafka.listener.KafkaMetaStoreEventListener
@@ -43,9 +43,9 @@ Export the location of the Hive libraries:
     export HIVE_LIB=/usr/lib/hive/lib/
     export HCAT_LIB=/usr/lib/hive-hcatalog/share/hcatalog/
 
-Copy the file _shunting-yard-binary/target/shunting-yard-binary-0.0.1-SNAPSHOT-bin.tgz_ and unzip it, then set the `SHUNTING_YARD_HOME` environment variable:
+Copy the file _shunting-yard-binary/target/shunting-yard-binary-<version>-bin.tgz_ and unzip it, then set the `SHUNTING_YARD_HOME` environment variable:
 
-    export SHUNTING_YARD_HOME=/home/hadoop/shuting-yard-0.0.1-SNAPSHOT
+    export SHUNTING_YARD_HOME=/home/hadoop/shuting-yard-<version>
 
 Create a `.yml` file under `$SHUNTING_YARD_HOME/conf/` with the correct settings to talk to the messaging infrastructure. You can find some guidelines in the file _shunting-yard-minimal.yml.template_. Once this is done you are all set up to run the service:
 
