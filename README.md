@@ -10,7 +10,7 @@ You can obtain Shunting Yard from Maven Central:
 
 ### How to install the emitter - SOURCE
 
-On the source cluster, copy the file _shunting-yard-binary/target/shunting-yard-emitter-\<version\>-all.jar_ to _/usr/lib/hive/lib/_ and configure _/etc/hive/conf/hive-site.xml_ with the properties required by the listener to talk to the messaging infrastructure:
+On the source cluster, copy the file respective emitter JAR to _/usr/lib/hive/lib/_ and configure _/etc/hive/conf/hive-site.xml_ with the properties required by the listener to talk to the messaging infrastructure:
 
 #### Kafka
     hive.metastore.event.listeners = com.hotels.shunting.yard.event.emitter.kafka.listener.KafkaMetaStoreEventListener

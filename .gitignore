@@ -23,6 +23,7 @@ nbactions.xml
 
 # Maven target folder
 target/
+**/dependency-reduced-pom.xml
 
 # Any left over .svn folders
 .svn/
