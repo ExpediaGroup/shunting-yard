@@ -15,6 +15,7 @@
  */
 package com.hotels.shunting.yard.emitter.kinesis.listener;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -48,6 +49,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import com.hotels.shunting.yard.common.emitter.WrappingMessageTask;
 import com.hotels.shunting.yard.common.event.SerializableAddPartitionEvent;
 import com.hotels.shunting.yard.common.event.SerializableAlterPartitionEvent;
 import com.hotels.shunting.yard.common.event.SerializableAlterTableEvent;
@@ -61,7 +63,6 @@ import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 import com.hotels.shunting.yard.common.messaging.Message;
 import com.hotels.shunting.yard.common.messaging.MessageTask;
 import com.hotels.shunting.yard.common.messaging.MessageTaskFactory;
-import com.hotels.shunting.yard.emitter.kinesis.listener.KinesisMetaStoreEventListener;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KinesisMetaStoreEventListenerTest {
@@ -97,7 +98,8 @@ public class KinesisMetaStoreEventListenerTest {
     when(serializableEvent.getTableName()).thenReturn(TABLE);
     when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
     listener.onCreateTable(event);
-    verify(executorService).submit(messageTask);
+    verify(executorService).submit(captor.capture());
+    assertThat(captor.getValue()).isEqualTo(new WrappingMessageTask(messageTask));
   }
 
   @Test
@@ -108,7 +110,8 @@ public class KinesisMetaStoreEventListenerTest {
     when(serializableEvent.getTableName()).thenReturn(TABLE);
     when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
     listener.onAlterTable(event);
-    verify(executorService).submit(messageTask);
+    verify(executorService).submit(captor.capture());
+    assertThat(captor.getValue()).isEqualTo(new WrappingMessageTask(messageTask));
   }
 
   @Test
@@ -119,7 +122,8 @@ public class KinesisMetaStoreEventListenerTest {
     when(serializableEvent.getTableName()).thenReturn(TABLE);
     when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
     listener.onDropTable(event);
-    verify(executorService).submit(messageTask);
+    verify(executorService).submit(captor.capture());
+    assertThat(captor.getValue()).isEqualTo(new WrappingMessageTask(messageTask));
   }
 
   @Test
@@ -130,7 +134,8 @@ public class KinesisMetaStoreEventListenerTest {
     when(serializableEvent.getTableName()).thenReturn(TABLE);
     when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
     listener.onAddPartition(event);
-    verify(executorService).submit(messageTask);
+    verify(executorService).submit(captor.capture());
+    assertThat(captor.getValue()).isEqualTo(new WrappingMessageTask(messageTask));
   }
 
   @Test
@@ -141,7 +146,8 @@ public class KinesisMetaStoreEventListenerTest {
     when(serializableEvent.getTableName()).thenReturn(TABLE);
     when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
     listener.onAlterPartition(event);
-    verify(executorService).submit(messageTask);
+    verify(executorService).submit(captor.capture());
+    assertThat(captor.getValue()).isEqualTo(new WrappingMessageTask(messageTask));
   }
 
   @Test
@@ -152,7 +158,8 @@ public class KinesisMetaStoreEventListenerTest {
     when(serializableEvent.getTableName()).thenReturn(TABLE);
     when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
     listener.onDropPartition(event);
-    verify(executorService).submit(messageTask);
+    verify(executorService).submit(captor.capture());
+    assertThat(captor.getValue()).isEqualTo(new WrappingMessageTask(messageTask));
   }
 
   @Test
@@ -163,7 +170,8 @@ public class KinesisMetaStoreEventListenerTest {
     when(serializableEvent.getTableName()).thenReturn(TABLE);
     when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
     listener.onInsert(event);
-    verify(executorService).submit(messageTask);
+    verify(executorService).submit(captor.capture());
+    assertThat(captor.getValue()).isEqualTo(new WrappingMessageTask(messageTask));
   }
 
   @Test

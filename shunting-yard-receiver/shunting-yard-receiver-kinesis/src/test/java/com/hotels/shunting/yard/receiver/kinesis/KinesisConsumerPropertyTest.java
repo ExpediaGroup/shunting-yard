@@ -63,7 +63,7 @@ public class KinesisConsumerPropertyTest {
   public void workerId() {
     assertThat(WORKER_ID.unPrefixedKey()).isEqualTo("worker.id");
     assertThat(WORKER_ID.key()).isEqualTo(prefixedKey("worker.id"));
-    assertThat(WORKER_ID.defaultValue()).isEqualTo("CircusTrainEventDrivenReceiver");
+    assertThat(WORKER_ID.defaultValue()).isEqualTo("ShuntingYardReceiver");
   }
 
   @Test
