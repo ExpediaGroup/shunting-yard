@@ -15,6 +15,9 @@
  */
 package com.hotels.shunting.yard.replicator.exec.app;
 
+import static com.hotels.shunting.yard.common.receiver.ReceiverUtils.error;
+import static com.hotels.shunting.yard.common.receiver.ReceiverUtils.success;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,23 +35,11 @@ import com.hotels.shunting.yard.common.event.SerializableDropTableEvent;
 import com.hotels.shunting.yard.common.event.SerializableInsertEvent;
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
-import com.hotels.shunting.yard.common.metrics.MetricsConstant;
-import com.hotels.shunting.yard.common.metrics.MetricsHelper;
 import com.hotels.shunting.yard.common.receiver.ShuntingYardMetaStoreEventListener;
 
 @Component
 class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator {
   private static final Logger log = LoggerFactory.getLogger(ReplicationRunner.class);
-
-  static void success() {
-    MetricsHelper.incrementCounter(MetricsConstant.RECEIVER_SUCCESSES);
-  }
-
-  static void error(Exception e) {
-    // ERROR, ShuntingYard and Emitter are keywords
-    log.error("Error in ShuntingYard Receiver", e);
-    MetricsHelper.incrementCounter(MetricsConstant.RECEIVER_FAILURES);
-  }
 
   private final ShuntingYardMetaStoreEventListener listener;
   private final MessageReader messageReader;

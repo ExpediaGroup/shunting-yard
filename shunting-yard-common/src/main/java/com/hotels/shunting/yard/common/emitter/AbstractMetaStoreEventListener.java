@@ -15,6 +15,8 @@
  */
 package com.hotels.shunting.yard.common.emitter;
 
+import static com.hotels.shunting.yard.common.emitter.EmitterUtils.error;
+
 import java.util.concurrent.ExecutorService;
 
 import org.apache.hadoop.conf.Configuration;
@@ -45,21 +47,9 @@ import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 import com.hotels.shunting.yard.common.messaging.Message;
 import com.hotels.shunting.yard.common.messaging.MessageTask;
 import com.hotels.shunting.yard.common.messaging.MessageTaskFactory;
-import com.hotels.shunting.yard.common.metrics.MetricsConstant;
-import com.hotels.shunting.yard.common.metrics.MetricsHelper;
 
 public abstract class AbstractMetaStoreEventListener extends MetaStoreEventListener {
   private static final Logger log = LoggerFactory.getLogger(AbstractMetaStoreEventListener.class);
-
-  static void success() {
-    MetricsHelper.incrementCounter(MetricsConstant.EMITTER_SUCCESSES);
-  }
-
-  static void error(Exception e) {
-    // ERROR, ShuntingYard and Emitter are keywords
-    log.error("Error in ShuntingYard Emitter", e);
-    MetricsHelper.incrementCounter(MetricsConstant.EMITTER_FAILURES);
-  }
 
   private final SerializableListenerEventFactory serializableListenerEventFactory;
   private final ExecutorService executorService;

@@ -15,6 +15,9 @@
  */
 package com.hotels.shunting.yard.common.emitter;
 
+import static com.hotels.shunting.yard.common.emitter.EmitterUtils.error;
+import static com.hotels.shunting.yard.common.emitter.EmitterUtils.success;
+
 import java.util.Objects;
 
 import com.hotels.shunting.yard.common.messaging.MessageTask;
@@ -31,9 +34,9 @@ public class WrappingMessageTask implements MessageTask {
   public void run() {
     try {
       task.run();
-      AbstractMetaStoreEventListener.success();
+      success();
     } catch (Exception e) {
-      AbstractMetaStoreEventListener.error(e);
+      error(e);
     }
   }
 
