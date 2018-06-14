@@ -24,6 +24,8 @@ import com.hotels.shunting.yard.common.metrics.MetricsHelper;
 public final class EmitterUtils {
   private static final Logger log = LoggerFactory.getLogger(EmitterUtils.class);
 
+  private EmitterUtils() {}
+
   public static void success() {
     MetricsHelper.incrementCounter(MetricsConstant.EMITTER_SUCCESSES);
   }

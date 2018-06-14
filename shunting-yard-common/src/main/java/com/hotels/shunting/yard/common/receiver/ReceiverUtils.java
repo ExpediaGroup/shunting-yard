@@ -24,6 +24,8 @@ import com.hotels.shunting.yard.common.metrics.MetricsHelper;
 public final class ReceiverUtils {
   private static final Logger log = LoggerFactory.getLogger(ReceiverUtils.class);
 
+  private ReceiverUtils() {}
+
   public static void success() {
     MetricsHelper.incrementCounter(MetricsConstant.RECEIVER_SUCCESSES);
   }
