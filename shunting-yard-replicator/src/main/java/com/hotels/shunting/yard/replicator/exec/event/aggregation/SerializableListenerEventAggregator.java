@@ -1,4 +1,4 @@
-package com.hotels.shunting.yard.common.event.aggregation;
+package com.hotels.shunting.yard.replicator.exec.event.aggregation;
 
 import java.util.List;
 
