@@ -63,6 +63,10 @@ public abstract class SerializableListenerEvent implements Serializable {
 
   public abstract String getTableName();
 
+  public String getQualifiedTableName() {
+    return String.join(".", getDatabaseName(), getTableName());
+  }
+
   public boolean getStatus() {
     return status;
   }
