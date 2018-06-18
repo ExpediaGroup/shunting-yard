@@ -30,7 +30,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(MetricsFactory.class)
-public class MetricsHelperTest {
+public class HiveMetricsHelperTest {
 
   private @Mock Metrics metrics;
 
@@ -42,21 +42,21 @@ public class MetricsHelperTest {
   @Test
   public void nullMetricsFactory() {
     when(MetricsFactory.getInstance()).thenReturn(null);
-    assertThat(MetricsHelper.incrementCounter("name")).isNotPresent();
+    assertThat(HiveMetricsHelper.incrementCounter("name")).isNotPresent();
   }
 
   @Test
   public void exceptionInIncrementCounter() {
     when(MetricsFactory.getInstance()).thenReturn(metrics);
     when(metrics.incrementCounter("name")).thenThrow(RuntimeException.class);
-    assertThat(MetricsHelper.incrementCounter("name")).isNotPresent();
+    assertThat(HiveMetricsHelper.incrementCounter("name")).isNotPresent();
   }
 
   @Test
   public void incrementCounter() {
     when(MetricsFactory.getInstance()).thenReturn(metrics);
     when(metrics.incrementCounter("name")).thenReturn(123L);
-    assertThat(MetricsHelper.incrementCounter("name")).get().isEqualTo(123L);
+    assertThat(HiveMetricsHelper.incrementCounter("name")).get().isEqualTo(123L);
   }
 
 }

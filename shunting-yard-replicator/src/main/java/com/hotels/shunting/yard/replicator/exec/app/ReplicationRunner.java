@@ -15,9 +15,6 @@
  */
 package com.hotels.shunting.yard.replicator.exec.app;
 
-import static com.hotels.shunting.yard.common.receiver.ReceiverUtils.error;
-import static com.hotels.shunting.yard.common.receiver.ReceiverUtils.success;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +22,9 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.stereotype.Component;
+
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Metrics;
 
 import com.hotels.shunting.yard.common.event.SerializableAddPartitionEvent;
 import com.hotels.shunting.yard.common.event.SerializableAlterPartitionEvent;
@@ -35,11 +35,15 @@ import com.hotels.shunting.yard.common.event.SerializableDropTableEvent;
 import com.hotels.shunting.yard.common.event.SerializableInsertEvent;
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
+import com.hotels.shunting.yard.common.metrics.MetricsConstant;
 import com.hotels.shunting.yard.common.receiver.ShuntingYardMetaStoreEventListener;
 
 @Component
 class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator {
   private static final Logger log = LoggerFactory.getLogger(ReplicationRunner.class);
+
+  private static final Counter SUCCESS_COUNTER = Metrics.counter(MetricsConstant.RECEIVER_SUCCESSES);
+  private static final Counter FAILURE_COUNTER = Metrics.counter(MetricsConstant.RECEIVER_FAILURES);
 
   private final ShuntingYardMetaStoreEventListener listener;
   private final MessageReader messageReader;
@@ -84,9 +88,11 @@ class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator {
           log.info("Do not know how to process event of type {}", event.getEventType());
           break;
         }
-        success();
+        SUCCESS_COUNTER.increment();
       } catch (Exception e) {
-        error(e);
+        // ERROR, ShuntingYard and Receiver are keywords
+        log.error("Error in ShuntingYard Receiver", e);
+        FAILURE_COUNTER.increment();
       }
     }
     log.info("Finishing event loop");

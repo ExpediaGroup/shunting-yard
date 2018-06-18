@@ -33,10 +33,10 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.hotels.shunting.yard.common.metrics.MetricsConstant;
-import com.hotels.shunting.yard.common.metrics.MetricsHelper;
+import com.hotels.shunting.yard.common.metrics.HiveMetricsHelper;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(MetricsHelper.class)
+@PrepareForTest(HiveMetricsHelper.class)
 public class EmitterUtilsTest {
 
   private @Mock AppenderSkeleton appender;
@@ -44,23 +44,23 @@ public class EmitterUtilsTest {
 
   @Before
   public void init() {
-    mockStatic(MetricsHelper.class);
+    mockStatic(HiveMetricsHelper.class);
     Logger.getRootLogger().addAppender(appender);
   }
 
   @Test
   public void success() {
     EmitterUtils.success();
-    verifyStatic(MetricsHelper.class);
-    MetricsHelper.incrementCounter(MetricsConstant.EMITTER_SUCCESSES);
+    verifyStatic(HiveMetricsHelper.class);
+    HiveMetricsHelper.incrementCounter(MetricsConstant.EMITTER_SUCCESSES);
   }
 
   @Test
   public void error() {
     Exception e = new RuntimeException("ABC");
     EmitterUtils.error(e);
-    verifyStatic(MetricsHelper.class);
-    MetricsHelper.incrementCounter(MetricsConstant.EMITTER_FAILURES);
+    verifyStatic(HiveMetricsHelper.class);
+    HiveMetricsHelper.incrementCounter(MetricsConstant.EMITTER_FAILURES);
     // We want to make sure these keywords are logged
     verify(appender).doAppend(logCaptor.capture());
     assertThat(logCaptor.getValue().getRenderedMessage()).startsWith("Error in ShuntingYard Emitter");
