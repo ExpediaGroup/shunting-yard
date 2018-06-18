@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.hotels.shunting.yard.common.metrics.MetricsConstant;
-import com.hotels.shunting.yard.common.metrics.MetricsHelper;
+import com.hotels.shunting.yard.common.metrics.HiveMetricsHelper;
 
 public final class EmitterUtils {
   private static final Logger log = LoggerFactory.getLogger(EmitterUtils.class);
@@ -27,13 +27,13 @@ public final class EmitterUtils {
   private EmitterUtils() {}
 
   public static void success() {
-    MetricsHelper.incrementCounter(MetricsConstant.EMITTER_SUCCESSES);
+    HiveMetricsHelper.incrementCounter(MetricsConstant.EMITTER_SUCCESSES);
   }
 
   public static void error(Exception e) {
     // ERROR, ShuntingYard and Emitter are keywords
     log.error("Error in ShuntingYard Emitter", e);
-    MetricsHelper.incrementCounter(MetricsConstant.EMITTER_FAILURES);
+    HiveMetricsHelper.incrementCounter(MetricsConstant.EMITTER_FAILURES);
   }
 
 }
