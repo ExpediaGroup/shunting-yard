@@ -44,8 +44,6 @@ import org.apache.hadoop.hive.metastore.events.LoadPartitionDoneEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -78,8 +76,6 @@ public class KinesisMetaStoreEventListenerTest {
   private @Mock SerializableListenerEventFactory serializableListenerEventFactory;
   private @Mock ExecutorService executorService;
 
-  private @Captor ArgumentCaptor<MessageTask> captor;
-
   private final Configuration config = new Configuration();
   private KinesisMetaStoreEventListener listener;
 
@@ -106,7 +102,6 @@ public class KinesisMetaStoreEventListenerTest {
     when(serializableEvent.getTableName()).thenReturn(TABLE);
     when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
     listener.onCreateTable(event);
-    verify(executorService).submit(captor.capture());
     verify(messageTask).run();
   }
 
@@ -118,7 +113,6 @@ public class KinesisMetaStoreEventListenerTest {
     when(serializableEvent.getTableName()).thenReturn(TABLE);
     when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
     listener.onAlterTable(event);
-    verify(executorService).submit(captor.capture());
     verify(messageTask).run();
   }
 
@@ -130,7 +124,6 @@ public class KinesisMetaStoreEventListenerTest {
     when(serializableEvent.getTableName()).thenReturn(TABLE);
     when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
     listener.onDropTable(event);
-    verify(executorService).submit(captor.capture());
     verify(messageTask).run();
   }
 
@@ -142,7 +135,6 @@ public class KinesisMetaStoreEventListenerTest {
     when(serializableEvent.getTableName()).thenReturn(TABLE);
     when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
     listener.onAddPartition(event);
-    verify(executorService).submit(captor.capture());
     verify(messageTask).run();
   }
 
@@ -154,7 +146,6 @@ public class KinesisMetaStoreEventListenerTest {
     when(serializableEvent.getTableName()).thenReturn(TABLE);
     when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
     listener.onAlterPartition(event);
-    verify(executorService).submit(captor.capture());
     verify(messageTask).run();
   }
 
@@ -166,7 +157,6 @@ public class KinesisMetaStoreEventListenerTest {
     when(serializableEvent.getTableName()).thenReturn(TABLE);
     when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
     listener.onDropPartition(event);
-    verify(executorService).submit(captor.capture());
     verify(messageTask).run();
   }
 
@@ -178,7 +168,6 @@ public class KinesisMetaStoreEventListenerTest {
     when(serializableEvent.getTableName()).thenReturn(TABLE);
     when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
     listener.onInsert(event);
-    verify(executorService).submit(captor.capture());
     verify(messageTask).run();
   }
 
