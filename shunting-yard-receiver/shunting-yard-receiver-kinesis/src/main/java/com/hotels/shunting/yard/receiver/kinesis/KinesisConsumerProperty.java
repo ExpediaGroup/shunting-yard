@@ -25,7 +25,7 @@ public enum KinesisConsumerProperty implements Property {
   STREAM("stream", null),
   REGION("region", US_WEST_2.getName()),
   APPLICTION_ID("application.id", null),
-  WORKER_ID("worker.id", "CircusTrainEventDrivenReceiver"),
+  WORKER_ID("worker.id", "ShuntingYardReceiver"),
   MAX_RECORDS("max.records", 30),
   BUFFER_CAPACITY("buffer.capacity", 100),
   POLLING_TIMEOUT_MS("polling.timeout.ms", SECONDS.toMillis(30));

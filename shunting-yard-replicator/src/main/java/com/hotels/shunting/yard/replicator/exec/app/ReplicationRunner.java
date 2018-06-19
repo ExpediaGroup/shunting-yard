@@ -23,6 +23,9 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.stereotype.Component;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Metrics;
+
 import com.hotels.shunting.yard.common.event.SerializableAddPartitionEvent;
 import com.hotels.shunting.yard.common.event.SerializableAlterPartitionEvent;
 import com.hotels.shunting.yard.common.event.SerializableAlterTableEvent;
@@ -32,14 +35,18 @@ import com.hotels.shunting.yard.common.event.SerializableDropTableEvent;
 import com.hotels.shunting.yard.common.event.SerializableInsertEvent;
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
+import com.hotels.shunting.yard.common.metrics.MetricsConstant;
 import com.hotels.shunting.yard.common.receiver.ShuntingYardMetaStoreEventListener;
 
 @Component
 class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator {
-  private static final Logger LOG = LoggerFactory.getLogger(ReplicationRunner.class);
+  private static final Logger log = LoggerFactory.getLogger(ReplicationRunner.class);
 
-  private ShuntingYardMetaStoreEventListener listener;
-  private MessageReader messageReader;
+  private static final Counter SUCCESS_COUNTER = Metrics.counter(MetricsConstant.RECEIVER_SUCCESSES);
+  private static final Counter FAILURE_COUNTER = Metrics.counter(MetricsConstant.RECEIVER_FAILURES);
+
+  private final ShuntingYardMetaStoreEventListener listener;
+  private final MessageReader messageReader;
 
   @Autowired
   ReplicationRunner(MessageReader messageReader, ShuntingYardMetaStoreEventListener listener) {
@@ -50,38 +57,45 @@ class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator {
   @Override
   public void run(ApplicationArguments args) {
     while (messageReader.hasNext()) {
-      SerializableListenerEvent event = messageReader.next();
-      LOG.info("New event received: {}", event);
-      // TODO this can be refactored, if we plan to make it more extensible, using small function associated to the
-      // class type instead of a listener
-      switch (event.getEventType()) {
-      case ON_CREATE_TABLE:
-        listener.onCreateTable((SerializableCreateTableEvent) event);
-        break;
-      case ON_ALTER_TABLE:
-        listener.onAlterTable((SerializableAlterTableEvent) event);
-        break;
-      case ON_DROP_TABLE:
-        listener.onDropTable((SerializableDropTableEvent) event);
-        break;
-      case ON_ADD_PARTITION:
-        listener.onAddPartition((SerializableAddPartitionEvent) event);
-        break;
-      case ON_ALTER_PARTITION:
-        listener.onAlterPartition((SerializableAlterPartitionEvent) event);
-        break;
-      case ON_DROP_PARTITION:
-        listener.onDropPartition((SerializableDropPartitionEvent) event);
-        break;
-      case ON_INSERT:
-        listener.onInsert((SerializableInsertEvent) event);
-        break;
-      default:
-        LOG.info("Do not know how to process event of type {}", event.getEventType());
-        break;
+      try {
+        SerializableListenerEvent event = messageReader.next();
+        log.info("New event received: {}", event);
+        // TODO this can be refactored, if we plan to make it more extensible, using small function associated to the
+        // class type instead of a listener
+        switch (event.getEventType()) {
+        case ON_CREATE_TABLE:
+          listener.onCreateTable((SerializableCreateTableEvent) event);
+          break;
+        case ON_ALTER_TABLE:
+          listener.onAlterTable((SerializableAlterTableEvent) event);
+          break;
+        case ON_DROP_TABLE:
+          listener.onDropTable((SerializableDropTableEvent) event);
+          break;
+        case ON_ADD_PARTITION:
+          listener.onAddPartition((SerializableAddPartitionEvent) event);
+          break;
+        case ON_ALTER_PARTITION:
+          listener.onAlterPartition((SerializableAlterPartitionEvent) event);
+          break;
+        case ON_DROP_PARTITION:
+          listener.onDropPartition((SerializableDropPartitionEvent) event);
+          break;
+        case ON_INSERT:
+          listener.onInsert((SerializableInsertEvent) event);
+          break;
+        default:
+          log.info("Do not know how to process event of type {}", event.getEventType());
+          break;
+        }
+        SUCCESS_COUNTER.increment();
+      } catch (Exception e) {
+        // ERROR, ShuntingYard and Receiver are keywords
+        log.error("Error in ShuntingYard Receiver", e);
+        FAILURE_COUNTER.increment();
       }
     }
-    LOG.info("Finishing event loop");
+    log.info("Finishing event loop");
   }
 
   @Override

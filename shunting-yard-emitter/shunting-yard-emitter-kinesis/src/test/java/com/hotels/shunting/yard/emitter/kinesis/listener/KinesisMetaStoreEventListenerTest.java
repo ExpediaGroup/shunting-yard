@@ -16,6 +16,7 @@
 package com.hotels.shunting.yard.emitter.kinesis.listener;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -43,10 +44,10 @@ import org.apache.hadoop.hive.metastore.events.LoadPartitionDoneEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 
 import com.hotels.shunting.yard.common.event.SerializableAddPartitionEvent;
 import com.hotels.shunting.yard.common.event.SerializableAlterPartitionEvent;
@@ -61,7 +62,6 @@ import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 import com.hotels.shunting.yard.common.messaging.Message;
 import com.hotels.shunting.yard.common.messaging.MessageTask;
 import com.hotels.shunting.yard.common.messaging.MessageTaskFactory;
-import com.hotels.shunting.yard.emitter.kinesis.listener.KinesisMetaStoreEventListener;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KinesisMetaStoreEventListenerTest {
@@ -76,8 +76,6 @@ public class KinesisMetaStoreEventListenerTest {
   private @Mock SerializableListenerEventFactory serializableListenerEventFactory;
   private @Mock ExecutorService executorService;
 
-  private @Captor ArgumentCaptor<MessageTask> captor;
-
   private final Configuration config = new Configuration();
   private KinesisMetaStoreEventListener listener;
 
@@ -85,6 +83,13 @@ public class KinesisMetaStoreEventListenerTest {
   public void init() throws Exception {
     when(eventSerDe.marshal(any(SerializableListenerEvent.class))).thenReturn(PAYLOAD);
     when(messageTaskFactory.newTask(any(Message.class))).thenReturn(messageTask);
+    doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        ((Runnable) invocation.getArgument(0)).run();
+        return null;
+      }
+    }).when(executorService).submit(any(Runnable.class));
     listener = new KinesisMetaStoreEventListener(config, serializableListenerEventFactory, eventSerDe,
         messageTaskFactory, executorService);
   }
@@ -97,7 +102,7 @@ public class KinesisMetaStoreEventListenerTest {
     when(serializableEvent.getTableName()).thenReturn(TABLE);
     when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
     listener.onCreateTable(event);
-    verify(executorService).submit(messageTask);
+    verify(messageTask).run();
   }
 
   @Test
@@ -108,7 +113,7 @@ public class KinesisMetaStoreEventListenerTest {
     when(serializableEvent.getTableName()).thenReturn(TABLE);
     when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
     listener.onAlterTable(event);
-    verify(executorService).submit(messageTask);
+    verify(messageTask).run();
   }
 
   @Test
@@ -119,7 +124,7 @@ public class KinesisMetaStoreEventListenerTest {
     when(serializableEvent.getTableName()).thenReturn(TABLE);
     when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
     listener.onDropTable(event);
-    verify(executorService).submit(messageTask);
+    verify(messageTask).run();
   }
 
   @Test
@@ -130,7 +135,7 @@ public class KinesisMetaStoreEventListenerTest {
     when(serializableEvent.getTableName()).thenReturn(TABLE);
     when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
     listener.onAddPartition(event);
-    verify(executorService).submit(messageTask);
+    verify(messageTask).run();
   }
 
   @Test
@@ -141,7 +146,7 @@ public class KinesisMetaStoreEventListenerTest {
     when(serializableEvent.getTableName()).thenReturn(TABLE);
     when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
     listener.onAlterPartition(event);
-    verify(executorService).submit(messageTask);
+    verify(messageTask).run();
   }
 
   @Test
@@ -152,7 +157,7 @@ public class KinesisMetaStoreEventListenerTest {
     when(serializableEvent.getTableName()).thenReturn(TABLE);
     when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
     listener.onDropPartition(event);
-    verify(executorService).submit(messageTask);
+    verify(messageTask).run();
   }
 
   @Test
@@ -163,7 +168,7 @@ public class KinesisMetaStoreEventListenerTest {
     when(serializableEvent.getTableName()).thenReturn(TABLE);
     when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
     listener.onInsert(event);
-    verify(executorService).submit(messageTask);
+    verify(messageTask).run();
   }
 
   @Test
