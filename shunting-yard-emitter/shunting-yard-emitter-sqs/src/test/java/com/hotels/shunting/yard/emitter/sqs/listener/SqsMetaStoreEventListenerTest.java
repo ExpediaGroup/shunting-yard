@@ -15,8 +15,8 @@
  */
 package com.hotels.shunting.yard.emitter.sqs.listener;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -44,12 +44,11 @@ import org.apache.hadoop.hive.metastore.events.LoadPartitionDoneEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 
-import com.hotels.shunting.yard.common.emitter.WrappingMessageTask;
 import com.hotels.shunting.yard.common.event.SerializableAddPartitionEvent;
 import com.hotels.shunting.yard.common.event.SerializableAlterPartitionEvent;
 import com.hotels.shunting.yard.common.event.SerializableAlterTableEvent;
@@ -77,8 +76,6 @@ public class SqsMetaStoreEventListenerTest {
   private @Mock SerializableListenerEventFactory serializableListenerEventFactory;
   private @Mock ExecutorService executorService;
 
-  private @Captor ArgumentCaptor<MessageTask> captor;
-
   private final Configuration config = new Configuration();
   private SqsMetaStoreEventListener listener;
 
@@ -86,6 +83,13 @@ public class SqsMetaStoreEventListenerTest {
   public void init() throws Exception {
     when(eventSerDe.marshal(any(SerializableListenerEvent.class))).thenReturn(PAYLOAD);
     when(messageTaskFactory.newTask(any(Message.class))).thenReturn(messageTask);
+    doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        ((Runnable) invocation.getArgument(0)).run();
+        return null;
+      }
+    }).when(executorService).submit(any(Runnable.class));
     listener = new SqsMetaStoreEventListener(config, serializableListenerEventFactory, eventSerDe, messageTaskFactory,
         executorService);
   }
@@ -98,8 +102,7 @@ public class SqsMetaStoreEventListenerTest {
     when(serializableEvent.getTableName()).thenReturn(TABLE);
     when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
     listener.onCreateTable(event);
-    verify(executorService).submit(captor.capture());
-    assertThat(captor.getValue()).isEqualTo(new WrappingMessageTask(messageTask));
+    verify(messageTask).run();
   }
 
   @Test
@@ -110,8 +113,7 @@ public class SqsMetaStoreEventListenerTest {
     when(serializableEvent.getTableName()).thenReturn(TABLE);
     when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
     listener.onAlterTable(event);
-    verify(executorService).submit(captor.capture());
-    assertThat(captor.getValue()).isEqualTo(new WrappingMessageTask(messageTask));
+    verify(messageTask).run();
   }
 
   @Test
@@ -122,8 +124,7 @@ public class SqsMetaStoreEventListenerTest {
     when(serializableEvent.getTableName()).thenReturn(TABLE);
     when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
     listener.onDropTable(event);
-    verify(executorService).submit(captor.capture());
-    assertThat(captor.getValue()).isEqualTo(new WrappingMessageTask(messageTask));
+    verify(messageTask).run();
   }
 
   @Test
@@ -134,8 +135,7 @@ public class SqsMetaStoreEventListenerTest {
     when(serializableEvent.getTableName()).thenReturn(TABLE);
     when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
     listener.onAddPartition(event);
-    verify(executorService).submit(captor.capture());
-    assertThat(captor.getValue()).isEqualTo(new WrappingMessageTask(messageTask));
+    verify(messageTask).run();
   }
 
   @Test
@@ -146,8 +146,7 @@ public class SqsMetaStoreEventListenerTest {
     when(serializableEvent.getTableName()).thenReturn(TABLE);
     when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
     listener.onAlterPartition(event);
-    verify(executorService).submit(captor.capture());
-    assertThat(captor.getValue()).isEqualTo(new WrappingMessageTask(messageTask));
+    verify(messageTask).run();
   }
 
   @Test
@@ -158,8 +157,7 @@ public class SqsMetaStoreEventListenerTest {
     when(serializableEvent.getTableName()).thenReturn(TABLE);
     when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
     listener.onDropPartition(event);
-    verify(executorService).submit(captor.capture());
-    assertThat(captor.getValue()).isEqualTo(new WrappingMessageTask(messageTask));
+    verify(messageTask).run();
   }
 
   @Test
@@ -170,8 +168,7 @@ public class SqsMetaStoreEventListenerTest {
     when(serializableEvent.getTableName()).thenReturn(TABLE);
     when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
     listener.onInsert(event);
-    verify(executorService).submit(captor.capture());
-    assertThat(captor.getValue()).isEqualTo(new WrappingMessageTask(messageTask));
+    verify(messageTask).run();
   }
 
   @Test

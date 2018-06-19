@@ -10,7 +10,7 @@
   <artifactId>shunting-yard-replicator</artifactId>
 
   <properties>
-    <spring.platform.version>2.0.3.RELEASE</spring.platform.version>
+    <spring.platform.version>Brussels-SR10</spring.platform.version>
     <micrometer.version>1.0.5</micrometer.version>
     <commons.vfs2.version>2.1</commons.vfs2.version>
     <commons.exec.version>1.3</commons.exec.version>
@@ -53,7 +53,7 @@
     <!-- Spring Boot -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-log4j</artifactId>
+      <artifactId>spring-boot-starter-log4j2</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>

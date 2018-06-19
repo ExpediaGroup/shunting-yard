@@ -22,11 +22,11 @@ import java.util.Objects;
 
 import com.hotels.shunting.yard.common.messaging.MessageTask;
 
-public class WrappingMessageTask implements MessageTask {
+class WrappingMessageTask implements MessageTask {
 
   private final MessageTask task;
 
-  public WrappingMessageTask(MessageTask task) {
+  WrappingMessageTask(MessageTask task) {
     this.task = task;
   }
 
@@ -40,6 +40,7 @@ public class WrappingMessageTask implements MessageTask {
     }
   }
 
+  // For testing
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {

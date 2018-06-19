@@ -17,10 +17,13 @@ package com.hotels.shunting.yard.common.emitter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 
 import java.util.concurrent.ExecutorService;
 
@@ -47,7 +50,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.hotels.shunting.yard.common.event.SerializableAddPartitionEvent;
 import com.hotels.shunting.yard.common.event.SerializableAlterPartitionEvent;
@@ -63,7 +67,8 @@ import com.hotels.shunting.yard.common.messaging.Message;
 import com.hotels.shunting.yard.common.messaging.MessageTask;
 import com.hotels.shunting.yard.common.messaging.MessageTaskFactory;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(EmitterUtils.class)
 public class AbstractMetaStoreEventListenerTest {
 
   private static final String DATABASE = "db";
@@ -83,6 +88,7 @@ public class AbstractMetaStoreEventListenerTest {
 
   @Before
   public void init() throws Exception {
+    mockStatic(EmitterUtils.class);
     when(eventSerDe.marshal(any(SerializableListenerEvent.class))).thenReturn(PAYLOAD);
     when(messageTaskFactory.newTask(any(Message.class))).thenReturn(messageTask);
     listener = new AbstractMetaStoreEventListener(config, serializableListenerEventFactory, executorService) {
@@ -111,6 +117,20 @@ public class AbstractMetaStoreEventListenerTest {
   }
 
   @Test
+  public void onCreateTableErrors() throws Exception {
+    CreateTableEvent event = mock(CreateTableEvent.class);
+    SerializableCreateTableEvent serializableEvent = mock(SerializableCreateTableEvent.class);
+    when(serializableEvent.getDatabaseName()).thenReturn(DATABASE);
+    when(serializableEvent.getTableName()).thenReturn(TABLE);
+    when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
+    RuntimeException e = new RuntimeException("Something has gone wrong");
+    doThrow(e).when(executorService).submit(any(MessageTask.class));
+    listener.onCreateTable(event);
+    verifyStatic(EmitterUtils.class);
+    EmitterUtils.error(e);
+  }
+
+  @Test
   public void onAlterTable() throws Exception {
     AlterTableEvent event = mock(AlterTableEvent.class);
     SerializableAlterTableEvent serializableEvent = mock(SerializableAlterTableEvent.class);
@@ -120,6 +140,20 @@ public class AbstractMetaStoreEventListenerTest {
     listener.onAlterTable(event);
     verify(executorService).submit(captor.capture());
     assertThat(captor.getValue()).isEqualTo(new WrappingMessageTask(messageTask));
+  }
+
+  @Test
+  public void onAlterTableErrors() throws Exception {
+    AlterTableEvent event = mock(AlterTableEvent.class);
+    SerializableAlterTableEvent serializableEvent = mock(SerializableAlterTableEvent.class);
+    when(serializableEvent.getDatabaseName()).thenReturn(DATABASE);
+    when(serializableEvent.getTableName()).thenReturn(TABLE);
+    when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
+    RuntimeException e = new RuntimeException("Something has gone wrong");
+    doThrow(e).when(executorService).submit(any(MessageTask.class));
+    listener.onAlterTable(event);
+    verifyStatic(EmitterUtils.class);
+    EmitterUtils.error(e);
   }
 
   @Test
@@ -135,6 +169,20 @@ public class AbstractMetaStoreEventListenerTest {
   }
 
   @Test
+  public void onDropTableErrors() throws Exception {
+    DropTableEvent event = mock(DropTableEvent.class);
+    SerializableDropTableEvent serializableEvent = mock(SerializableDropTableEvent.class);
+    when(serializableEvent.getDatabaseName()).thenReturn(DATABASE);
+    when(serializableEvent.getTableName()).thenReturn(TABLE);
+    when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
+    RuntimeException e = new RuntimeException("Something has gone wrong");
+    doThrow(e).when(executorService).submit(any(MessageTask.class));
+    listener.onDropTable(event);
+    verifyStatic(EmitterUtils.class);
+    EmitterUtils.error(e);
+  }
+
+  @Test
   public void onAddPartition() throws Exception {
     AddPartitionEvent event = mock(AddPartitionEvent.class);
     SerializableAddPartitionEvent serializableEvent = mock(SerializableAddPartitionEvent.class);
@@ -144,6 +192,20 @@ public class AbstractMetaStoreEventListenerTest {
     listener.onAddPartition(event);
     verify(executorService).submit(captor.capture());
     assertThat(captor.getValue()).isEqualTo(new WrappingMessageTask(messageTask));
+  }
+
+  @Test
+  public void onAddPartitionErrors() throws Exception {
+    AddPartitionEvent event = mock(AddPartitionEvent.class);
+    SerializableAddPartitionEvent serializableEvent = mock(SerializableAddPartitionEvent.class);
+    when(serializableEvent.getDatabaseName()).thenReturn(DATABASE);
+    when(serializableEvent.getTableName()).thenReturn(TABLE);
+    when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
+    RuntimeException e = new RuntimeException("Something has gone wrong");
+    doThrow(e).when(executorService).submit(any(MessageTask.class));
+    listener.onAddPartition(event);
+    verifyStatic(EmitterUtils.class);
+    EmitterUtils.error(e);
   }
 
   @Test
@@ -159,6 +221,20 @@ public class AbstractMetaStoreEventListenerTest {
   }
 
   @Test
+  public void onAlterPartitionErrors() throws Exception {
+    AlterPartitionEvent event = mock(AlterPartitionEvent.class);
+    SerializableAlterPartitionEvent serializableEvent = mock(SerializableAlterPartitionEvent.class);
+    when(serializableEvent.getDatabaseName()).thenReturn(DATABASE);
+    when(serializableEvent.getTableName()).thenReturn(TABLE);
+    when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
+    RuntimeException e = new RuntimeException("Something has gone wrong");
+    doThrow(e).when(executorService).submit(any(MessageTask.class));
+    listener.onAlterPartition(event);
+    verifyStatic(EmitterUtils.class);
+    EmitterUtils.error(e);
+  }
+
+  @Test
   public void onDropPartition() throws Exception {
     DropPartitionEvent event = mock(DropPartitionEvent.class);
     SerializableDropPartitionEvent serializableEvent = mock(SerializableDropPartitionEvent.class);
@@ -171,6 +247,20 @@ public class AbstractMetaStoreEventListenerTest {
   }
 
   @Test
+  public void onDropPartitionErrors() throws Exception {
+    DropPartitionEvent event = mock(DropPartitionEvent.class);
+    SerializableDropPartitionEvent serializableEvent = mock(SerializableDropPartitionEvent.class);
+    when(serializableEvent.getDatabaseName()).thenReturn(DATABASE);
+    when(serializableEvent.getTableName()).thenReturn(TABLE);
+    when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
+    RuntimeException e = new RuntimeException("Something has gone wrong");
+    doThrow(e).when(executorService).submit(any(MessageTask.class));
+    listener.onDropPartition(event);
+    verifyStatic(EmitterUtils.class);
+    EmitterUtils.error(e);
+  }
+
+  @Test
   public void onInsert() throws Exception {
     InsertEvent event = mock(InsertEvent.class);
     SerializableInsertEvent serializableEvent = mock(SerializableInsertEvent.class);
@@ -180,6 +270,20 @@ public class AbstractMetaStoreEventListenerTest {
     listener.onInsert(event);
     verify(executorService).submit(captor.capture());
     assertThat(captor.getValue()).isEqualTo(new WrappingMessageTask(messageTask));
+  }
+
+  @Test
+  public void onInsertErrors() throws Exception {
+    InsertEvent event = mock(InsertEvent.class);
+    SerializableInsertEvent serializableEvent = mock(SerializableInsertEvent.class);
+    when(serializableEvent.getDatabaseName()).thenReturn(DATABASE);
+    when(serializableEvent.getTableName()).thenReturn(TABLE);
+    when(serializableListenerEventFactory.create(event)).thenReturn(serializableEvent);
+    RuntimeException e = new RuntimeException("Something has gone wrong");
+    doThrow(e).when(executorService).submit(any(MessageTask.class));
+    listener.onInsert(event);
+    verifyStatic(EmitterUtils.class);
+    EmitterUtils.error(e);
   }
 
   @Test
