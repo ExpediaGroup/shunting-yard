@@ -23,8 +23,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.hadoop.hive.metastore.api.FieldSchema;
-
 import com.google.common.base.Joiner;
 
 import com.hotels.bdp.circustrain.core.conf.ReplicaCatalog;
@@ -39,19 +37,12 @@ public class CircusTrainConfig {
   private static final Joiner AND_JOINER = Joiner.on(" AND ");
   private static final Joiner OR_JOINER = Joiner.on(") OR (");
 
-  private static String partCondition(FieldSchema partitionColumn, String partitionValue) {
-    String type = partitionColumn.getType().toLowerCase();
-    boolean needQuotes = type.equals("string") || type.equals("char") || type.equals("varchar") || type.equals("date");
-    return new StringBuilder(partitionColumn.getName())
-        .append("=")
-        .append(needQuotes ? "'" : "")
-        .append(partitionValue)
-        .append(needQuotes ? "'" : "")
-        .toString();
+  private static String partCondition(String partitionColumn, String partitionValue) {
+    return new StringBuilder(partitionColumn).append("='").append(partitionValue).append("'").toString();
   }
 
-  private static String createPartitionFilter(List<FieldSchema> partitionColumns, List<String>[] partitionValuesList) {
-    List<String> partitionExpressions = new ArrayList<>(partitionValuesList.length);
+  private static String createPartitionFilter(List<String> partitionColumns, List<List<String>> partitionValuesList) {
+    List<String> partitionExpressions = new ArrayList<>(partitionValuesList.size());
     for (List<String> partitionValues : partitionValuesList) {
       List<String> partConditions = new ArrayList<>(partitionValues.size());
       for (int i = 0; i < partitionColumns.size(); i++) {
@@ -111,8 +102,8 @@ public class CircusTrainConfig {
         String databaseName,
         String tableName,
         String replicaTableLocation,
-        List<FieldSchema> partitionColumns,
-        List<String>[] partitionValues) {
+        List<String> partitionColumns,
+        List<List<String>> partitionValues) {
       TableReplication tableReplication = new TableReplication();
       tableReplication.setReplicationMode(checkNotNull(replicationMode, "replicationMode is required"));
 

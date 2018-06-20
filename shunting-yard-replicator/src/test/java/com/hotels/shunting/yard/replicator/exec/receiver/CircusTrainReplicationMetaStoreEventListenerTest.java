@@ -15,6 +15,7 @@
  */
 package com.hotels.shunting.yard.replicator.exec.receiver;
 
+import static org.apache.hadoop.hive.common.StatsSetupConst.CASCADE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -25,19 +26,25 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 import static com.hotels.bdp.circustrain.api.CircusTrainTableParameter.REPLICATION_EVENT;
+import static com.hotels.shunting.yard.common.event.EventType.ON_ADD_PARTITION;
+import static com.hotels.shunting.yard.common.event.EventType.ON_ALTER_PARTITION;
+import static com.hotels.shunting.yard.common.event.EventType.ON_ALTER_TABLE;
+import static com.hotels.shunting.yard.common.event.EventType.ON_CREATE_TABLE;
+import static com.hotels.shunting.yard.common.event.EventType.ON_DROP_PARTITION;
+import static com.hotels.shunting.yard.common.event.EventType.ON_DROP_TABLE;
+import static com.hotels.shunting.yard.common.event.EventType.ON_INSERT;
+import static com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent.DELETE_DATA_PARAMETER;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.hadoop.hive.common.ObjectPair;
 import org.apache.hadoop.hive.metastore.api.EnvironmentContext;
 import org.apache.hadoop.hive.metastore.api.NoSuchObjectException;
 import org.apache.hadoop.hive.metastore.api.Partition;
@@ -47,27 +54,25 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import com.google.common.collect.ImmutableMap;
+
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 import com.hotels.shunting.yard.common.ShuntingYardException;
-import com.hotels.shunting.yard.common.event.SerializableAddPartitionEvent;
-import com.hotels.shunting.yard.common.event.SerializableAlterPartitionEvent;
-import com.hotels.shunting.yard.common.event.SerializableAlterTableEvent;
-import com.hotels.shunting.yard.common.event.SerializableCreateTableEvent;
-import com.hotels.shunting.yard.common.event.SerializableDropPartitionEvent;
-import com.hotels.shunting.yard.common.event.SerializableDropTableEvent;
-import com.hotels.shunting.yard.common.event.SerializableInsertEvent;
-import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
+import com.hotels.shunting.yard.common.event.EventType;
 import com.hotels.shunting.yard.common.receiver.thrift.ThriftListenerUtils;
+import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 import com.hotels.shunting.yard.replicator.exec.launcher.CircusTrainRunner;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(ThriftListenerUtils.class)
-public class ReplicationCircusTrainMetaStoreEventListenerTest {
+public class CircusTrainReplicationMetaStoreEventListenerTest {
 
   private static final String DATABASE = "db";
   private static final String TABLE = "tbl";
@@ -80,10 +85,11 @@ public class ReplicationCircusTrainMetaStoreEventListenerTest {
   private @Mock Context context;
   private @Mock Table table;
   private @Mock Partition partition;
-  private @Mock List<ObjectPair<Integer, byte[]>> objectPairs;
+
+  private @Captor ArgumentCaptor<EnvironmentContext> environmentContextCaptor;
 
   private final Map<String, String> tableParameters = new HashMap<>();
-  private ReplicationCircusTrainMetaStoreEventListener listener;
+  private CircusTrainReplicationMetaStoreEventListener listener;
 
   @Before
   public void init() throws Exception {
@@ -95,127 +101,106 @@ public class ReplicationCircusTrainMetaStoreEventListenerTest {
     when(metaStoreClient.getTable(DATABASE, TABLE)).thenReturn(table);
     when(partition.getDbName()).thenReturn(DATABASE);
     when(partition.getTableName()).thenReturn(TABLE);
-    listener = new ReplicationCircusTrainMetaStoreEventListener(metaStoreClient, contextFactory, circusTrainRunner);
+    listener = new CircusTrainReplicationMetaStoreEventListener(metaStoreClient, contextFactory, circusTrainRunner);
   }
 
   @Test
   public void canReplicateTable() {
-    assertThat(listener.canReplicate(table)).isTrue();
+    assertThat(listener.canReplicate(DATABASE, TABLE)).isTrue();
   }
 
   @Test
   public void canReplicateTableIfTableDoesNotExists() throws Exception {
     reset(metaStoreClient);
     when(metaStoreClient.getTable(DATABASE, TABLE)).thenThrow(NoSuchObjectException.class);
-    assertThat(listener.canReplicate(table)).isTrue();
+    assertThat(listener.canReplicate(DATABASE, TABLE)).isTrue();
   }
 
   @Test
   public void cannotReplicateTable() {
     tableParameters.clear();
-    listener.canReplicate(table);
+    listener.canReplicate(DATABASE, TABLE);
   }
 
   @Test(expected = ShuntingYardException.class)
   public void cannotReplicateTableIfExceptionIsThrown() throws Exception {
     reset(metaStoreClient);
     when(metaStoreClient.getTable(DATABASE, TABLE)).thenThrow(TException.class);
-    listener.canReplicate(table);
-  }
-
-  @Test
-  public void canReplicatePartition() {
-    assertThat(listener.canReplicate(partition)).isTrue();
-  }
-
-  @Test
-  public void canReplicatePartitionIfTableDoesNotExists() throws Exception {
-    reset(metaStoreClient);
-    when(metaStoreClient.getTable(DATABASE, TABLE)).thenThrow(NoSuchObjectException.class);
-    assertThat(listener.canReplicate(partition)).isTrue();
-  }
-
-  @Test
-  public void cannotReplicatePartition() {
-    tableParameters.clear();
-    assertThat(listener.canReplicate(partition)).isFalse();
-  }
-
-  @Test(expected = ShuntingYardException.class)
-  public void cannotReplicatePartitionIfExceptionIsThrown() throws Exception {
-    reset(metaStoreClient);
-    when(metaStoreClient.getTable(DATABASE, TABLE)).thenThrow(TException.class);
-    listener.canReplicate(partition);
+    listener.canReplicate(DATABASE, TABLE);
   }
 
   @Test
   public void onCreateTableReplicates() {
-    SerializableCreateTableEvent event = mockEvent(SerializableCreateTableEvent.class);
-    when(event.getTable()).thenReturn(table);
-    when(contextFactory.createContext(event, table)).thenReturn(context);
-    listener.onCreateTable(event);
+    MetaStoreEvent event = mockEvent(ON_CREATE_TABLE);
+    // when(event.getTable()).thenReturn(table);
+    when(contextFactory.createContext(event)).thenReturn(context);
+    listener.onEvent(event);
     verify(circusTrainRunner).run(context);
   }
 
   @Test
   public void onCreateTableDoesNotReplicate() {
     tableParameters.clear();
-    SerializableCreateTableEvent event = mockEvent(SerializableCreateTableEvent.class);
-    when(event.getTable()).thenReturn(table);
-    listener.onCreateTable(event);
+    MetaStoreEvent event = mockEvent(ON_CREATE_TABLE);
+    // when(event.getTable()).thenReturn(table);
+    listener.onEvent(event);
     verifyZeroInteractions(contextFactory);
     verifyZeroInteractions(circusTrainRunner);
   }
 
   @Test
   public void onDropTableDeletesTable() throws Exception {
-    SerializableDropTableEvent event = mockEvent(SerializableDropTableEvent.class);
-    when(event.getTable()).thenReturn(table);
-    listener.onDropTable(event);
+    MetaStoreEvent event = mockEvent(ON_DROP_TABLE);
+    // when(event.getTable()).thenReturn(table);
+    listener.onEvent(event);
     verify(metaStoreClient).dropTable(DATABASE, TABLE, false, true);
   }
 
   @Test
   public void onDropTableDeletesTableAndData() throws Exception {
-    SerializableDropTableEvent event = mockEvent(SerializableDropTableEvent.class);
-    when(event.getTable()).thenReturn(table);
-    when(event.getDeleteData()).thenReturn(true);
-    listener.onDropTable(event);
+    MetaStoreEvent event = mockEvent(ON_DROP_TABLE);
+    when(event.getParameters()).thenReturn(ImmutableMap.of(DELETE_DATA_PARAMETER, "true"));
+    listener.onEvent(event);
     verify(metaStoreClient).dropTable(DATABASE, TABLE, true, true);
   }
 
   @Test
   public void onDropTableDoesNotDeleteTable() throws Exception {
     tableParameters.clear();
-    SerializableDropTableEvent event = mockEvent(SerializableDropTableEvent.class);
-    when(event.getTable()).thenReturn(table);
-    listener.onDropTable(event);
+    MetaStoreEvent event = mockEvent(ON_DROP_TABLE);
+    // when(event.getTable()).thenReturn(table);
+    listener.onEvent(event);
     verify(metaStoreClient, never()).dropTable(anyString(), anyString(), anyBoolean(), anyBoolean());
   }
 
   @Test
   public void onAlterTableReplicates() throws Exception {
+    final String newTableName = "new_tbl";
     Table newTable = mock(Table.class);
     when(newTable.getDbName()).thenReturn(DATABASE);
-    when(newTable.getTableName()).thenReturn("new_tbl");
-    when(metaStoreClient.getTable(DATABASE, "new_tbl")).thenReturn(newTable);
+    when(newTable.getTableName()).thenReturn(newTableName);
+    when(newTable.getParameters()).thenReturn(tableParameters);
+    when(metaStoreClient.getTable(DATABASE, newTableName)).thenReturn(newTable);
+    Map<String, String> envContextProperties = ImmutableMap.of("key", "value", CASCADE, "true");
     EnvironmentContext environment = mock(EnvironmentContext.class);
-    SerializableAlterTableEvent event = mockEvent(SerializableAlterTableEvent.class);
-    when(event.getOldTable()).thenReturn(table);
-    when(event.getNewTable()).thenReturn(newTable);
-    when(event.getEnvironmentContext()).thenReturn(environment);
-    when(contextFactory.createContext(event, newTable)).thenReturn(context);
-    listener.onAlterTable(event);
+    when(environment.getProperties()).thenReturn(envContextProperties);
+    MetaStoreEvent event = mockEvent(ON_ALTER_TABLE);
+    when(event.getDatabaseName()).thenReturn(DATABASE);
+    when(event.getTableName()).thenReturn(newTableName);
+    when(event.getEnvironmentContext()).thenReturn(envContextProperties);
+    when(contextFactory.createContext(event)).thenReturn(context);
+    listener.onEvent(event);
     verify(circusTrainRunner).run(context);
-    verify(metaStoreClient).alter_table_with_environmentContext(DATABASE, "new_tbl", newTable, environment);
+    verify(metaStoreClient).alter_table_with_environmentContext(eq(DATABASE), eq(newTableName), same(newTable),
+        environmentContextCaptor.capture());
+    assertThat(environmentContextCaptor.getValue().getProperties()).isEqualTo(envContextProperties);
   }
 
   @Test
   public void onAlterTableDoesNotReplicate() throws Exception {
     tableParameters.clear();
-    SerializableAlterTableEvent event = mockEvent(SerializableAlterTableEvent.class);
-    when(event.getOldTable()).thenReturn(table);
-    listener.onAlterTable(event);
+    MetaStoreEvent event = mockEvent(ON_ALTER_TABLE);
+    listener.onEvent(event);
     verifyZeroInteractions(contextFactory);
     verifyZeroInteractions(circusTrainRunner);
     verify(metaStoreClient, never()).alter_table_with_environmentContext(anyString(), anyString(), any(Table.class),
@@ -224,89 +209,87 @@ public class ReplicationCircusTrainMetaStoreEventListenerTest {
 
   @Test
   public void onAddPartitionReplicates() {
-    List<Partition> partitions = Arrays.asList(partition);
-    SerializableAddPartitionEvent event = mockEvent(SerializableAddPartitionEvent.class);
-    when(event.getTable()).thenReturn(table);
-    when(event.getPartitions()).thenReturn(partitions);
-    when(contextFactory.createContext(event, table, partitions)).thenReturn(context);
-    listener.onAddPartition(event);
+    MetaStoreEvent event = mockEvent(ON_ADD_PARTITION);
+    when(contextFactory.createContext(event)).thenReturn(context);
+    listener.onEvent(event);
     verify(circusTrainRunner).run(context);
   }
 
   @Test
   public void onAddPartitionDoesNotReplicate() {
     tableParameters.clear();
-    SerializableAddPartitionEvent event = mockEvent(SerializableAddPartitionEvent.class);
-    when(event.getTable()).thenReturn(table);
-    when(contextFactory.createContext(same(event), same(table), eq(Arrays.asList(partition)))).thenReturn(context);
-    listener.onAddPartition(event);
+    MetaStoreEvent event = mockEvent(ON_ADD_PARTITION);
+    when(contextFactory.createContext(same(event))).thenReturn(context);
+    listener.onEvent(event);
     verifyZeroInteractions(contextFactory);
     verifyZeroInteractions(circusTrainRunner);
   }
 
   @Test
   public void onDropPartitionDeletesPartition() throws Exception {
-    List<Partition> partitions = Arrays.asList(partition);
-    when(ThriftListenerUtils.toObjectPairs(table, partitions)).thenReturn(objectPairs);
-    SerializableDropPartitionEvent event = mockEvent(SerializableDropPartitionEvent.class);
-    when(event.getTable()).thenReturn(table);
-    when(event.getPartitions()).thenReturn(partitions);
-    listener.onDropPartition(event);
-    verify(metaStoreClient).dropPartitions(DATABASE, TABLE, objectPairs, false, true, false);
+    List<String> partitions = Arrays.asList("a", "b");
+    MetaStoreEvent event = mockEvent(ON_DROP_PARTITION);
+    when(event.getPartitionValues()).thenReturn(Arrays.asList(partitions));
+    listener.onEvent(event);
+    verify(metaStoreClient).dropPartition(DATABASE, TABLE, partitions, false);
   }
 
   @Test
   public void onDropPartitionDeletesPartitionAndData() throws Exception {
-    List<Partition> partitions = Arrays.asList(partition);
-    when(ThriftListenerUtils.toObjectPairs(table, partitions)).thenReturn(objectPairs);
-    SerializableDropPartitionEvent event = mockEvent(SerializableDropPartitionEvent.class);
-    when(event.getTable()).thenReturn(table);
-    when(event.getPartitions()).thenReturn(partitions);
-    when(event.getDeleteData()).thenReturn(true);
-    listener.onDropPartition(event);
-    verify(metaStoreClient).dropPartitions(DATABASE, TABLE, objectPairs, true, true, false);
+    List<String> partitions = Arrays.asList("a", "b");
+    MetaStoreEvent event = mockEvent(ON_DROP_PARTITION);
+    when(event.getPartitionValues()).thenReturn(Arrays.asList(partitions));
+    when(event.getParameters()).thenReturn(ImmutableMap.of(DELETE_DATA_PARAMETER, "true"));
+    listener.onEvent(event);
+    verify(metaStoreClient).dropPartition(DATABASE, TABLE, partitions, true);
   }
 
   @Test
   public void onDropPartitionDoesNotDeletePartition() throws Exception {
     tableParameters.clear();
-    SerializableDropPartitionEvent event = mockEvent(SerializableDropPartitionEvent.class);
-    when(event.getTable()).thenReturn(table);
-    listener.onDropPartition(event);
+    MetaStoreEvent event = mockEvent(ON_DROP_PARTITION);
+    listener.onEvent(event);
     verify(metaStoreClient, never()).dropPartitions(anyString(), anyString(), any(List.class), anyBoolean(),
         anyBoolean(), anyBoolean());
   }
 
   @Test
   public void onAlterPartitionReplicates() {
-    SerializableAlterPartitionEvent event = mockEvent(SerializableAlterPartitionEvent.class);
-    when(event.getTable()).thenReturn(table);
-    when(event.getNewPartition()).thenReturn(partition);
-    when(contextFactory.createContext(same(event), same(table), eq(Arrays.asList(partition)))).thenReturn(context);
-    listener.onAlterPartition(event);
+    MetaStoreEvent event = mockEvent(ON_ALTER_PARTITION);
+    when(contextFactory.createContext(same(event))).thenReturn(context);
+    listener.onEvent(event);
     verify(circusTrainRunner).run(context);
   }
 
   @Test
   public void onAlterPartitionDoesNotReplicate() {
     tableParameters.clear();
-    SerializableAlterPartitionEvent event = mockEvent(SerializableAlterPartitionEvent.class);
-    when(event.getTable()).thenReturn(table);
-    listener.onAlterPartition(event);
+    MetaStoreEvent event = mockEvent(ON_ALTER_PARTITION);
+    listener.onEvent(event);
     verifyZeroInteractions(contextFactory);
     verifyZeroInteractions(circusTrainRunner);
   }
 
   @Test
-  public void onInsert() {
-    SerializableInsertEvent event = mockEvent(SerializableInsertEvent.class);
-    listener.onInsert(event);
-    verifyNoMoreInteractions(metaStoreClient);
-    verifyNoMoreInteractions(circusTrainRunner);
+  public void onInsertReplicates() {
+    MetaStoreEvent event = mockEvent(ON_INSERT);
+    when(contextFactory.createContext(same(event))).thenReturn(context);
+    listener.onEvent(event);
+    verify(circusTrainRunner).run(context);
   }
 
-  private static <T extends SerializableListenerEvent> T mockEvent(Class<T> clazz) {
-    T event = mock(clazz);
+  @Test
+  public void onInsertDoesNotReplicate() {
+    tableParameters.clear();
+    MetaStoreEvent event = mockEvent(ON_INSERT);
+    listener.onEvent(event);
+    verifyZeroInteractions(contextFactory);
+    verifyZeroInteractions(circusTrainRunner);
+  }
+
+  private static MetaStoreEvent mockEvent(EventType eventType) {
+    MetaStoreEvent event = mock(MetaStoreEvent.class);
+    when(event.getEventType()).thenReturn(eventType);
     when(event.getDatabaseName()).thenReturn(DATABASE);
     when(event.getTableName()).thenReturn(TABLE);
     return event;

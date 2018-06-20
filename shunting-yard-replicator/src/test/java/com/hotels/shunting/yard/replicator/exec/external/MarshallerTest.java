@@ -20,9 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.List;
 
-import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -47,8 +45,8 @@ public class MarshallerTest {
         .replicaMetaStoreUri("replicaMetaStoreUri")
         .copierOption("p1", "val1")
         .copierOption("p2", "val2")
-        .replication(ReplicationMode.FULL, "databaseName", "tableName", "replicaTableLocation",
-            Arrays.asList(new FieldSchema("part", "string", null)), new List[] { Arrays.asList("partval") })
+        .replication(ReplicationMode.FULL, "databaseName", "tableName", "replicaTableLocation", Arrays.asList("part"),
+            Arrays.asList(Arrays.asList("partval")))
         .build();
 
     File file = tmp.newFile("conif.yml");

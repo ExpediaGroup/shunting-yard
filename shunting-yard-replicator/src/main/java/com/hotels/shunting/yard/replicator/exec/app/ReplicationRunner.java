@@ -26,17 +26,10 @@ import org.springframework.stereotype.Component;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Metrics;
 
-import com.hotels.shunting.yard.common.event.SerializableAddPartitionEvent;
-import com.hotels.shunting.yard.common.event.SerializableAlterPartitionEvent;
-import com.hotels.shunting.yard.common.event.SerializableAlterTableEvent;
-import com.hotels.shunting.yard.common.event.SerializableCreateTableEvent;
-import com.hotels.shunting.yard.common.event.SerializableDropPartitionEvent;
-import com.hotels.shunting.yard.common.event.SerializableDropTableEvent;
-import com.hotels.shunting.yard.common.event.SerializableInsertEvent;
-import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
-import com.hotels.shunting.yard.common.messaging.MessageReader;
 import com.hotels.shunting.yard.common.metrics.MetricsConstant;
-import com.hotels.shunting.yard.common.receiver.ShuntingYardMetaStoreEventListener;
+import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
+import com.hotels.shunting.yard.replicator.exec.messaging.MetaStoreEventReader;
+import com.hotels.shunting.yard.replicator.exec.receiver.ReplicationMetaStoreEventListener;
 
 @Component
 class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator {
@@ -45,49 +38,22 @@ class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator {
   private static final Counter SUCCESS_COUNTER = Metrics.counter(MetricsConstant.RECEIVER_SUCCESSES);
   private static final Counter FAILURE_COUNTER = Metrics.counter(MetricsConstant.RECEIVER_FAILURES);
 
-  private final ShuntingYardMetaStoreEventListener listener;
-  private final MessageReader messageReader;
+  private final ReplicationMetaStoreEventListener listener;
+  private final MetaStoreEventReader eventReader;
 
   @Autowired
-  ReplicationRunner(MessageReader messageReader, ShuntingYardMetaStoreEventListener listener) {
+  ReplicationRunner(MetaStoreEventReader eventReader, ReplicationMetaStoreEventListener listener) {
     this.listener = listener;
-    this.messageReader = messageReader;
+    this.eventReader = eventReader;
   }
 
   @Override
   public void run(ApplicationArguments args) {
-    while (messageReader.hasNext()) {
+    while (eventReader.hasNext()) {
       try {
-        SerializableListenerEvent event = messageReader.next();
+        MetaStoreEvent event = eventReader.next();
         log.info("New event received: {}", event);
-        // TODO this can be refactored, if we plan to make it more extensible, using small function associated to the
-        // class type instead of a listener
-        switch (event.getEventType()) {
-        case ON_CREATE_TABLE:
-          listener.onCreateTable((SerializableCreateTableEvent) event);
-          break;
-        case ON_ALTER_TABLE:
-          listener.onAlterTable((SerializableAlterTableEvent) event);
-          break;
-        case ON_DROP_TABLE:
-          listener.onDropTable((SerializableDropTableEvent) event);
-          break;
-        case ON_ADD_PARTITION:
-          listener.onAddPartition((SerializableAddPartitionEvent) event);
-          break;
-        case ON_ALTER_PARTITION:
-          listener.onAlterPartition((SerializableAlterPartitionEvent) event);
-          break;
-        case ON_DROP_PARTITION:
-          listener.onDropPartition((SerializableDropPartitionEvent) event);
-          break;
-        case ON_INSERT:
-          listener.onInsert((SerializableInsertEvent) event);
-          break;
-        default:
-          log.info("Do not know how to process event of type {}", event.getEventType());
-          break;
-        }
+        listener.onEvent(event);
         SUCCESS_COUNTER.increment();
       } catch (Exception e) {
         // ERROR, ShuntingYard and Receiver are keywords
