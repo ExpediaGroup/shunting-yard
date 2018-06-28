@@ -22,6 +22,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -190,6 +191,32 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
     when(event.getEnvironmentContext()).thenReturn(envContextProperties);
     when(event.isCascade()).thenReturn(true);
     when(contextFactory.createContext(event)).thenReturn(context);
+    listener.onEvent(event);
+    verify(circusTrainRunner).run(context);
+    verify(metaStoreClient).alter_table_with_environmentContext(eq(DATABASE), eq(newTableName), same(newTable),
+        environmentContextCaptor.capture());
+    assertThat(environmentContextCaptor.getValue().getProperties()).isEqualTo(envContextProperties);
+  }
+
+  @Test
+  public void onAlterTableReplicatesButCannotCascadeUpdates() throws Exception {
+    final String newTableName = "new_tbl";
+    Table newTable = mock(Table.class);
+    when(newTable.getDbName()).thenReturn(DATABASE);
+    when(newTable.getTableName()).thenReturn(newTableName);
+    when(newTable.getParameters()).thenReturn(tableParameters);
+    when(metaStoreClient.getTable(DATABASE, newTableName)).thenReturn(newTable);
+    Map<String, String> envContextProperties = ImmutableMap.of("key", "value", CASCADE, "true");
+    EnvironmentContext environment = mock(EnvironmentContext.class);
+    when(environment.getProperties()).thenReturn(envContextProperties);
+    MetaStoreEvent event = mockEvent(ON_ALTER_TABLE);
+    when(event.getDatabaseName()).thenReturn(DATABASE);
+    when(event.getTableName()).thenReturn(newTableName);
+    when(event.getEnvironmentContext()).thenReturn(envContextProperties);
+    when(event.isCascade()).thenReturn(true);
+    when(contextFactory.createContext(event)).thenReturn(context);
+    doThrow(RuntimeException.class).when(metaStoreClient).alter_table_with_environmentContext(eq(DATABASE),
+        eq(newTableName), same(newTable), any());
     listener.onEvent(event);
     verify(circusTrainRunner).run(context);
     verify(metaStoreClient).alter_table_with_environmentContext(eq(DATABASE), eq(newTableName), same(newTable),
