@@ -60,4 +60,11 @@ public class ReplicationRunnerTest {
     verifyNoMoreInteractions(listener);
   }
 
+  @Test
+  public void onEventProcessingFailure() {
+    when(eventReader.next()).thenThrow(RuntimeException.class);
+    runner.run(args);
+    verifyNoMoreInteractions(listener);
+  }
+
 }
