@@ -188,6 +188,7 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
     when(event.getDatabaseName()).thenReturn(DATABASE);
     when(event.getTableName()).thenReturn(newTableName);
     when(event.getEnvironmentContext()).thenReturn(envContextProperties);
+    when(event.isCascade()).thenReturn(true);
     when(contextFactory.createContext(event)).thenReturn(context);
     listener.onEvent(event);
     verify(circusTrainRunner).run(context);

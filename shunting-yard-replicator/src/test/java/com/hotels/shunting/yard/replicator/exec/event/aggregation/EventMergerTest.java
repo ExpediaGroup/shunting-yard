@@ -17,6 +17,7 @@ package com.hotels.shunting.yard.replicator.exec.event.aggregation;
 
 import static java.util.Arrays.asList;
 
+import static org.apache.hadoop.hive.common.StatsSetupConst.CASCADE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
@@ -220,6 +221,7 @@ public class EventMergerTest {
         .hasFieldOrPropertyWithValue("partitionValues", null)
         .hasFieldOrPropertyWithValue("parameters", ImmutableMap.of("p", "vb1"))
         .hasFieldOrPropertyWithValue("environmentContext", ImmutableMap.of("eka1", "eva1", "ekb1", "evb1"));
+    assertThat(event.isCascade()).isFalse();
   }
 
   @Test
@@ -242,6 +244,7 @@ public class EventMergerTest {
         .hasFieldOrPropertyWithValue("partitionValues", asList(asList("b1")))
         .hasFieldOrPropertyWithValue("parameters", ImmutableMap.of("pa1", "va1", "pb1", "vb1"))
         .hasFieldOrPropertyWithValue("environmentContext", ImmutableMap.of("eka1", "eva1", "ekb1", "evb1"));
+    assertThat(event.isCascade()).isFalse();
   }
 
   @Test
@@ -265,6 +268,37 @@ public class EventMergerTest {
         .hasFieldOrPropertyWithValue("partitionValues", asList(asList("a1"), asList("b1")))
         .hasFieldOrPropertyWithValue("parameters", ImmutableMap.of("pa1", "va1", "pb1", "vb1"))
         .hasFieldOrPropertyWithValue("environmentContext", ImmutableMap.of("eka1", "eva1", "ekb1", "evb1"));
+    assertThat(event.isCascade()).isFalse();
+  }
+
+  @Test
+  public void propagateCascadePropertyWhenPreviousEventIsCascade() {
+    when(eventA.getEventType()).thenReturn(ON_ADD_PARTITION);
+    when(eventA.getPartitionColumns()).thenReturn(PARTITION_COLS);
+    when(eventA.getPartitionValues()).thenReturn(asList(asList("a1")));
+    when(eventA.getEnvironmentContext()).thenReturn(ImmutableMap.of(CASCADE, "true"));
+    when(eventA.isCascade()).thenReturn(true);
+    when(eventB.getEventType()).thenReturn(ON_ADD_PARTITION);
+    when(eventB.getPartitionColumns()).thenReturn(PARTITION_COLS);
+    when(eventB.getPartitionValues()).thenReturn(asList(asList("b1")));
+    when(eventB.getEnvironmentContext()).thenReturn(ImmutableMap.of(CASCADE, "false"));
+    MetaStoreEvent event = merger.merge(eventA, eventB);
+    assertThat(event.isCascade()).isTrue();
+  }
+
+  @Test
+  public void propagateCascadePropertyWhenLaterEventIsCascade() {
+    when(eventA.getEventType()).thenReturn(ON_ADD_PARTITION);
+    when(eventA.getPartitionColumns()).thenReturn(PARTITION_COLS);
+    when(eventA.getPartitionValues()).thenReturn(asList(asList("a1")));
+    when(eventA.getEnvironmentContext()).thenReturn(ImmutableMap.of(CASCADE, "false"));
+    when(eventB.getEventType()).thenReturn(ON_ADD_PARTITION);
+    when(eventB.getPartitionColumns()).thenReturn(PARTITION_COLS);
+    when(eventB.getPartitionValues()).thenReturn(asList(asList("b1")));
+    when(eventB.getEnvironmentContext()).thenReturn(ImmutableMap.of(CASCADE, "true"));
+    when(eventB.isCascade()).thenReturn(true);
+    MetaStoreEvent event = merger.merge(eventA, eventB);
+    assertThat(event.isCascade()).isTrue();
   }
 
 }

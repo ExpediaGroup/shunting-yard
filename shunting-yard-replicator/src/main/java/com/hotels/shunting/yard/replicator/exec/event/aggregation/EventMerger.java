@@ -15,12 +15,18 @@
  */
 package com.hotels.shunting.yard.replicator.exec.event.aggregation;
 
+import static java.lang.Boolean.TRUE;
+
+import static org.apache.hadoop.hive.common.StatsSetupConst.CASCADE;
+
 import static com.google.common.base.Preconditions.checkArgument;
 
 import static com.hotels.shunting.yard.common.event.EventType.ON_DROP_PARTITION;
 import static com.hotels.shunting.yard.common.event.EventType.ON_DROP_TABLE;
 
 import java.util.Objects;
+
+import com.google.common.collect.ImmutableMap;
 
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent.Builder;
@@ -59,6 +65,10 @@ class EventMerger {
     }
     if (b.getPartitionValues() != null) {
       b.getPartitionValues().stream().forEach(builder::partitionValues);
+    }
+    // Ensure that cascade is preserved
+    if (a.isCascade() || b.isCascade()) {
+      builder.environmentContext(ImmutableMap.of(CASCADE, TRUE.toString()));
     }
     return builder.build();
   }

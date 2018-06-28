@@ -20,7 +20,6 @@ import static com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent.DELE
 
 import java.util.List;
 
-import org.apache.hadoop.hive.common.StatsSetupConst;
 import org.apache.hadoop.hive.metastore.api.EnvironmentContext;
 import org.apache.hadoop.hive.metastore.api.NoSuchObjectException;
 import org.apache.hadoop.hive.metastore.api.Table;
@@ -99,7 +98,7 @@ public class CircusTrainReplicationMetaStoreEventListener implements Replication
     circusTrainRunner.run(context);
 
     // TODO dodge code: we update here and the CT updates again
-    if (isCascade(event)) {
+    if (event.isCascade()) {
       try {
         Table newReplicaTable = metaStoreClient.getTable(event.getDatabaseName(), event.getTableName());
         // This will make sure the partitions are updated if the cascade option was
@@ -109,13 +108,6 @@ public class CircusTrainReplicationMetaStoreEventListener implements Replication
         log.warn("SuthingYard Replication could not propagate the CASCADE operation", e);
       }
     }
-  }
-
-  private boolean isCascade(MetaStoreEvent event) {
-    if (event.getEnvironmentContext() == null) {
-      return false;
-    }
-    return Boolean.valueOf(event.getEnvironmentContext().get(StatsSetupConst.CASCADE));
   }
 
   private void onDropTable(MetaStoreEvent event) {

@@ -21,6 +21,7 @@ import static com.hotels.shunting.yard.common.event.EventType.ON_CREATE_TABLE;
 
 import java.util.Arrays;
 
+import org.apache.hadoop.hive.common.StatsSetupConst;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
@@ -157,6 +158,30 @@ public class MetaStoreEventTest {
         .build();
     assertThat(event).hasFieldOrPropertyWithValue("environmentContext",
         ImmutableMap.of("envKey1", "envValue1", "envKey2", "envValue2"));
+  }
+
+  @Test
+  public void isCascade() {
+    MetaStoreEvent event = MetaStoreEvent
+        .builder(ON_CREATE_TABLE, DATABASE, TABLE)
+        .environmentContext(ImmutableMap.of(StatsSetupConst.CASCADE, "true"))
+        .build();
+    assertThat(event.isCascade()).isTrue();
+  }
+
+  @Test
+  public void isNotCascade() {
+    MetaStoreEvent event = MetaStoreEvent
+        .builder(ON_CREATE_TABLE, DATABASE, TABLE)
+        .environmentContext(ImmutableMap.of("p", "v"))
+        .build();
+    assertThat(event.isCascade()).isFalse();
+  }
+
+  @Test
+  public void isNotCascadeIfEnvironmentContextIsNotSet() {
+    MetaStoreEvent event = MetaStoreEvent.builder(ON_CREATE_TABLE, DATABASE, TABLE).build();
+    assertThat(event.isCascade()).isFalse();
   }
 
 }

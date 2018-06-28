@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.hadoop.hive.common.StatsSetupConst;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
@@ -156,4 +158,10 @@ public class MetaStoreEvent {
     return String.join(".", getDatabaseName(), getTableName());
   }
 
+  public boolean isCascade() {
+    if (environmentContext == null) {
+      return false;
+    }
+    return Boolean.valueOf(environmentContext.get(StatsSetupConst.CASCADE));
+  }
 }
