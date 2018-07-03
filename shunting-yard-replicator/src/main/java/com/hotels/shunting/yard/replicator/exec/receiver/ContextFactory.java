@@ -34,7 +34,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hotels.bdp.circustrain.conf.ReplicationMode;
+import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 import com.hotels.shunting.yard.common.PropertyUtils;
 import com.hotels.shunting.yard.common.ShuntingYardException;

@@ -27,7 +27,7 @@ import org.junit.rules.TemporaryFolder;
 
 import com.google.common.io.Files;
 
-import com.hotels.bdp.circustrain.conf.ReplicationMode;
+import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
 
 public class MarshallerTest {
 
