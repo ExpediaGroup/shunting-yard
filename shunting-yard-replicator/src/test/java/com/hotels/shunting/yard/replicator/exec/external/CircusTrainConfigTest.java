@@ -23,8 +23,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import com.hotels.bdp.circustrain.core.conf.ReplicationMode;
-import com.hotels.bdp.circustrain.core.conf.TableReplication;
+import com.hotels.bdp.circustrain.conf.ReplicationMode;
+import com.hotels.bdp.circustrain.conf.TableReplication;
 
 public class CircusTrainConfigTest {
 

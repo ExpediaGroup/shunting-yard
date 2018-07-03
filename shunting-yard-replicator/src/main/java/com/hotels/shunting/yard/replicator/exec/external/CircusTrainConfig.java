@@ -25,12 +25,12 @@ import java.util.Map;
 
 import com.google.common.base.Joiner;
 
-import com.hotels.bdp.circustrain.core.conf.ReplicaCatalog;
-import com.hotels.bdp.circustrain.core.conf.ReplicaTable;
-import com.hotels.bdp.circustrain.core.conf.ReplicationMode;
-import com.hotels.bdp.circustrain.core.conf.SourceCatalog;
-import com.hotels.bdp.circustrain.core.conf.SourceTable;
-import com.hotels.bdp.circustrain.core.conf.TableReplication;
+import com.hotels.bdp.circustrain.conf.ReplicaTable;
+import com.hotels.bdp.circustrain.conf.ReplicationMode;
+import com.hotels.bdp.circustrain.conf.SourceCatalog;
+import com.hotels.bdp.circustrain.conf.SourceTable;
+import com.hotels.bdp.circustrain.conf.TableReplication;
+import com.hotels.shunting.yard.replicator.exec.conf.ReplicaCatalog;
 
 public class CircusTrainConfig {
 
