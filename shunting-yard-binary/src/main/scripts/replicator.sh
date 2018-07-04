@@ -45,13 +45,10 @@ else
 fi
 
 if [[ -z ${HADOOP_CLASSPATH-} ]]; then
-  export HADOOP_CLASSPATH=$SHUNTING_YARD_CLASSPATH
-else
-  export HADOOP_CLASSPATH=$SHUNTING_YARD_CLASSPATH:$HADOOP_CLASSPATH
+  export HADOOP_CLASSPATH=`hadoop classpath`
 fi
 
-hadoop jar \
-  $SHUNTING_YARD_HOME/lib/shunting-yard-all-latest.jar \
+java -cp $SHUNTING_YARD_CLASSPATH:$HADOOP_CLASSPATH \
   com.hotels.shunting.yard.replicator.exec.MetaStoreEventReplication \
   "$@"
 
