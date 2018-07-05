@@ -101,6 +101,9 @@ public class DefaultMetaStoreEventCompactorTest {
   private static MetaStoreEvent mockEvent(EventType eventType) {
     MetaStoreEvent event = mock(MetaStoreEvent.class);
     when(event.getEventType()).thenReturn(eventType);
+    if (eventType == ON_DROP_PARTITION || eventType == ON_DROP_TABLE) {
+      when(event.isDropEvent()).thenReturn(true);
+    }
     return event;
   }
 

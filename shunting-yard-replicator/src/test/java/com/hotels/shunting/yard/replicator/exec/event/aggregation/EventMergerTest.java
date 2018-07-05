@@ -45,7 +45,7 @@ import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 @RunWith(MockitoJUnitRunner.class)
 public class EventMergerTest {
 
-  private static final String DATABASE = "tbl";
+  private static final String DATABASE = "db";
   private static final String TABLE = "tbl";
   private static final List<String> PARTITION_COLS = asList("p");
   private static final String QUALIFIED_TABLE_NAME = DATABASE + "." + TABLE;
@@ -142,6 +142,7 @@ public class EventMergerTest {
   @Test
   public void cannotMergeDropTableAndDropPartition() {
     when(eventA.getEventType()).thenReturn(ON_DROP_TABLE);
+    when(eventA.isDropEvent()).thenReturn(true);
     when(eventB.getEventType()).thenReturn(ON_DROP_PARTITION);
     assertThat(merger.canMerge(eventA, eventB)).isFalse();
   }
@@ -150,6 +151,7 @@ public class EventMergerTest {
   public void cannotCreateTableEventAndDropTableEvent() {
     when(eventA.getEventType()).thenReturn(ON_CREATE_TABLE);
     when(eventB.getEventType()).thenReturn(ON_DROP_TABLE);
+    when(eventB.isDropEvent()).thenReturn(true);
     assertThat(merger.canMerge(eventA, eventB)).isFalse();
   }
 
@@ -157,6 +159,7 @@ public class EventMergerTest {
   public void cannotCreateTableEventAndDropPartitionEvent() {
     when(eventA.getEventType()).thenReturn(ON_CREATE_TABLE);
     when(eventB.getEventType()).thenReturn(ON_DROP_PARTITION);
+    when(eventB.isDropEvent()).thenReturn(true);
     assertThat(merger.canMerge(eventA, eventB)).isFalse();
   }
 
@@ -164,6 +167,7 @@ public class EventMergerTest {
   public void cannotAlterTableEventAndDropTableEvent() {
     when(eventA.getEventType()).thenReturn(ON_ALTER_TABLE);
     when(eventB.getEventType()).thenReturn(ON_DROP_TABLE);
+    when(eventB.isDropEvent()).thenReturn(true);
     assertThat(merger.canMerge(eventA, eventB)).isFalse();
   }
 
@@ -171,6 +175,7 @@ public class EventMergerTest {
   public void cannotAlterTableEventAndDropPartitionEvent() {
     when(eventA.getEventType()).thenReturn(ON_ALTER_TABLE);
     when(eventB.getEventType()).thenReturn(ON_DROP_PARTITION);
+    when(eventB.isDropEvent()).thenReturn(true);
     assertThat(merger.canMerge(eventA, eventB)).isFalse();
   }
 
@@ -178,6 +183,7 @@ public class EventMergerTest {
   public void cannotAddPartitionEventAndDropPartitionEvent() {
     when(eventA.getEventType()).thenReturn(ON_ADD_PARTITION);
     when(eventB.getEventType()).thenReturn(ON_DROP_PARTITION);
+    when(eventB.isDropEvent()).thenReturn(true);
     assertThat(merger.canMerge(eventA, eventB)).isFalse();
   }
 
@@ -185,6 +191,7 @@ public class EventMergerTest {
   public void cannotAddPartitionEventAndDropTableEvent() {
     when(eventA.getEventType()).thenReturn(ON_ADD_PARTITION);
     when(eventB.getEventType()).thenReturn(ON_DROP_TABLE);
+    when(eventB.isDropEvent()).thenReturn(true);
     assertThat(merger.canMerge(eventA, eventB)).isFalse();
   }
 
@@ -192,6 +199,7 @@ public class EventMergerTest {
   public void cannotAlterPartitionEventAndDropPartitionEvent() {
     when(eventA.getEventType()).thenReturn(ON_ALTER_PARTITION);
     when(eventB.getEventType()).thenReturn(ON_DROP_PARTITION);
+    when(eventB.isDropEvent()).thenReturn(true);
     assertThat(merger.canMerge(eventA, eventB)).isFalse();
   }
 
@@ -199,6 +207,7 @@ public class EventMergerTest {
   public void cannotAlterPartitionEventAndDropTableEvent() {
     when(eventA.getEventType()).thenReturn(ON_ALTER_PARTITION);
     when(eventB.getEventType()).thenReturn(ON_DROP_TABLE);
+    when(eventB.isDropEvent()).thenReturn(true);
     assertThat(merger.canMerge(eventA, eventB)).isFalse();
   }
 

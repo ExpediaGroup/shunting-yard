@@ -21,9 +21,6 @@ import static org.apache.hadoop.hive.common.StatsSetupConst.CASCADE;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import static com.hotels.shunting.yard.common.event.EventType.ON_DROP_PARTITION;
-import static com.hotels.shunting.yard.common.event.EventType.ON_DROP_TABLE;
-
 import java.util.Objects;
 
 import com.google.common.collect.ImmutableMap;
@@ -35,17 +32,13 @@ class EventMerger {
 
   EventMerger() {}
 
-  private boolean isDropEvent(MetaStoreEvent event) {
-    return event.getEventType() == ON_DROP_PARTITION || event.getEventType() == ON_DROP_TABLE;
-  }
-
   public boolean canMerge(MetaStoreEvent a, MetaStoreEvent b) {
-    return (Objects.equals(a.getEventType(), b.getEventType()) || (!isDropEvent(a) && !isDropEvent(b)))
+    return (Objects.equals(a.getEventType(), b.getEventType()) || (!a.isDropEvent() && !b.isDropEvent()))
         && Objects.equals(a.getQualifiedTableName(), b.getQualifiedTableName())
         && Objects.equals(a.getPartitionColumns(), b.getPartitionColumns());
   }
 
-  // Note this methods creates a new object each time it's invoked and this may end-up generating a lot
+  // Note this method creates a new object each time it's invoked and this may end-up generating a lot
   // of garbage. However the number of expected events to be merged is low so this should not be an issue. Keep an eye
   // on this anyway.
   public MetaStoreEvent merge(MetaStoreEvent a, MetaStoreEvent b) {

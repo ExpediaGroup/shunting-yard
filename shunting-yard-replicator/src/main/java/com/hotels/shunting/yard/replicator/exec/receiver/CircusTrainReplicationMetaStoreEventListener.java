@@ -101,11 +101,11 @@ public class CircusTrainReplicationMetaStoreEventListener implements Replication
     if (event.isCascade()) {
       try {
         Table newReplicaTable = metaStoreClient.getTable(event.getDatabaseName(), event.getTableName());
-        // This will make sure the partitions are updated if the cascade option was
+        // This will make sure the partitions are updated if the cascade option was set
         metaStoreClient.alter_table_with_environmentContext(event.getDatabaseName(), event.getTableName(),
             newReplicaTable, new EnvironmentContext(event.getEnvironmentContext()));
       } catch (Exception e) {
-        log.warn("SuthingYard Replication could not propagate the CASCADE operation", e);
+        log.warn("ShuntingYard Replication could not propagate the CASCADE operation", e);
       }
     }
   }

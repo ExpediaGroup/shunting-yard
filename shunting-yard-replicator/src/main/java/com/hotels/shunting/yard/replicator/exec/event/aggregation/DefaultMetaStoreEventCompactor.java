@@ -15,9 +15,6 @@
  */
 package com.hotels.shunting.yard.replicator.exec.event.aggregation;
 
-import static com.hotels.shunting.yard.common.event.EventType.ON_DROP_PARTITION;
-import static com.hotels.shunting.yard.common.event.EventType.ON_DROP_TABLE;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -42,7 +39,7 @@ class DefaultMetaStoreEventCompactor {
   }
 
   /**
-   * Reduces the number of event to the minimum necessary to execute Circus Train as fewer times as possible.
+   * Reduces the number of events to the minimum necessary to execute Circus Train as few times as possible.
    * <p>
    * This method assumes all the events passed in are for the same table and are sorted in chronological order, i.e.
    * they come from the same source table.
@@ -51,15 +48,15 @@ class DefaultMetaStoreEventCompactor {
    * <ol>
    * <li>Drop events are always kept untouched</li>
    * <li>Any create/alter event before a drop event is removed from the final list of events</li>
-   * <li>Create and alter events are aggregate together</li>
+   * <li>Create and alter events are aggregated together</li>
    * <li>If an alter table has been issue with the CASCADE the CASCADE option of the aggregated event will on as
    * well</li>
    * <li>Parameters from previous events which are also in later events will be overwritten with the most recent value.
-   * This statement is also truth for the environment context</li>
+   * This statement is also true for the environment context</li>
    * </ol>
    *
-   * @param tableEvents a chronological ordered list of event on a single table
-   * @return reduced set of events
+   * @param tableEvents a chronological ordered list of events on a single table
+   * @return compacted set of events
    */
   public List<MetaStoreEvent> compact(List<MetaStoreEvent> tableEvents) {
     LinkedList<MetaStoreEvent> finalEvents = new LinkedList<>();
@@ -70,14 +67,14 @@ class DefaultMetaStoreEventCompactor {
         processDropTable(finalEvents, e);
         break;
       case ON_DROP_PARTITION:
-        mergeOrAdd(finalEvents, e, evt -> isDropEvent(evt));
+        mergeOrAdd(finalEvents, e, evt -> evt.isDropEvent());
         break;
       case ON_CREATE_TABLE:
       case ON_ALTER_TABLE:
       case ON_ADD_PARTITION:
       case ON_ALTER_PARTITION:
       case ON_INSERT:
-        mergeOrAdd(finalEvents, e, evt -> !isDropEvent(evt));
+        mergeOrAdd(finalEvents, e, evt -> !evt.isDropEvent());
         break;
       default:
         log.debug("Unknown event type {}: adding to list of event", e.getEventType());
@@ -88,15 +85,11 @@ class DefaultMetaStoreEventCompactor {
     return finalEvents;
   }
 
-  private boolean isDropEvent(MetaStoreEvent event) {
-    return event.getEventType() == ON_DROP_PARTITION || event.getEventType() == ON_DROP_TABLE;
-  }
-
   private void processDropTable(LinkedList<MetaStoreEvent> finalEvents, MetaStoreEvent event) {
     ListIterator<MetaStoreEvent> it = finalEvents.listIterator();
     while (it.hasNext()) {
       MetaStoreEvent e = it.next();
-      if (isDropEvent(e)) {
+      if (e.isDropEvent()) {
         continue;
       }
       it.remove();

@@ -133,7 +133,6 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
   @Test
   public void onCreateTableReplicates() {
     MetaStoreEvent event = mockEvent(ON_CREATE_TABLE);
-    // when(event.getTable()).thenReturn(table);
     when(contextFactory.createContext(event)).thenReturn(context);
     listener.onEvent(event);
     verify(circusTrainRunner).run(context);
@@ -143,7 +142,6 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
   public void onCreateTableDoesNotReplicate() {
     tableParameters.clear();
     MetaStoreEvent event = mockEvent(ON_CREATE_TABLE);
-    // when(event.getTable()).thenReturn(table);
     listener.onEvent(event);
     verifyZeroInteractions(contextFactory);
     verifyZeroInteractions(circusTrainRunner);
@@ -152,7 +150,6 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
   @Test
   public void onDropTableDeletesTable() throws Exception {
     MetaStoreEvent event = mockEvent(ON_DROP_TABLE);
-    // when(event.getTable()).thenReturn(table);
     listener.onEvent(event);
     verify(metaStoreClient).dropTable(DATABASE, TABLE, false, true);
   }
@@ -169,7 +166,6 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
   public void onDropTableDoesNotDeleteTable() throws Exception {
     tableParameters.clear();
     MetaStoreEvent event = mockEvent(ON_DROP_TABLE);
-    // when(event.getTable()).thenReturn(table);
     listener.onEvent(event);
     verify(metaStoreClient, never()).dropTable(anyString(), anyString(), anyBoolean(), anyBoolean());
   }

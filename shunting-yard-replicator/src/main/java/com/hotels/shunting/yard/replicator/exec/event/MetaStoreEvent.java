@@ -19,6 +19,9 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+import static com.hotels.shunting.yard.common.event.EventType.ON_DROP_PARTITION;
+import static com.hotels.shunting.yard.common.event.EventType.ON_DROP_TABLE;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,7 +66,7 @@ public class MetaStoreEvent {
       checkState(partitionColumns != null, "partitionColumns is required");
       checkNotNull(partitionValues, "partitionValues is required");
       checkArgument(partitionColumns.size() == partitionValues.size(),
-          "Number of partition values doesn't march the number of partition columns");
+          "Number of partition values doesn't match the number of partition columns");
       if (this.partitionValues == null) {
         this.partitionValues = new ArrayList<>();
       }
@@ -158,10 +161,15 @@ public class MetaStoreEvent {
     return String.join(".", getDatabaseName(), getTableName());
   }
 
+  public boolean isDropEvent() {
+    return eventType == ON_DROP_PARTITION || eventType == ON_DROP_TABLE;
+  }
+
   public boolean isCascade() {
     if (environmentContext == null) {
       return false;
     }
     return Boolean.valueOf(environmentContext.get(StatsSetupConst.CASCADE));
   }
+
 }
