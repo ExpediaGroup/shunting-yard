@@ -35,7 +35,8 @@ import com.google.common.collect.ImmutableMap;
 import com.hotels.shunting.yard.common.event.EventType;
 
 public class MetaStoreEvent {
-  public static final String DELETE_DATA_PARAMETER = "delete_data_parameter";
+
+  private static final String DELETE_DATA_PARAMETER = "delete_data_parameter";
 
   public static class Builder {
     private final EventType eventType;
@@ -92,6 +93,11 @@ public class MetaStoreEvent {
       return this;
     }
 
+    public Builder deleteData(boolean deleteData) {
+      checkState(isDropEvent(eventType), "");
+      return parameter(DELETE_DATA_PARAMETER, Boolean.toString(deleteData));
+    }
+
     public Builder environmentContext(Map<String, String> environmentContext) {
       if (this.environmentContext == null) {
         this.environmentContext = new HashMap<>();
@@ -109,6 +115,10 @@ public class MetaStoreEvent {
 
   public static Builder builder(EventType eventType, String databaseName, String tableName) {
     return new Builder(eventType, databaseName, tableName);
+  }
+
+  private static boolean isDropEvent(EventType eventType) {
+    return eventType == ON_DROP_PARTITION || eventType == ON_DROP_TABLE;
   }
 
   private final EventType eventType;
@@ -162,7 +172,11 @@ public class MetaStoreEvent {
   }
 
   public boolean isDropEvent() {
-    return eventType == ON_DROP_PARTITION || eventType == ON_DROP_TABLE;
+    return isDropEvent(eventType);
+  }
+
+  public boolean isDeleteData() {
+    return isDropEvent() && parameters != null && Boolean.valueOf(parameters.get(DELETE_DATA_PARAMETER));
   }
 
   public boolean isCascade() {

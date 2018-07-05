@@ -15,8 +15,6 @@
  */
 package com.hotels.shunting.yard.replicator.exec.messaging;
 
-import static com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent.DELETE_DATA_PARAMETER;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,12 +80,12 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
       SerializableDropPartitionEvent dropPartition = (SerializableDropPartitionEvent) listenerEvent;
       addPartitionColumns(builder, dropPartition.getTable());
       addPartitionValues(builder, dropPartition.getPartitions());
-      builder.parameter(DELETE_DATA_PARAMETER, Boolean.toString(dropPartition.getDeleteData()));
+      builder.deleteData(dropPartition.getDeleteData());
       break;
     }
     case ON_DROP_TABLE: {
       SerializableDropTableEvent dropTable = (SerializableDropTableEvent) listenerEvent;
-      builder.parameter(DELETE_DATA_PARAMETER, Boolean.toString(dropTable.getDeleteData()));
+      builder.deleteData(dropTable.getDeleteData());
       break;
     }
     case ON_INSERT: {

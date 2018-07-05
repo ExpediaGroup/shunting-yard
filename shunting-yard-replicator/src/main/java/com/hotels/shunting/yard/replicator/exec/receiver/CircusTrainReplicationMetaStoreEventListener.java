@@ -16,7 +16,6 @@
 package com.hotels.shunting.yard.replicator.exec.receiver;
 
 import static com.hotels.bdp.circustrain.api.CircusTrainTableParameter.REPLICATION_EVENT;
-import static com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent.DELETE_DATA_PARAMETER;
 
 import java.util.List;
 
@@ -112,7 +111,7 @@ public class CircusTrainReplicationMetaStoreEventListener implements Replication
 
   private void onDropTable(MetaStoreEvent event) {
     try {
-      metaStoreClient.dropTable(event.getDatabaseName(), event.getTableName(), deleteData(event), ifExists());
+      metaStoreClient.dropTable(event.getDatabaseName(), event.getTableName(), event.isDeleteData(), ifExists());
     } catch (Exception e) {
       throw new ShuntingYardException("Cannot drop table", e);
     }
@@ -122,15 +121,11 @@ public class CircusTrainReplicationMetaStoreEventListener implements Replication
     try {
       for (List<String> partitionValues : event.getPartitionValues()) {
         metaStoreClient.dropPartition(event.getDatabaseName(), event.getTableName(), partitionValues,
-            deleteData(event));
+            event.isDeleteData());
       }
     } catch (Exception e) {
       throw new ShuntingYardException("Cannot drop partitions", e);
     }
-  }
-
-  private boolean deleteData(MetaStoreEvent event) {
-    return Boolean.valueOf(event.getParameters().get(DELETE_DATA_PARAMETER));
   }
 
 }

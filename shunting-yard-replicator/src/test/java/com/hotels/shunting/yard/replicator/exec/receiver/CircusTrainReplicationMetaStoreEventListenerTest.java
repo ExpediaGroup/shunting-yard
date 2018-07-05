@@ -39,7 +39,6 @@ import static com.hotels.shunting.yard.common.event.EventType.ON_CREATE_TABLE;
 import static com.hotels.shunting.yard.common.event.EventType.ON_DROP_PARTITION;
 import static com.hotels.shunting.yard.common.event.EventType.ON_DROP_TABLE;
 import static com.hotels.shunting.yard.common.event.EventType.ON_INSERT;
-import static com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent.DELETE_DATA_PARAMETER;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -157,7 +156,7 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
   @Test
   public void onDropTableDeletesTableAndData() throws Exception {
     MetaStoreEvent event = mockEvent(ON_DROP_TABLE);
-    when(event.getParameters()).thenReturn(ImmutableMap.of(DELETE_DATA_PARAMETER, "true"));
+    when(event.isDeleteData()).thenReturn(true);
     listener.onEvent(event);
     verify(metaStoreClient).dropTable(DATABASE, TABLE, true, true);
   }
@@ -263,7 +262,7 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
     List<String> partitions = Arrays.asList("a", "b");
     MetaStoreEvent event = mockEvent(ON_DROP_PARTITION);
     when(event.getPartitionValues()).thenReturn(Arrays.asList(partitions));
-    when(event.getParameters()).thenReturn(ImmutableMap.of(DELETE_DATA_PARAMETER, "true"));
+    when(event.isDeleteData()).thenReturn(true);
     listener.onEvent(event);
     verify(metaStoreClient).dropPartition(DATABASE, TABLE, partitions, true);
   }
