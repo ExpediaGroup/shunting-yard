@@ -37,7 +37,7 @@ public class CircusTrainConfig {
   private static final Joiner AND_JOINER = Joiner.on(" AND ");
   private static final Joiner OR_JOINER = Joiner.on(") OR (");
 
-  private static String partCondition(String partitionColumn, String partitionValue) {
+  private static String partitionCondition(String partitionColumn, String partitionValue) {
     return new StringBuilder(partitionColumn).append("='").append(partitionValue).append("'").toString();
   }
 
@@ -46,7 +46,7 @@ public class CircusTrainConfig {
     for (List<String> partitionValues : partitionValuesList) {
       List<String> partConditions = new ArrayList<>(partitionValues.size());
       for (int i = 0; i < partitionColumns.size(); i++) {
-        partConditions.add(partCondition(partitionColumns.get(i), partitionValues.get(i)));
+        partConditions.add(partitionCondition(partitionColumns.get(i), partitionValues.get(i)));
       }
       partitionExpressions.add(AND_JOINER.join(partConditions));
     }

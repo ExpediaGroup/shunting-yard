@@ -96,7 +96,7 @@ public class CircusTrainReplicationMetaStoreEventListener implements Replication
     Context context = contextFactory.createContext(event);
     circusTrainRunner.run(context);
 
-    // TODO dodge code: we update here and the CT updates again
+    // We update here because CT won't cascade the operation
     if (event.isCascade()) {
       try {
         Table newReplicaTable = metaStoreClient.getTable(event.getDatabaseName(), event.getTableName());

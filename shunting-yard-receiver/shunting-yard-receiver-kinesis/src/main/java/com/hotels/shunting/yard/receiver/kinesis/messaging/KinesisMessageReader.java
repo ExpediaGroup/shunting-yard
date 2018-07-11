@@ -68,7 +68,6 @@ public class KinesisMessageReader implements MessageReader {
     try {
       return eventSerDe.unmarshal(data);
     } catch (Exception e) {
-      // TODO this may be removed when we get rid of checked exceptions in the SerDe contract
       throw new SerDeException("Unable to unmarshall event", e);
     }
   }

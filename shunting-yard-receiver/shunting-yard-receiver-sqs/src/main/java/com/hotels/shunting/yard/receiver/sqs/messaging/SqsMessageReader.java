@@ -105,7 +105,6 @@ public class SqsMessageReader implements MessageReader {
     try {
       return eventSerDe.unmarshal(messageDecoder.decode(message));
     } catch (Exception e) {
-      // TODO this may be removed when we get rid of checked exceptions in the SerDe contract
       throw new SerDeException("Unable to unmarshall event", e);
     }
   }
