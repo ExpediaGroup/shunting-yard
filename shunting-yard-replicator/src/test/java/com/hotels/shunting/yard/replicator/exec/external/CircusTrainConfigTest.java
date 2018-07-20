@@ -18,15 +18,13 @@ package com.hotels.shunting.yard.replicator.exec.external;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
-import java.util.List;
 
-import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import com.hotels.bdp.circustrain.core.conf.ReplicationMode;
-import com.hotels.bdp.circustrain.core.conf.TableReplication;
+import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
+import com.hotels.bdp.circustrain.api.conf.TableReplication;
 
 public class CircusTrainConfigTest {
 
@@ -42,8 +40,8 @@ public class CircusTrainConfigTest {
         .replicaMetaStoreUri("replicaMetaStoreUri")
         .copierOption("p1", "val1")
         .copierOption("p2", "val2")
-        .replication(ReplicationMode.FULL, "databaseName", "tableName", "replicaTableLocation",
-            Arrays.asList(new FieldSchema("part", "string", null)), new List[] { Arrays.asList("partval") })
+        .replication(ReplicationMode.FULL, "databaseName", "tableName", "replicaTableLocation", Arrays.asList("part"),
+            Arrays.asList(Arrays.asList("partval")))
         .build();
     assertThat(config.getSourceCatalog().getName()).isEqualTo("sourceName");
     assertThat(config.getSourceCatalog().getHiveMetastoreUris()).isEqualTo("sourceMetaStoreUri");
@@ -75,8 +73,7 @@ public class CircusTrainConfigTest {
         .copierOption("p1", "val1")
         .copierOption("p2", "val2")
         .replication(ReplicationMode.FULL, "databaseName", "tableName", "replicaTableLocation",
-            Arrays.asList(new FieldSchema("part_a", "string", null), new FieldSchema("part_b", "integer", null)),
-            new List[] { Arrays.asList("a", "1"), Arrays.asList("a", "2") })
+            Arrays.asList("part_a", "part_b"), Arrays.asList(Arrays.asList("a", "1"), Arrays.asList("a", "2")))
         .build();
     assertThat(config.getSourceCatalog().getName()).isEqualTo("sourceName");
     assertThat(config.getSourceCatalog().getHiveMetastoreUris()).isEqualTo("sourceMetaStoreUri");
@@ -90,7 +87,7 @@ public class CircusTrainConfigTest {
     assertThat(replication.getSourceTable().getDatabaseName()).isEqualTo("databaseName");
     assertThat(replication.getSourceTable().getTableName()).isEqualTo("tableName");
     assertThat(replication.getSourceTable().getPartitionFilter())
-        .isEqualTo("(part_a='a' AND part_b=1) OR (part_a='a' AND part_b=2)");
+        .isEqualTo("(part_a='a' AND part_b='1') OR (part_a='a' AND part_b='2')");
     assertThat(replication.getSourceTable().isGeneratePartitionFilter()).isEqualTo(false);
     assertThat(replication.getSourceTable().getPartitionLimit()).isEqualTo(Short.MAX_VALUE);
     assertThat(replication.getReplicaTable().getDatabaseName()).isEqualTo("databaseName");

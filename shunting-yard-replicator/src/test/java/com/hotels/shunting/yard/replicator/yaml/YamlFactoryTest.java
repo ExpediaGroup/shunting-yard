@@ -22,7 +22,7 @@ import java.io.StringWriter;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 
-import com.hotels.bdp.circustrain.core.conf.ReplicationMode;
+import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
 import com.hotels.shunting.yard.replicator.exec.external.CircusTrainConfig;
 
 public class YamlFactoryTest {

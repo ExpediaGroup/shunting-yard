@@ -23,39 +23,30 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.hadoop.hive.metastore.api.FieldSchema;
-
 import com.google.common.base.Joiner;
 
-import com.hotels.bdp.circustrain.core.conf.ReplicaCatalog;
-import com.hotels.bdp.circustrain.core.conf.ReplicaTable;
-import com.hotels.bdp.circustrain.core.conf.ReplicationMode;
-import com.hotels.bdp.circustrain.core.conf.SourceCatalog;
-import com.hotels.bdp.circustrain.core.conf.SourceTable;
-import com.hotels.bdp.circustrain.core.conf.TableReplication;
+import com.hotels.bdp.circustrain.api.conf.ReplicaTable;
+import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
+import com.hotels.bdp.circustrain.api.conf.SourceCatalog;
+import com.hotels.bdp.circustrain.api.conf.SourceTable;
+import com.hotels.bdp.circustrain.api.conf.TableReplication;
+import com.hotels.shunting.yard.replicator.exec.conf.ReplicaCatalog;
 
 public class CircusTrainConfig {
 
   private static final Joiner AND_JOINER = Joiner.on(" AND ");
   private static final Joiner OR_JOINER = Joiner.on(") OR (");
 
-  private static String partCondition(FieldSchema partitionColumn, String partitionValue) {
-    String type = partitionColumn.getType().toLowerCase();
-    boolean needQuotes = type.equals("string") || type.equals("char") || type.equals("varchar") || type.equals("date");
-    return new StringBuilder(partitionColumn.getName())
-        .append("=")
-        .append(needQuotes ? "'" : "")
-        .append(partitionValue)
-        .append(needQuotes ? "'" : "")
-        .toString();
+  private static String partitionCondition(String partitionColumn, String partitionValue) {
+    return new StringBuilder(partitionColumn).append("='").append(partitionValue).append("'").toString();
   }
 
-  private static String createPartitionFilter(List<FieldSchema> partitionColumns, List<String>[] partitionValuesList) {
-    List<String> partitionExpressions = new ArrayList<>(partitionValuesList.length);
+  private static String createPartitionFilter(List<String> partitionColumns, List<List<String>> partitionValuesList) {
+    List<String> partitionExpressions = new ArrayList<>(partitionValuesList.size());
     for (List<String> partitionValues : partitionValuesList) {
       List<String> partConditions = new ArrayList<>(partitionValues.size());
       for (int i = 0; i < partitionColumns.size(); i++) {
-        partConditions.add(partCondition(partitionColumns.get(i), partitionValues.get(i)));
+        partConditions.add(partitionCondition(partitionColumns.get(i), partitionValues.get(i)));
       }
       partitionExpressions.add(AND_JOINER.join(partConditions));
     }
@@ -111,8 +102,8 @@ public class CircusTrainConfig {
         String databaseName,
         String tableName,
         String replicaTableLocation,
-        List<FieldSchema> partitionColumns,
-        List<String>[] partitionValues) {
+        List<String> partitionColumns,
+        List<List<String>> partitionValues) {
       TableReplication tableReplication = new TableReplication();
       tableReplication.setReplicationMode(checkNotNull(replicationMode, "replicationMode is required"));
 

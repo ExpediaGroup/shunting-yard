@@ -11,7 +11,7 @@
   <version>0.0.3-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Shunting Yard Parent</name>
-  <url>https://stash/users/ddelcastilloperez/repos/shunting-yard</url>
+  <url>https://github.com/HotelsDotCom/shunting-yard</url>
   <inceptionYear>2016</inceptionYear>
 
   <scm>
@@ -42,10 +42,10 @@
     <aws.version>1.11.272</aws.version>
     <aws.kcl.version>1.9.0</aws.kcl.version>
     <aws.kpl.version>0.12.8</aws.kpl.version>
-    <circus.train.version>11.4.0</circus.train.version>
+    <circus.train.version>12.0.0</circus.train.version>
     <commons.lang3.version>3.7</commons.lang3.version>
     <thrift.version>0.10.0</thrift.version>
-    <jackson.version>2.9.5</jackson.version>
+    <guava.version>25.0-jre</guava.version>
 
     <junit.version>4.12</junit.version>
     <assertj.version>3.10.0</assertj.version>
@@ -54,6 +54,7 @@
     <lastcommons.version>5.2.1</lastcommons.version>
     <beeju.version>1.2.0</beeju.version>
 
+    <maven.shade.plugin.version>3.1.1</maven.shade.plugin.version>
     <shade.prefix>${project.groupId}.shaded</shade.prefix>
   </properties>
 
@@ -116,12 +117,6 @@
       </dependency>
 
       <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-        <version>${jackson.version}</version>
-      </dependency>
-
-      <dependency>
         <groupId>com.hotels</groupId>
         <artifactId>hcommon-hive-metastore</artifactId>
         <version>${hcommon.hive.metastore.version}</version>
@@ -159,10 +154,11 @@
         <artifactId>circus-train-api</artifactId>
         <version>${circus.train.version}</version>
       </dependency>
+
       <dependency>
-        <groupId>com.hotels</groupId>
-        <artifactId>circus-train-core</artifactId>
-        <version>${circus.train.version}</version>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${guava.version}</version>
       </dependency>
 
       <dependency>
@@ -236,6 +232,11 @@
   <build>
     <pluginManagement>
       <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>${maven.shade.plugin.version}</version>
+        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>

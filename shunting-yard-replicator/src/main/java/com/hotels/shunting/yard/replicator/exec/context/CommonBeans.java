@@ -44,13 +44,18 @@ import com.hotels.hcommon.hive.metastore.conf.HiveConfFactory;
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
 import com.hotels.shunting.yard.common.messaging.MessageReaderFactory;
-import com.hotels.shunting.yard.common.receiver.ShuntingYardMetaStoreEventListener;
 import com.hotels.shunting.yard.replicator.exec.conf.EventReceiverConfiguration;
 import com.hotels.shunting.yard.replicator.exec.conf.ReplicaCatalog;
+import com.hotels.shunting.yard.replicator.exec.event.aggregation.DefaultMetaStoreEventAggregator;
+import com.hotels.shunting.yard.replicator.exec.event.aggregation.MetaStoreEventAggregator;
 import com.hotels.shunting.yard.replicator.exec.external.Marshaller;
 import com.hotels.shunting.yard.replicator.exec.launcher.CircusTrainRunner;
+import com.hotels.shunting.yard.replicator.exec.messaging.AggregatingMetaStoreEventReader;
+import com.hotels.shunting.yard.replicator.exec.messaging.MessageReaderAdapter;
+import com.hotels.shunting.yard.replicator.exec.messaging.MetaStoreEventReader;
 import com.hotels.shunting.yard.replicator.exec.receiver.ContextFactory;
-import com.hotels.shunting.yard.replicator.exec.receiver.ReplicationCircusTrainMetaStoreEventListener;
+import com.hotels.shunting.yard.replicator.exec.receiver.CircusTrainReplicationMetaStoreEventListener;
+import com.hotels.shunting.yard.replicator.exec.receiver.ReplicationMetaStoreEventListener;
 import com.hotels.shunting.yard.replicator.metastore.DefaultMetaStoreClientSupplier;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -107,12 +112,12 @@ public class CommonBeans {
   }
 
   @Bean
-  ShuntingYardMetaStoreEventListener circusTrainMetaStoreEventListener(
+  ReplicationMetaStoreEventListener replicationMetaStoreEventListener(
       HiveConf replicaHiveConf,
       Supplier<CloseableMetaStoreClient> replicaMetaStoreClientSupplier) {
     CloseableMetaStoreClient metaStoreClient = replicaMetaStoreClientSupplier.get();
     ContextFactory contextFactory = new ContextFactory(replicaHiveConf, metaStoreClient, new Marshaller());
-    return new ReplicationCircusTrainMetaStoreEventListener(metaStoreClient, contextFactory, new CircusTrainRunner());
+    return new CircusTrainReplicationMetaStoreEventListener(metaStoreClient, contextFactory, new CircusTrainRunner());
   }
 
   @Bean
@@ -121,12 +126,24 @@ public class CommonBeans {
   }
 
   @Bean
-  MessageReader messageReader(
+  MetaStoreEventAggregator eventAggregator() {
+    return new DefaultMetaStoreEventAggregator();
+  }
+
+  @Bean
+  MessageReaderAdapter messageReaderAdapter(
       HiveConf replicaHiveConf,
       MetaStoreEventSerDe metaStoreEventSerDe,
       EventReceiverConfiguration messageReaderConfig) {
-    return MessageReaderFactory.newInstance(messageReaderConfig.getMessageReaderFactoryClass()).newInstance(
-        replicaHiveConf, metaStoreEventSerDe);
+    MessageReaderFactory messaReaderFactory = MessageReaderFactory
+        .newInstance(messageReaderConfig.getMessageReaderFactoryClass());
+    MessageReader messageReader = messaReaderFactory.newInstance(replicaHiveConf, metaStoreEventSerDe);
+    return new MessageReaderAdapter(messageReader);
+  }
+
+  @Bean
+  MetaStoreEventReader eventReader(MessageReaderAdapter messageReaderAdapter) {
+    return new AggregatingMetaStoreEventReader(messageReaderAdapter, eventAggregator());
   }
 
 }

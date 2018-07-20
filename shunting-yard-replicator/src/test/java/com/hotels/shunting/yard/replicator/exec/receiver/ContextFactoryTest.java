@@ -31,9 +31,7 @@ import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.metastore.api.Database;
-import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.apache.hadoop.hive.metastore.api.NoSuchObjectException;
-import org.apache.hadoop.hive.metastore.api.Partition;
 import org.apache.hadoop.hive.metastore.api.StorageDescriptor;
 import org.apache.hadoop.hive.metastore.api.Table;
 import org.apache.thrift.TException;
@@ -47,12 +45,12 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import com.hotels.bdp.circustrain.core.conf.ReplicationMode;
-import com.hotels.bdp.circustrain.core.conf.TableReplication;
+import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
+import com.hotels.bdp.circustrain.api.conf.TableReplication;
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 import com.hotels.shunting.yard.common.ShuntingYardException;
 import com.hotels.shunting.yard.common.event.EventType;
-import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
+import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 import com.hotels.shunting.yard.replicator.exec.external.CircusTrainConfig;
 import com.hotels.shunting.yard.replicator.exec.external.Marshaller;
 
@@ -70,9 +68,7 @@ public class ContextFactoryTest {
 
   private @Mock CloseableMetaStoreClient replicaMetaStoreClient;
   private @Mock Marshaller marshaller;
-  private @Mock SerializableListenerEvent event;
-  private @Mock Table sourceTable;
-  private @Mock Partition sourcePartitionA, sourcePartitionB;
+  private @Mock MetaStoreEvent event;
   private @Mock Table replicaTable;
   private @Mock StorageDescriptor replicaStorageDescriptor;
   private @Mock Map<String, String> eventParameters;
@@ -94,10 +90,9 @@ public class ContextFactoryTest {
 
     when(event.getParameters()).thenReturn(eventParameters);
     when(event.getEventType()).thenReturn(EventType.ON_CREATE_TABLE);
+    when(event.getDatabaseName()).thenReturn(DATABASE);
+    when(event.getTableName()).thenReturn(TABLE);
     when(eventParameters.get(METASTOREURIS.varname)).thenReturn(SOURCE_METASTORE_URIS);
-
-    when(sourceTable.getDbName()).thenReturn(DATABASE);
-    when(sourceTable.getTableName()).thenReturn(TABLE);
 
     replicaTableLocation = tmp.newFolder(CT_EVENT_ID);
     when(replicaStorageDescriptor.getLocation()).thenReturn(replicaTableLocation.getAbsolutePath());
@@ -111,7 +106,7 @@ public class ContextFactoryTest {
 
   @Test
   public void createContextForUnpartitionedTable() {
-    Context context = factory.createContext(event, sourceTable);
+    Context context = factory.createContext(event);
     assertThat(context.getWorkspace()).matches(actualWorkspacePattern);
     assertThat(context.getConfigLocation()).matches(actualWorkspacePattern + "/replication.yml");
     verify(marshaller).marshall(eq(context.getConfigLocation()), circusTrainConfigCaptor.capture());
@@ -132,11 +127,9 @@ public class ContextFactoryTest {
 
   @Test
   public void createContextForPartitionedTable() {
-    when(sourceTable.getPartitionKeys())
-        .thenReturn(Arrays.asList(new FieldSchema("s", "string", null), new FieldSchema("i", "integer", null)));
-    when(sourcePartitionA.getValues()).thenReturn(Arrays.asList("a", "1"));
-    when(sourcePartitionB.getValues()).thenReturn(Arrays.asList("b", "2"));
-    Context context = factory.createContext(event, sourceTable, Arrays.asList(sourcePartitionA, sourcePartitionB));
+    when(event.getPartitionColumns()).thenReturn(Arrays.asList("s", "i"));
+    when(event.getPartitionValues()).thenReturn(Arrays.asList(Arrays.asList("a", "1"), Arrays.asList("b", "2")));
+    Context context = factory.createContext(event);
     assertThat(context.getWorkspace()).matches(actualWorkspacePattern);
     assertThat(context.getConfigLocation()).matches(actualWorkspacePattern + "/replication.yml");
     verify(marshaller).marshall(eq(context.getConfigLocation()), circusTrainConfigCaptor.capture());
@@ -148,7 +141,7 @@ public class ContextFactoryTest {
     assertThat(replication.getReplicationMode()).isSameAs(ReplicationMode.FULL);
     assertThat(replication.getSourceTable().getTableName()).isEqualTo(TABLE);
     assertThat(replication.getSourceTable().getTableName()).isEqualTo(TABLE);
-    assertThat(replication.getSourceTable().getPartitionFilter()).isEqualTo("(s='a' AND i=1) OR (s='b' AND i=2)");
+    assertThat(replication.getSourceTable().getPartitionFilter()).isEqualTo("(s='a' AND i='1') OR (s='b' AND i='2')");
     assertThat(replication.getReplicaTable().getDatabaseName()).isEqualTo(DATABASE);
     assertThat(replication.getReplicaTable().getTableName()).isEqualTo(TABLE);
     assertThat(replication.getReplicaTable().getTableLocation())
@@ -162,7 +155,7 @@ public class ContextFactoryTest {
     Database replicaDatabase = mock(Database.class);
     when(replicaDatabase.getLocationUri()).thenReturn(REPLICA_DATABASE_LOCATION);
     when(replicaMetaStoreClient.getDatabase(DATABASE)).thenReturn(replicaDatabase);
-    Context context = factory.createContext(event, sourceTable);
+    Context context = factory.createContext(event);
     verify(marshaller).marshall(eq(context.getConfigLocation()), circusTrainConfigCaptor.capture());
     CircusTrainConfig circusTrainConfig = circusTrainConfigCaptor.getValue();
     TableReplication replication = circusTrainConfig.getTableReplications().get(0);
@@ -178,7 +171,7 @@ public class ContextFactoryTest {
     reset(replicaMetaStoreClient);
     when(replicaMetaStoreClient.getTable(DATABASE, TABLE)).thenThrow(NoSuchObjectException.class);
     when(replicaMetaStoreClient.getDatabase(DATABASE)).thenThrow(TException.class);
-    factory.createContext(event, sourceTable);
+    factory.createContext(event);
   }
 
 }

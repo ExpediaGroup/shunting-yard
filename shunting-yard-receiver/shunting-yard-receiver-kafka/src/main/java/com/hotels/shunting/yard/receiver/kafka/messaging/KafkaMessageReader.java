@@ -90,7 +90,6 @@ public class KafkaMessageReader implements MessageReader {
     try {
       return eventSerDe.unmarshal(message.value());
     } catch (Exception e) {
-      // TODO this may be removed when we get rid of checked exceptions in the SerDe contract
       throw new SerDeException("Unable to unmarshall event", e);
     }
   }

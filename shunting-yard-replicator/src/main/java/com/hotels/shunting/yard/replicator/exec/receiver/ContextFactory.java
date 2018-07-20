@@ -21,14 +21,12 @@ import static com.hotels.shunting.yard.replicator.exec.app.ConfigurationVariable
 
 import java.io.File;
 import java.net.URI;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.metastore.api.Database;
 import org.apache.hadoop.hive.metastore.api.NoSuchObjectException;
-import org.apache.hadoop.hive.metastore.api.Partition;
 import org.apache.hadoop.hive.metastore.api.Table;
 import org.apache.thrift.TException;
 import org.joda.time.DateTime;
@@ -36,11 +34,11 @@ import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hotels.bdp.circustrain.core.conf.ReplicationMode;
+import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 import com.hotels.shunting.yard.common.PropertyUtils;
 import com.hotels.shunting.yard.common.ShuntingYardException;
-import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
+import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 import com.hotels.shunting.yard.replicator.exec.external.CircusTrainConfig;
 import com.hotels.shunting.yard.replicator.exec.external.Marshaller;
 
@@ -61,19 +59,19 @@ public class ContextFactory {
     this.marshaller = marshaller;
   }
 
-  private String dir(SerializableListenerEvent event) {
+  private String dir(MetaStoreEvent event) {
     String timestamp = DateTimeFormat.forPattern(TIMESTAMP_FORMAT).print(new DateTime());
     return event.getEventType().name() + "_" + timestamp;
   }
 
-  private String getSourceMetaStoreUri(SerializableListenerEvent event) {
+  private String getSourceMetaStoreUri(MetaStoreEvent event) {
     return event.getParameters().get(METASTOREURIS.varname);
   }
 
-  private String workOutReplicaLocation(Table table) {
+  private String workOutReplicaLocation(String databaseName, String tableName) {
     try {
       try {
-        Table replicaTable = metaStoreClient.getTable(table.getDbName(), table.getTableName());
+        Table replicaTable = metaStoreClient.getTable(databaseName, tableName);
         String tableLocation = replicaTable.getSd().getLocation();
         LOG.info("Replica table current location is {}", tableLocation);
         // If the table has been replicated before then remove the previous event ID
@@ -86,46 +84,35 @@ public class ContextFactory {
       } catch (NoSuchObjectException e) {
         // Ignore and work the location out using the DB location and table name
       }
-      Database db = metaStoreClient.getDatabase(table.getDbName());
-      URI tableLocation = URI.create(db.getLocationUri() + "/" + table.getTableName());
+      Database db = metaStoreClient.getDatabase(databaseName);
+      URI tableLocation = URI.create(db.getLocationUri() + "/" + tableName);
       return tableLocation.toString();
     } catch (TException e) {
       throw new ShuntingYardException("Unable to work replica location out", e);
     }
   }
 
-  public Context createContext(SerializableListenerEvent event, Table table) {
-    return createContext(event, table, null);
-  }
-
-  public Context createContext(SerializableListenerEvent event, Table table, List<Partition> partitions) {
+  public Context createContext(MetaStoreEvent event) {
     File workspace = new File(PropertyUtils.stringProperty(conf, WORKSPACE), dir(event));
     workspace.mkdirs();
     File configLocation = new File(workspace, "replication.yml");
 
-    CircusTrainConfig circusTrainConfig = generateConfiguration(getSourceMetaStoreUri(event), table, partitions);
+    CircusTrainConfig circusTrainConfig = generateConfiguration(event);
 
     marshaller.marshall(configLocation.getAbsolutePath(), circusTrainConfig);
 
     return new Context(workspace.getAbsolutePath(), configLocation.getAbsolutePath());
   }
 
-  private CircusTrainConfig generateConfiguration(String sourceMetaStoreUri, Table table, List<Partition> partitions) {
-    List<String>[] partitionValues = null;
-    if (partitions != null) {
-      partitionValues = new List[partitions.size()];
-      for (int i = 0; i < partitions.size(); ++i) {
-        partitionValues[i] = partitions.get(i).getValues();
-      }
-    }
-
-    String replicaTableLocation = workOutReplicaLocation(table);
+  private CircusTrainConfig generateConfiguration(MetaStoreEvent event) {
+    String sourceMetaStoreUri = getSourceMetaStoreUri(event);
+    String replicaTableLocation = workOutReplicaLocation(event.getDatabaseName(), event.getTableName());
     CircusTrainConfig config = CircusTrainConfig
         .builder()
         .sourceMetaStoreUri(sourceMetaStoreUri)
         .replicaMetaStoreUri(conf.get(METASTOREURIS.varname))
-        .replication(ReplicationMode.FULL, table.getDbName(), table.getTableName(), replicaTableLocation,
-            table.getPartitionKeys(), partitionValues)
+        .replication(ReplicationMode.FULL, event.getDatabaseName(), event.getTableName(), replicaTableLocation,
+            event.getPartitionColumns(), event.getPartitionValues())
         .build();
     return config;
   }

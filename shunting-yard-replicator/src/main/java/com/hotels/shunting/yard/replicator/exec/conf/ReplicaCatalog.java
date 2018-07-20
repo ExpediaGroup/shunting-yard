@@ -22,6 +22,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+// TODO this may be replaced with the CT equivalent class
 @Configuration
 @ConfigurationProperties(prefix = "replica-catalog")
 public class ReplicaCatalog {
