@@ -20,6 +20,7 @@
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-sqs</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <!-- Hadoop -->
@@ -73,14 +74,14 @@
                   <include>com.hotels:shunting-yard-common*</include>
                   <include>com.hotels:shunting-yard-emitter*</include>
                   <include>com.hotels:hcommon-hive-metastore</include>
-                  <include>com.amazonaws:*</include>
+                  <!-- <include>com.amazonaws:*</include> -->
                 </includes>
               </artifactSet>
               <relocations>
-                <relocation>
+               <!--  <relocation>
                   <pattern>com.amazonaws</pattern>
                   <shadedPattern>${shade.prefix}.com.amazonaws</shadedPattern>
-                </relocation>
+                </relocation> -->
               </relocations>
             </configuration>
           </execution>
