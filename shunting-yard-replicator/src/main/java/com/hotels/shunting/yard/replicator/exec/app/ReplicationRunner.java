@@ -32,7 +32,7 @@ import com.hotels.shunting.yard.replicator.exec.messaging.MetaStoreEventReader;
 import com.hotels.shunting.yard.replicator.exec.receiver.ReplicationMetaStoreEventListener;
 
 @Component
-class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator {
+public class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator {
   private static final Logger log = LoggerFactory.getLogger(ReplicationRunner.class);
 
   private static final Counter SUCCESS_COUNTER = Metrics.counter(MetricsConstant.RECEIVER_SUCCESSES);
@@ -42,7 +42,7 @@ class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator {
   private final MetaStoreEventReader eventReader;
 
   @Autowired
-  ReplicationRunner(MetaStoreEventReader eventReader, ReplicationMetaStoreEventListener listener) {
+  public ReplicationRunner(MetaStoreEventReader eventReader, ReplicationMetaStoreEventListener listener) {
     this.listener = listener;
     this.eventReader = eventReader;
   }

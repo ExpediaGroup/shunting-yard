@@ -17,7 +17,6 @@ package com.hotels.shunting.yard.replicator.exec.launcher;
 
 import static org.apache.commons.exec.environment.EnvironmentUtils.getProcEnvironment;
 
-import static com.hotels.shunting.yard.replicator.exec.Constants.CIRCUS_TRAIN_HOME_ENV_VAR;
 import static com.hotels.shunting.yard.replicator.exec.Constants.CIRCUS_TRAIN_HOME_SCRIPT;
 
 import java.io.File;
@@ -45,7 +44,9 @@ public class CircusTrainRunner {
   public void run(Context context) {
     try (OutputStream out = outStream(context); OutputStream err = errStream(context)) {
       CommandLine cli = CommandLine
-          .parse(String.format("%s/%s", getProcEnvironment().get(CIRCUS_TRAIN_HOME_ENV_VAR), CIRCUS_TRAIN_HOME_SCRIPT));
+          .parse(String
+              .format("%s/%s", "/Users/abhgupta/Desktop/workspace/shunting-yard/circus-train-12.1.0",
+                  CIRCUS_TRAIN_HOME_SCRIPT));
       cli.addArgument("--config=${CONFIG_LOCATION}");
       cli.setSubstitutionMap(ImmutableMap.of("CONFIG_LOCATION", context.getConfigLocation()));
 
