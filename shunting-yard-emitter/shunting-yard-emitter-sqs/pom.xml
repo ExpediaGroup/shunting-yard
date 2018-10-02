@@ -75,8 +75,6 @@
                   <include>com.hotels:hcommon-hive-metastore</include>
                 </includes>
               </artifactSet>
-              <relocations>
-              </relocations>
             </configuration>
           </execution>
         </executions>
