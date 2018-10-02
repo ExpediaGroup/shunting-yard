@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -74,14 +75,9 @@
                   <include>com.hotels:shunting-yard-common*</include>
                   <include>com.hotels:shunting-yard-emitter*</include>
                   <include>com.hotels:hcommon-hive-metastore</include>
-                  <!-- <include>com.amazonaws:*</include> -->
                 </includes>
               </artifactSet>
               <relocations>
-               <!--  <relocation>
-                  <pattern>com.amazonaws</pattern>
-                  <shadedPattern>${shade.prefix}.com.amazonaws</shadedPattern>
-                </relocation> -->
               </relocations>
             </configuration>
           </execution>
