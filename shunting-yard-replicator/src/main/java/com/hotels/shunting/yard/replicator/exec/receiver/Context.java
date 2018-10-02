@@ -15,14 +15,24 @@
  */
 package com.hotels.shunting.yard.replicator.exec.receiver;
 
+import java.util.Map;
+
+import com.google.common.collect.ImmutableMap;
+
 public class Context {
 
   private final String workspace;
   private final String configLocation;
+  private final Map<String, String> environment;
 
   Context(String workspace, String configLocation) {
+    this(workspace, configLocation, ImmutableMap.of());
+  }
+
+  Context(String workspace, String configLocation, Map<String, String> environment) {
     this.workspace = workspace;
     this.configLocation = configLocation;
+    this.environment = environment;
   }
 
   public String getWorkspace() {
@@ -31,6 +41,10 @@ public class Context {
 
   public String getConfigLocation() {
     return configLocation;
+  }
+
+  public final Map<String, String> getEnvironment() {
+    return environment;
   }
 
 }

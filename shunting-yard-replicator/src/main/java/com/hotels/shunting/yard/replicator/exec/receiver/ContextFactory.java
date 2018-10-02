@@ -101,7 +101,7 @@ public class ContextFactory {
 
     marshaller.marshall(configLocation.getAbsolutePath(), circusTrainConfig);
 
-    return new Context(workspace.getAbsolutePath(), configLocation.getAbsolutePath());
+    return new Context(workspace.getAbsolutePath(), configLocation.getAbsolutePath(), event.getEnvironmentContext());
   }
 
   private CircusTrainConfig generateConfiguration(MetaStoreEvent event) {

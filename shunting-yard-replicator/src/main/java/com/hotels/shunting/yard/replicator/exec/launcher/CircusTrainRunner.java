@@ -17,12 +17,15 @@ package com.hotels.shunting.yard.replicator.exec.launcher;
 
 import static org.apache.commons.exec.environment.EnvironmentUtils.getProcEnvironment;
 
+import static com.hotels.shunting.yard.replicator.exec.Constants.CIRCUS_TRAIN_HOME_ENV_VAR;
 import static com.hotels.shunting.yard.replicator.exec.Constants.CIRCUS_TRAIN_HOME_SCRIPT;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
@@ -41,12 +44,14 @@ import com.hotels.shunting.yard.replicator.exec.receiver.Context;
 public class CircusTrainRunner {
   private static final Logger log = LoggerFactory.getLogger(CircusTrainRunner.class);
 
+  private Context context;
+
   public void run(Context context) {
+    this.context = context;
     try (OutputStream out = outStream(context); OutputStream err = errStream(context)) {
       CommandLine cli = CommandLine
           .parse(String
-              .format("%s/%s", "/Users/abhgupta/Desktop/workspace/shunting-yard/circus-train-12.1.0",
-                  CIRCUS_TRAIN_HOME_SCRIPT));
+              .format("%s/%s", getEnvironmentVariables().get(CIRCUS_TRAIN_HOME_ENV_VAR), CIRCUS_TRAIN_HOME_SCRIPT));
       cli.addArgument("--config=${CONFIG_LOCATION}");
       cli.setSubstitutionMap(ImmutableMap.of("CONFIG_LOCATION", context.getConfigLocation()));
 
@@ -54,8 +59,8 @@ public class CircusTrainRunner {
       executor.setWorkingDirectory(new File(context.getWorkspace()));
       executor.setStreamHandler(new PumpStreamHandler(out, err));
 
-      log.debug("Executing {} with environment {}", cli, getProcEnvironment());
-      int returnValue = executor.execute(cli, getProcEnvironment());
+      log.debug("Executing {} with environment {}", cli, getEnvironmentVariables());
+      int returnValue = executor.execute(cli, getEnvironmentVariables());
       log.debug("Command exited with value {} ", returnValue);
       if (returnValue != 0) {
         throw new CircusTrainException("Circus Train exited with error value " + returnValue);
@@ -63,6 +68,12 @@ public class CircusTrainRunner {
     } catch (Throwable e) {
       log.error("Unable to execute Circus Train", e);
     }
+  }
+
+  private Map<String, String> getEnvironmentVariables() throws IOException {
+    Map<String, String> mergedMap = new HashMap<>(context.getEnvironment());
+    mergedMap.putAll(getProcEnvironment());
+    return mergedMap;
   }
 
   private OutputStream errStream(Context context) throws IOException {

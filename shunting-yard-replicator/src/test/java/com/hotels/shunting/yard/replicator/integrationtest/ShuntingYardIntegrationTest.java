@@ -121,17 +121,36 @@ public class ShuntingYardIntegrationTest {
 
     System.out.println("HELLO WORLD - " + map.get(ConfVars.METASTOREURIS.varname) + "**");
 
-    MetaStoreEvent event = MetaStoreEvent
-        .builder(EventType.ON_ADD_PARTITION, DATABASE, IntegrationTestHelper.SOURCE_PARTITIONED_TABLE)
-        .parameters(map)
-        .build();
-
     Map<String, String> env = EnvironmentUtils.getProcEnvironment();
     EnvironmentUtils
         .addVariableToEnvironment(env,
             "CIRCUS_TRAIN_HOME=/Users/abhgupta/Desktop/workspace/shunting-yard/circus-train-12.1.0");
+   EnvironmentUtils.addVariableToEnvironment(env, "HIVE_LIB=/usr/local/opt/hive/lib");
+    EnvironmentUtils
+        .addVariableToEnvironment(env, "HCAT_LIB=/usr/local/opt/hive/hcatalog");
+//    EnvironmentUtils
+//        .addVariableToEnvironment(env, "HADOOP_HOME=/usr/local/opt/hadoop/");
+//    EnvironmentUtils
+//        .addVariableToEnvironment(env, "HADOOP_CLASSPATH=/usr/local/opt/hadoop/share/hadoop/tools/lib");
 
-    System.out.println(EnvironmentUtils.getProcEnvironment().get("CIRCUS_TRAIN_HOME"));
+   // EnvironmentUtils.addVariableToEnvironment(env, "HADOOP_HOME=/usr/local/Cellar/hadoop/3.1.1/");
+//    EnvironmentUtils
+//        .addVariableToEnvironment(env, "HADOOP_CLASSPATH=$(find $HADOOP_HOME -name '*.jar' | xargs echo | tr ' ' ':')");
+
+    // export HADOOP_COMMON_HOME=/usr/local/Cellar/hadoop/3.1.1/libexec/share/hadoop/common/
+
+    MetaStoreEvent event = MetaStoreEvent
+        .builder(EventType.ON_ADD_PARTITION, DATABASE, IntegrationTestHelper.SOURCE_PARTITIONED_TABLE)
+        .parameters(map)
+        .environmentContext(env)
+        .build();
+
+    System.out.println(env.get("CIRCUS_TRAIN_HOME"));
+    System.out.println(env.get("HIVE_LIB"));
+    System.out.println(env.get("HCAT_LIB"));
+//    System.out.println(env.get("HADOOP_HOME"));
+//    System.out.println(env.get("HADOOP_CLASSPATH"));
+
     eventListener.onEvent(event);
 
     // ReplicationRunner runner = new ReplicationRunner(eventReader, listener);
@@ -159,7 +178,6 @@ public class ShuntingYardIntegrationTest {
     // }
     // });
     // runner.run(config.getAbsolutePath());
-    System.out.println("HELLO WORLD");
   }
 
 }

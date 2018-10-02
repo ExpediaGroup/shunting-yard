@@ -53,8 +53,8 @@ import com.hotels.shunting.yard.replicator.exec.launcher.CircusTrainRunner;
 import com.hotels.shunting.yard.replicator.exec.messaging.AggregatingMetaStoreEventReader;
 import com.hotels.shunting.yard.replicator.exec.messaging.MessageReaderAdapter;
 import com.hotels.shunting.yard.replicator.exec.messaging.MetaStoreEventReader;
-import com.hotels.shunting.yard.replicator.exec.receiver.ContextFactory;
 import com.hotels.shunting.yard.replicator.exec.receiver.CircusTrainReplicationMetaStoreEventListener;
+import com.hotels.shunting.yard.replicator.exec.receiver.ContextFactory;
 import com.hotels.shunting.yard.replicator.exec.receiver.ReplicationMetaStoreEventListener;
 import com.hotels.shunting.yard.replicator.metastore.DefaultMetaStoreClientSupplier;
 
