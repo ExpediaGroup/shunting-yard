@@ -3,6 +3,7 @@ package com.hotels.shunting.yard.replicator.exec.messaging;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import java.util.stream.IntStream;
 import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.apache.hadoop.hive.metastore.api.Partition;
 import org.apache.hadoop.hive.metastore.api.Table;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -66,7 +68,11 @@ public class MessageReaderAdapterTest {
     messageReaderAdapter = new MessageReaderAdapter(messageReader);
     when(partition.getValues()).thenReturn(PARTITION_VALUES);
     when(dummyHiveTable.getPartitionKeys()).thenReturn(partitionKeys);
+  }
 
+  @After
+  public void close() throws IOException {
+    messageReaderAdapter.close();
   }
 
   @Test
@@ -87,8 +93,7 @@ public class MessageReaderAdapterTest {
 
     MetaStoreEvent actual = messageReaderAdapter.next();
 
-    assertMetaStoreEvent(actual, expected);
-
+    assertMetaStoreEvent(expected, actual);
   }
 
   @Test
@@ -99,8 +104,6 @@ public class MessageReaderAdapterTest {
     when(alterPartitionEvent.getNewPartition()).thenReturn(partition);
     when(alterPartitionEvent.getEventType()).thenReturn(EventType.ON_ALTER_PARTITION);
 
-    MetaStoreEvent actual = messageReaderAdapter.next();
-
     MetaStoreEvent expected = MetaStoreEvent
         .builder(EventType.ON_ALTER_PARTITION, TEST_DB, TEST_TABLE)
         .partitionColumns(PARTITION_COLUMNS)
@@ -109,8 +112,9 @@ public class MessageReaderAdapterTest {
         .parameters(EMPTY_MAP)
         .build();
 
-    assertMetaStoreEvent(actual, expected);
+    MetaStoreEvent actual = messageReaderAdapter.next();
 
+    assertMetaStoreEvent(expected, actual);
   }
 
   @Test
@@ -122,8 +126,6 @@ public class MessageReaderAdapterTest {
     when(dropPartitionEvent.getEventType()).thenReturn(EventType.ON_DROP_PARTITION);
     when(dropPartitionEvent.getDeleteData()).thenReturn(true);
 
-    MetaStoreEvent actual = messageReaderAdapter.next();
-
     MetaStoreEvent expected = MetaStoreEvent
         .builder(EventType.ON_DROP_PARTITION, TEST_DB, TEST_TABLE)
         .partitionColumns(PARTITION_COLUMNS)
@@ -132,8 +134,9 @@ public class MessageReaderAdapterTest {
         .environmentContext(EMPTY_MAP)
         .build();
 
-    assertMetaStoreEvent(actual, expected);
+    MetaStoreEvent actual = messageReaderAdapter.next();
 
+    assertMetaStoreEvent(expected, actual);
   }
 
   @Test
@@ -143,15 +146,15 @@ public class MessageReaderAdapterTest {
     when(dropTableEvent.getEventType()).thenReturn(EventType.ON_DROP_TABLE);
     when(dropTableEvent.getDeleteData()).thenReturn(true);
 
-    MetaStoreEvent actual = messageReaderAdapter.next();
-
     MetaStoreEvent expected = MetaStoreEvent
         .builder(EventType.ON_DROP_TABLE, TEST_DB, TEST_TABLE)
         .deleteData(true)
         .environmentContext(EMPTY_MAP)
         .build();
 
-    assertMetaStoreEvent(actual, expected);
+    MetaStoreEvent actual = messageReaderAdapter.next();
+
+    assertMetaStoreEvent(expected, actual);
   }
 
   @Test
@@ -176,8 +179,7 @@ public class MessageReaderAdapterTest {
 
     MetaStoreEvent actual = messageReaderAdapter.next();
 
-    assertMetaStoreEvent(actual, expected);
-
+    assertMetaStoreEvent(expected, actual);
   }
 
   @Test
@@ -194,8 +196,13 @@ public class MessageReaderAdapterTest {
 
     MetaStoreEvent actual = messageReaderAdapter.next();
 
-    assertMetaStoreEvent(actual, expected);
+    assertMetaStoreEvent(expected, actual);
+  }
 
+  @Test
+  public void testHasNext() {
+    when(messageReader.hasNext()).thenReturn(true);
+    assertThat(messageReaderAdapter.hasNext()).isTrue();
   }
 
   private void configureMockedEvent(SerializableListenerEvent serializableListenerEvent) {
@@ -203,7 +210,7 @@ public class MessageReaderAdapterTest {
     when(serializableListenerEvent.getTableName()).thenReturn(TEST_TABLE);
   }
 
-  private void assertMetaStoreEvent(MetaStoreEvent actual, MetaStoreEvent expected) {
+  private void assertMetaStoreEvent(MetaStoreEvent expected, MetaStoreEvent actual) {
     assertThat(actual.getEventType()).isEqualTo(expected.getEventType());
     assertThat(actual.getDatabaseName()).isEqualTo(expected.getDatabaseName());
     assertThat(actual.getTableName()).isEqualTo(expected.getTableName());
@@ -212,7 +219,6 @@ public class MessageReaderAdapterTest {
     assertThat(actual.isDeleteData()).isEqualTo(expected.isDeleteData());
     assertThat(actual.getParameters()).isEqualTo(expected.getParameters());
     assertThat(actual.getEnvironmentContext()).isEqualTo(expected.getEnvironmentContext());
-
   }
 
 }
