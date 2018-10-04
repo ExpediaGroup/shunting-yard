@@ -1,6 +1,7 @@
 package com.hotels.shunting.yard.replicator.exec.messaging;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -12,7 +13,6 @@ import java.util.stream.IntStream;
 import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.apache.hadoop.hive.metastore.api.Partition;
 import org.apache.hadoop.hive.metastore.api.Table;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,11 +68,6 @@ public class MessageReaderAdapterTest {
     messageReaderAdapter = new MessageReaderAdapter(messageReader);
     when(partition.getValues()).thenReturn(PARTITION_VALUES);
     when(dummyHiveTable.getPartitionKeys()).thenReturn(partitionKeys);
-  }
-
-  @After
-  public void close() throws IOException {
-    messageReaderAdapter.close();
   }
 
   @Test
@@ -201,8 +196,14 @@ public class MessageReaderAdapterTest {
 
   @Test
   public void testHasNext() {
-    when(messageReader.hasNext()).thenReturn(true);
-    assertThat(messageReaderAdapter.hasNext()).isTrue();
+    messageReaderAdapter.hasNext();
+    verify(messageReader).hasNext();
+  }
+
+  @Test
+  public void testClose() throws IOException {
+    messageReaderAdapter.close();
+    verify(messageReader).close();
   }
 
   private void configureMockedEvent(SerializableListenerEvent serializableListenerEvent) {
