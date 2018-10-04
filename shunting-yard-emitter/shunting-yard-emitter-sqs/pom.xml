@@ -73,15 +73,8 @@
                   <include>com.hotels:shunting-yard-common*</include>
                   <include>com.hotels:shunting-yard-emitter*</include>
                   <include>com.hotels:hcommon-hive-metastore</include>
-                  <include>com.amazonaws:*</include>
                 </includes>
               </artifactSet>
-              <relocations>
-                <relocation>
-                  <pattern>com.amazonaws</pattern>
-                  <shadedPattern>${shade.prefix}.com.amazonaws</shadedPattern>
-                </relocation>
-              </relocations>
             </configuration>
           </execution>
         </executions>

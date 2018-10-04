@@ -24,14 +24,14 @@ import javax.validation.constraints.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-import com.hotels.shunting.yard.receiver.kinesis.messaging.KinesisMessageReaderFactory;
+import com.hotels.shunting.yard.receiver.sqs.messaging.SqsMessageReaderFactory;
 
 @Configuration
 @ConfigurationProperties(prefix = "event-receiver")
 public class EventReceiverConfiguration {
 
   private Map<String, String> configurationProperties;
-  private @NotNull String messageReaderFactoryClass = KinesisMessageReaderFactory.class.getName();
+  private @NotNull String messageReaderFactoryClass = SqsMessageReaderFactory.class.getName();
   private @NotNull SerDeType serDeType = JSON;
 
   public Map<String, String> getConfigurationProperties() {

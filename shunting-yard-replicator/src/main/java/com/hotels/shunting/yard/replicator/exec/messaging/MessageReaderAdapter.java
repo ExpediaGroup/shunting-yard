@@ -91,7 +91,7 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
     case ON_INSERT: {
       SerializableInsertEvent insert = (SerializableInsertEvent) listenerEvent;
       builder.partitionColumns(new ArrayList<>(insert.getKeyValues().keySet()));
-      builder.partitionColumns(new ArrayList<>(insert.getKeyValues().values()));
+      builder.partitionValues(new ArrayList<>(insert.getKeyValues().values()));
       break;
     }
     default:
@@ -106,7 +106,7 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
   }
 
   private void addPartitionValues(MetaStoreEvent.Builder builder, List<Partition> partitions) {
-    partitions.stream().map(p -> p.getValues()).forEach(pl -> builder.partitionColumns(pl));
+    partitions.stream().map(p -> p.getValues()).forEach(pl -> builder.partitionValues(pl));
   }
 
 }
