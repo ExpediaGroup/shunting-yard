@@ -16,7 +16,6 @@
 package com.hotels.shunting.yard.receiver.sqs.messaging;
 
 import com.amazonaws.services.sqs.model.Message;
-import com.sun.jersey.core.util.Base64;
 
 public interface MessageDecoder {
 
@@ -24,7 +23,7 @@ public interface MessageDecoder {
 
     @Override
     public byte[] decode(Message message) {
-      return Base64.decode(message.getBody().getBytes());
+      return message.getBody().getBytes();
     }
 
   };

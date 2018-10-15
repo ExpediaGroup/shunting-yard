@@ -28,7 +28,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
-import com.amazonaws.util.Base64;
 
 import com.hotels.shunting.yard.common.messaging.Message;
 
@@ -57,7 +56,7 @@ public class SqsMessageTaskTest {
     sqsTask.run();
     verify(producer).sendMessage(captor.capture());
     assertThat(captor.getValue().getQueueUrl()).isEqualTo(TOPIC_URL);
-    assertThat(captor.getValue().getMessageBody()).isEqualTo(new String(Base64.encode(PAYLOAD)));
+    assertThat(captor.getValue().getMessageBody()).isEqualTo(new String(PAYLOAD));
   }
 
 }

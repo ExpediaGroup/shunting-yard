@@ -26,7 +26,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.amazonaws.services.sqs.model.Message;
-import com.sun.jersey.core.util.Base64;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MessageDecoderTest {
@@ -44,7 +43,7 @@ public class MessageDecoderTest {
 
   @Test
   public void typical() {
-    assertThat(decoder.decode(message)).isEqualTo(Base64.decode(BODY.getBytes()));
+    assertThat(decoder.decode(message)).isEqualTo(BODY.getBytes());
   }
 
   @Test(expected = NullPointerException.class)

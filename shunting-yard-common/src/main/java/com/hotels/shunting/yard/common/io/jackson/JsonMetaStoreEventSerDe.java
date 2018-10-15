@@ -80,6 +80,7 @@ public class JsonMetaStoreEventSerDe implements MetaStoreEventSerDe {
   @Override
   public <T extends SerializableListenerEvent> T unmarshal(byte[] payload) throws MetaException {
     try {
+      System.out.println(new String(payload));
       if (log.isDebugEnabled()) {
         log.debug("Marshalled event is: {}", new String(payload));
       }
@@ -87,7 +88,7 @@ public class JsonMetaStoreEventSerDe implements MetaStoreEventSerDe {
       // As we don't know the type in advance we can only deserialize the event twice:
       // 1. Create a dummy object just to find out the type
       T genericEvent = mapper.readerFor(HeplerSerializableListenerEvent.class).readValue(buffer);
-      log.debug("Umarshal event of type: {}", genericEvent.getEventType());
+      log.debug("Unmarshal event of type: {}", genericEvent.getEventType());
       // 2. Deserialize the actual object
       buffer.reset();
       T event = mapper.readerFor(genericEvent.getEventType().eventClass()).readValue(buffer);

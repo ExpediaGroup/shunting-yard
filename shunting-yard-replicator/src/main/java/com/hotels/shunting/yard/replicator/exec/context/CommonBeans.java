@@ -51,10 +51,11 @@ import com.hotels.shunting.yard.replicator.exec.event.aggregation.MetaStoreEvent
 import com.hotels.shunting.yard.replicator.exec.external.Marshaller;
 import com.hotels.shunting.yard.replicator.exec.launcher.CircusTrainRunner;
 import com.hotels.shunting.yard.replicator.exec.messaging.AggregatingMetaStoreEventReader;
+import com.hotels.shunting.yard.replicator.exec.messaging.ApiaryEventHelper;
 import com.hotels.shunting.yard.replicator.exec.messaging.MessageReaderAdapter;
 import com.hotels.shunting.yard.replicator.exec.messaging.MetaStoreEventReader;
-import com.hotels.shunting.yard.replicator.exec.receiver.ContextFactory;
 import com.hotels.shunting.yard.replicator.exec.receiver.CircusTrainReplicationMetaStoreEventListener;
+import com.hotels.shunting.yard.replicator.exec.receiver.ContextFactory;
 import com.hotels.shunting.yard.replicator.exec.receiver.ReplicationMetaStoreEventListener;
 import com.hotels.shunting.yard.replicator.metastore.DefaultMetaStoreClientSupplier;
 
@@ -90,6 +91,7 @@ public class CommonBeans {
     putConfigurationProperties(replicaCatalog.getConfigurationProperties(), properties);
     putConfigurationProperties(messageReaderConfig.getConfigurationProperties(), properties);
     HiveConf hiveConf = new HiveConfFactory(siteXml, properties).newInstance();
+
     return hiveConf;
   }
 
@@ -131,14 +133,20 @@ public class CommonBeans {
   }
 
   @Bean
+  ApiaryEventHelper apiaryEventHelper(MetaStoreClientFactory metaStoreClientFactory) {
+    return new ApiaryEventHelper(metaStoreClientFactory);
+  }
+
+  @Bean
   MessageReaderAdapter messageReaderAdapter(
       HiveConf replicaHiveConf,
       MetaStoreEventSerDe metaStoreEventSerDe,
-      EventReceiverConfiguration messageReaderConfig) {
+      EventReceiverConfiguration messageReaderConfig,
+      ApiaryEventHelper apiaryEventHelper) {
     MessageReaderFactory messaReaderFactory = MessageReaderFactory
         .newInstance(messageReaderConfig.getMessageReaderFactoryClass());
     MessageReader messageReader = messaReaderFactory.newInstance(replicaHiveConf, metaStoreEventSerDe);
-    return new MessageReaderAdapter(messageReader);
+    return new MessageReaderAdapter(messageReader, apiaryEventHelper);
   }
 
   @Bean

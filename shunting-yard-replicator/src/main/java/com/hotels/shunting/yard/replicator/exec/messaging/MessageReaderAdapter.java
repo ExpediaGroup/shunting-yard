@@ -15,6 +15,8 @@
  */
 package com.hotels.shunting.yard.replicator.exec.messaging;
 
+import static org.apache.hadoop.hive.conf.HiveConf.ConfVars.METASTOREURIS;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,15 +31,21 @@ import com.hotels.shunting.yard.common.event.SerializableDropPartitionEvent;
 import com.hotels.shunting.yard.common.event.SerializableDropTableEvent;
 import com.hotels.shunting.yard.common.event.SerializableInsertEvent;
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
+import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryAddPartitionEvent;
+import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryAlterPartitionEvent;
+import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryDropPartitionEvent;
+import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryInsertTableEvent;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 
 public class MessageReaderAdapter implements MetaStoreEventReader {
 
   private final MessageReader messageReader;
+  private final ApiaryEventHelper apiaryEventHelper;
 
-  public MessageReaderAdapter(MessageReader messageReader) {
+  public MessageReaderAdapter(MessageReader messageReader, ApiaryEventHelper apiaryEventHelper) {
     this.messageReader = messageReader;
+    this.apiaryEventHelper = apiaryEventHelper;
   }
 
   @Override
@@ -94,11 +102,70 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
       builder.partitionValues(new ArrayList<>(insert.getKeyValues().values()));
       break;
     }
+
+    case ADD_PARTITION: {
+      SerializableApiaryAddPartitionEvent addPartition = (SerializableApiaryAddPartitionEvent) listenerEvent;
+
+      List<String> partitionkeys = apiaryEventHelper
+          .getPartitionKeys(addPartition.getDatabaseName(), addPartition.getTableName(),
+              addPartition.getSourceMetastoreUris());
+
+      builder.parameter(METASTOREURIS.varname, addPartition.getSourceMetastoreUris());
+      addPartitionColumns(builder, partitionkeys);
+      addPartitionValues1(builder, addPartition.getPartition());
+      break;
+    }
+    case ALTER_PARTITION: {
+      SerializableApiaryAlterPartitionEvent alterPartition = (SerializableApiaryAlterPartitionEvent) listenerEvent;
+
+      List<String> partitionkeys = apiaryEventHelper
+          .getPartitionKeys(alterPartition.getDatabaseName(), alterPartition.getTableName(),
+              alterPartition.getSourceMetastoreUris());
+
+      builder.parameter(METASTOREURIS.varname, alterPartition.getSourceMetastoreUris());
+      addPartitionColumns(builder, partitionkeys);
+      addPartitionValues1(builder, alterPartition.getPartition());
+      break;
+    }
+    case DROP_PARTITION: {
+      SerializableApiaryDropPartitionEvent dropPartition = (SerializableApiaryDropPartitionEvent) listenerEvent;
+
+      List<String> partitionkeys = apiaryEventHelper
+          .getPartitionKeys(dropPartition.getDatabaseName(), dropPartition.getTableName(),
+              dropPartition.getSourceMetastoreUris());
+
+      builder.parameter(METASTOREURIS.varname, dropPartition.getSourceMetastoreUris());
+      addPartitionColumns(builder, partitionkeys);
+      addPartitionValues1(builder, dropPartition.getPartition());
+      builder.deleteData(true);
+      break;
+    }
+    case INSERT: {
+      SerializableApiaryInsertTableEvent insertTable = (SerializableApiaryInsertTableEvent) listenerEvent;
+
+      builder.parameter(METASTOREURIS.varname, insertTable.getSourceMetastoreUris());
+      addPartitionColumns(builder, new ArrayList<>(insertTable.getKeyValues().keySet()));
+      addPartitionValues1(builder, new ArrayList<>(insertTable.getKeyValues().values()));
+      break;
+    }
+    case DROP_TABLE: {
+      builder.deleteData(true);
+      break;
+    }
+
     default:
       // Ignore non-partition events
       break;
     }
     return builder.build();
+  }
+
+  private void addPartitionColumns(MetaStoreEvent.Builder builder, List<String> partitionKeys) {
+    builder.partitionColumns(partitionKeys);
+  }
+
+  private void addPartitionValues1(MetaStoreEvent.Builder builder, List<String> partitionValues) {
+    builder.partitionValues(partitionValues);
   }
 
   private void addPartitionColumns(MetaStoreEvent.Builder builder, Table table) {

@@ -15,6 +15,13 @@
  */
 package com.hotels.shunting.yard.common.event;
 
+import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryAddPartitionEvent;
+import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryAlterPartitionEvent;
+import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryCreateTableEvent;
+import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryDropPartitionEvent;
+import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryDropTableEvent;
+import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryInsertTableEvent;
+
 /**
  * To make processing event in the receiver easier.
  */
@@ -25,7 +32,13 @@ public enum EventType {
   ON_ADD_PARTITION(SerializableAddPartitionEvent.class),
   ON_ALTER_PARTITION(SerializableAlterPartitionEvent.class),
   ON_DROP_PARTITION(SerializableDropPartitionEvent.class),
-  ON_INSERT(SerializableInsertEvent.class);
+  ON_INSERT(SerializableInsertEvent.class),
+  ADD_PARTITION(SerializableApiaryAddPartitionEvent.class),
+  ALTER_PARTITION(SerializableApiaryAlterPartitionEvent.class),
+  DROP_PARTITION(SerializableApiaryDropPartitionEvent.class),
+  CREATE_TABLE(SerializableApiaryCreateTableEvent.class),
+  INSERT(SerializableApiaryInsertTableEvent.class),
+  DROP_TABLE(SerializableApiaryDropTableEvent.class);
 
   private final Class<? extends SerializableListenerEvent> eventClass;
 
