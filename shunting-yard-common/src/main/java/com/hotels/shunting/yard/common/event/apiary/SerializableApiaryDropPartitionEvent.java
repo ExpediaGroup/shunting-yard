@@ -17,27 +17,14 @@ package com.hotels.shunting.yard.common.event.apiary;
 
 import java.util.List;
 
-/*
- * {
- *   \"protocolVersion\":\"1.0\",
- *   \"eventType\":\"DROP_PARTITION\",
- *   \"dbName\":\"some_db\",
- *   \"tableName\":\"some_table\",
- *   \"partition\":[\"col_1\", \"col_2\", \"col_3\"],
- *   \"sourceMetastoreUris\":\"thrift://host:9083\"
- * }
- *
- */
-
-import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
-
-public class SerializableApiaryDropPartitionEvent extends SerializableListenerEvent {
+public class SerializableApiaryDropPartitionEvent extends SerializableApiaryListenerEvent {
   private static final long serialVersionUID = 1L;
 
   private String protocolVersion;
   private String dbName;
   private String tableName;
-  private List<String> partition;
+  private List<String> partitionKeys;
+  private List<String> partitionValues;
   private String sourceMetastoreUris;
 
   public String getProtocolVersion() {
@@ -58,10 +45,15 @@ public class SerializableApiaryDropPartitionEvent extends SerializableListenerEv
     return tableName;
   }
 
-  public List<String> getPartition() {
-    return partition;
+  public List<String> getPartitionKeys() {
+    return partitionKeys;
   }
 
+  public List<String> getPartitionValues() {
+    return partitionValues;
+  }
+
+  @Override
   public String getSourceMetastoreUris() {
     return sourceMetastoreUris;
   }

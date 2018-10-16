@@ -42,9 +42,9 @@ import com.hotels.shunting.yard.common.io.jackson.JsonMetaStoreEventSerDe;
 public class SerdeWithJsonInputTest {
 
   private final MetaStoreEventSerDe serDe = new JsonMetaStoreEventSerDe();
-  private final static String ADD_PARTITION_EVENT = "{\"protocolVersion\":\"1.0\",\"eventType\":\"ADD_PARTITION\",\"dbName\":\"some_db\",\"tableName\":\"some_table\",\"partition\":[\"col_1\", \"col_2\", \"col_3\"],\"sourceMetastoreUris\":\"thrift://host:9083\"}";
-  private final static String ALTER_PARTITION_EVENT = "{\"protocolVersion\":\"1.0\",\"eventType\":\"ALTER_PARTITION\",\"dbName\":\"some_db\",\"tableName\":\"some_table\",\"partition\":[\"col_1\", \"col_2\", \"col_3\"],\"oldPartition\": [\"col_1\", \"col_2\", \"col_3\"],\"sourceMetastoreUris\":\"thrift://host:9083\"}";
-  private final static String DROP_PARTITION_EVENT = "{\"protocolVersion\":\"1.0\",\"eventType\":\"DROP_PARTITION\",\"dbName\":\"some_db\",\"tableName\":\"some_table\",\"partition\":[\"col_1\", \"col_2\", \"col_3\"],\"sourceMetastoreUris\":\"thrift://host:9083\"}";
+  private final static String ADD_PARTITION_EVENT = "{\"protocolVersion\":\"1.0\",\"eventType\":\"ADD_PARTITION\",\"dbName\":\"some_db\",\"tableName\":\"some_table\",\"partitionKeys\":[\"col_1\", \"col_2\", \"col_3\"], \"partitionValues\":[\"val_1\", \"val_2\", \"val_3\"], \"sourceMetastoreUris\":\"thrift://host:9083\"}";
+  private final static String ALTER_PARTITION_EVENT = "{\"protocolVersion\":\"1.0\",\"eventType\":\"ALTER_PARTITION\",\"dbName\":\"some_db\",\"tableName\":\"some_table\",\"partitionKeys\": [\"col_1\", \"col_2\", \"col_3\"], \"partitionValues\":[\"val_1\", \"val_2\", \"val_3\"],\"oldPartitionValues\": [\"val_4\", \"val_5\", \"val_6\"],\"sourceMetastoreUris\":\"thrift://host:9083\"}";
+  private final static String DROP_PARTITION_EVENT = "{\"protocolVersion\":\"1.0\",\"eventType\":\"DROP_PARTITION\",\"dbName\":\"some_db\",\"tableName\":\"some_table\",\"partitionKeys\": [\"col_1\", \"col_2\", \"col_3\"],\"partitionValues\":[\"val_1\", \"val_2\", \"val_3\"],\"sourceMetastoreUris\":\"thrift://host:9083\"}";
 
   private final static String CREATE_TABLE_EVENT = "{\"protocolVersion\":\"1.0\",\"eventType\":\"CREATE_TABLE\",\"dbName\":\"some_db\",\"tableName\":\"some_table\",\"sourceMetastoreUris\":\"thrift://host:9083\"}";
   private final static String INSERT_EVENT = "{\"protocolVersion\": \"1.0\",\"eventType\": \"INSERT\",\"dbName\": \"some_db\",\"tableName\": \"some_table\",\"files\": [\"file:/a/b.txt\",\"file:/a/c.txt\"],\"fileChecksums\": [\"123\",\"456\"],\"partitionKeyValues\": {\"load_date\": \"2013-03-24\",\"variant_code\": \"EN\"},\"sourceMetastoreUris\": \"thrift://host:9083\"}";
@@ -56,12 +56,7 @@ public class SerdeWithJsonInputTest {
   private Table table;
   private List<FieldSchema> partitionKeys;
 
-  private final MessageDecoder decoder = new MessageDecoder() {
-    @Override
-    public byte[] decode(Message message) {
-      return message.getBody().getBytes();
-    }
-  };
+  private final MessageDecoder decoder = MessageDecoder.DEFAULT;
 
   public void init() {
     table = new Table();

@@ -26,31 +26,37 @@ import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryInsertTabl
  * To make processing event in the receiver easier.
  */
 public enum EventType {
-  ON_CREATE_TABLE(SerializableCreateTableEvent.class),
-  ON_ALTER_TABLE(SerializableAlterTableEvent.class),
-  ON_DROP_TABLE(SerializableDropTableEvent.class),
-  ON_ADD_PARTITION(SerializableAddPartitionEvent.class),
-  ON_ALTER_PARTITION(SerializableAlterPartitionEvent.class),
-  ON_DROP_PARTITION(SerializableDropPartitionEvent.class),
-  ON_INSERT(SerializableInsertEvent.class),
-  ADD_PARTITION(SerializableApiaryAddPartitionEvent.class),
-  ALTER_PARTITION(SerializableApiaryAlterPartitionEvent.class),
-  DROP_PARTITION(SerializableApiaryDropPartitionEvent.class),
-  CREATE_TABLE(SerializableApiaryCreateTableEvent.class),
-  INSERT(SerializableApiaryInsertTableEvent.class),
-  DROP_TABLE(SerializableApiaryDropTableEvent.class);
+  ON_CREATE_TABLE(SerializableCreateTableEvent.class, false),
+  ON_ALTER_TABLE(SerializableAlterTableEvent.class, false),
+  ON_DROP_TABLE(SerializableDropTableEvent.class, false),
+  ON_ADD_PARTITION(SerializableAddPartitionEvent.class, false),
+  ON_ALTER_PARTITION(SerializableAlterPartitionEvent.class, false),
+  ON_DROP_PARTITION(SerializableDropPartitionEvent.class, false),
+  ON_INSERT(SerializableInsertEvent.class, false),
+  ADD_PARTITION(SerializableApiaryAddPartitionEvent.class, true),
+  ALTER_PARTITION(SerializableApiaryAlterPartitionEvent.class, true),
+  DROP_PARTITION(SerializableApiaryDropPartitionEvent.class, true),
+  CREATE_TABLE(SerializableApiaryCreateTableEvent.class, true),
+  INSERT(SerializableApiaryInsertTableEvent.class, true),
+  DROP_TABLE(SerializableApiaryDropTableEvent.class, true);
 
   private final Class<? extends SerializableListenerEvent> eventClass;
+  private final boolean isApiaryEvent;
 
-  private EventType(Class<? extends SerializableListenerEvent> eventClass) {
+  private EventType(Class<? extends SerializableListenerEvent> eventClass, boolean isApiaryEvent) {
     if (eventClass == null) {
       throw new NullPointerException("Parameter eventClass is required");
     }
     this.eventClass = eventClass;
+    this.isApiaryEvent = isApiaryEvent;
   }
 
   public Class<? extends SerializableListenerEvent> eventClass() {
     return eventClass;
+  }
+
+  public boolean isApiaryEvent() {
+    return isApiaryEvent;
   }
 
   public static EventType forClass(Class<? extends SerializableListenerEvent> clazz) {

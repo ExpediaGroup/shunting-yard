@@ -17,28 +17,19 @@ package com.hotels.shunting.yard.common.event.apiary;
 
 import java.util.List;
 
-/*
- * {
- *   \"protocolVersion\":\"1.0\",
- *   \"eventType\":\"ADD_PARTITION\",
- *   \"dbName\":\"some_db\",
- *   \"tableName\":\"some_table\",
- *   \"partition\":[\"col_1\", \"col_2\", \"col_3\"],
- *   \"sourceMetastoreUris\":\"thrift://host:9083\"
- * }
- *
- */
-
-import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
-
-public class SerializableApiaryAddPartitionEvent extends SerializableListenerEvent {
+public class SerializableApiaryAddPartitionEvent extends SerializableApiaryListenerEvent {
   private static final long serialVersionUID = 1L;
 
+  private String protocolVersion;
   private String dbName;
   private String tableName;
-  private String protocolVersion;
-  private List<String> partition;
+  private List<String> partitionKeys;
+  private List<String> partitionValues;
   private String sourceMetastoreUris;
+
+  public String getProtocolVersion() {
+    return protocolVersion;
+  }
 
   public String getDbName() {
     return dbName;
@@ -54,14 +45,15 @@ public class SerializableApiaryAddPartitionEvent extends SerializableListenerEve
     return tableName;
   }
 
-  public List<String> getPartition() {
-    return partition;
+  public List<String> getPartitionKeys() {
+    return partitionKeys;
   }
 
-  public String getProtocolVersion() {
-    return protocolVersion;
+  public List<String> getPartitionValues() {
+    return partitionValues;
   }
 
+  @Override
   public String getSourceMetastoreUris() {
     return sourceMetastoreUris;
   }

@@ -17,29 +17,15 @@ package com.hotels.shunting.yard.common.event.apiary;
 
 import java.util.List;
 
-/*
- * {
- *   \"protocolVersion\":\"1.0\",
- *   \"eventType\":\"ALTER_PARTITION\",
- *   \"dbName\":\"some_db\",
- *   \"tableName\":\"some_table\",
- *   \"partition\":[\"col_1\", \"col_2\", \"col_3\"],
- *   \"oldPartition\": [\"col_1\", \"col_2\", \"col_3\"],
- *   \"sourceMetastoreUris\":\"thrift://host:9083\"
- * }
- *
- */
-
-import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
-
-public class SerializableApiaryAlterPartitionEvent extends SerializableListenerEvent {
+public class SerializableApiaryAlterPartitionEvent extends SerializableApiaryListenerEvent {
   private static final long serialVersionUID = 1L;
 
   private String protocolVersion;
   private String dbName;
   private String tableName;
-  private List<String> partition;
-  private List<String> oldPartition;
+  private List<String> partitionKeys;
+  private List<String> partitionValues;
+  private List<String> oldPartitionValues;
   private String sourceMetastoreUris;
 
   public String getProtocolVersion() {
@@ -60,14 +46,19 @@ public class SerializableApiaryAlterPartitionEvent extends SerializableListenerE
     return tableName;
   }
 
-  public List<String> getPartition() {
-    return partition;
+  public List<String> getPartitionKeys() {
+    return partitionKeys;
   }
 
-  public List<String> getOldPartition() {
-    return oldPartition;
+  public List<String> getPartitionValues() {
+    return partitionValues;
   }
 
+  public List<String> getOldPartitionValues() {
+    return oldPartitionValues;
+  }
+
+  @Override
   public String getSourceMetastoreUris() {
     return sourceMetastoreUris;
   }

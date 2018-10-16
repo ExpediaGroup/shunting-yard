@@ -18,23 +18,7 @@ package com.hotels.shunting.yard.common.event.apiary;
 import java.util.List;
 import java.util.Map;
 
-import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
-
-/*
- * {
- *   \"protocolVersion\": \"1.0\",
- *   \"eventType\": \"INSERT\",
- *   \"dbName\": \"some_db\",
- *   \"tableName\": \"some_table\",
- *   \"files\": [\"file:/a/b.txt\",\"file:/a/c.txt\"],
- *   \"fileChecksums\": [\"123\",\"456\"],
- *   \"partitionKeyValues\": {\"load_date\": \"2013-03-24\",\"variant_code\": \"EN\"},
- *   \"sourceMetastoreUris\": \"thrift://host:9083\"
- * }
- *
- */
-
-public class SerializableApiaryInsertTableEvent extends SerializableListenerEvent {
+public class SerializableApiaryInsertTableEvent extends SerializableApiaryListenerEvent {
   private static final long serialVersionUID = 1L;
 
   private String protocolVersion;
@@ -63,6 +47,7 @@ public class SerializableApiaryInsertTableEvent extends SerializableListenerEven
     return tableName;
   }
 
+  @Override
   public String getSourceMetastoreUris() {
     return sourceMetastoreUris;
   }

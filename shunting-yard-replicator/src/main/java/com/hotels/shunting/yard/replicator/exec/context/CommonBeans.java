@@ -51,7 +51,6 @@ import com.hotels.shunting.yard.replicator.exec.event.aggregation.MetaStoreEvent
 import com.hotels.shunting.yard.replicator.exec.external.Marshaller;
 import com.hotels.shunting.yard.replicator.exec.launcher.CircusTrainRunner;
 import com.hotels.shunting.yard.replicator.exec.messaging.AggregatingMetaStoreEventReader;
-import com.hotels.shunting.yard.replicator.exec.messaging.ApiaryEventHelper;
 import com.hotels.shunting.yard.replicator.exec.messaging.MessageReaderAdapter;
 import com.hotels.shunting.yard.replicator.exec.messaging.MetaStoreEventReader;
 import com.hotels.shunting.yard.replicator.exec.receiver.CircusTrainReplicationMetaStoreEventListener;
@@ -133,20 +132,14 @@ public class CommonBeans {
   }
 
   @Bean
-  ApiaryEventHelper apiaryEventHelper(MetaStoreClientFactory metaStoreClientFactory) {
-    return new ApiaryEventHelper(metaStoreClientFactory);
-  }
-
-  @Bean
   MessageReaderAdapter messageReaderAdapter(
       HiveConf replicaHiveConf,
       MetaStoreEventSerDe metaStoreEventSerDe,
-      EventReceiverConfiguration messageReaderConfig,
-      ApiaryEventHelper apiaryEventHelper) {
+      EventReceiverConfiguration messageReaderConfig) {
     MessageReaderFactory messaReaderFactory = MessageReaderFactory
         .newInstance(messageReaderConfig.getMessageReaderFactoryClass());
     MessageReader messageReader = messaReaderFactory.newInstance(replicaHiveConf, metaStoreEventSerDe);
-    return new MessageReaderAdapter(messageReader, apiaryEventHelper);
+    return new MessageReaderAdapter(messageReader);
   }
 
   @Bean

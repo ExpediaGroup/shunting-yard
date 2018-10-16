@@ -15,6 +15,7 @@
  */
 package com.hotels.shunting.yard.replicator.exec.messaging;
 
+import static org.apache.hadoop.hive.conf.HiveConf.ConfVars.METASTOREURIS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -63,6 +64,7 @@ public class MessageReaderAdapterTest {
   private static final String TEST_DB = "test_db";
   private static final String TEST_TABLE = "test_table";
   private static final String SOURCE_METASTORE_URIS = "thrift://remote_host:9883";
+  private static final Map<String, String> PARAMETERS = ImmutableMap.of(METASTOREURIS.varname, SOURCE_METASTORE_URIS);
 
   private MessageReaderAdapter messageReaderAdapter;
 
@@ -81,7 +83,6 @@ public class MessageReaderAdapterTest {
   private @Mock SerializableApiaryDropTableEvent dropApiaryTableEvent;
 
   private @Mock MessageReader messageReader;
-  private @Mock ApiaryEventHelper apiaryEventHelper;
   private @Mock Table dummyHiveTable;
   private @Mock Partition partition;
 
@@ -96,7 +97,7 @@ public class MessageReaderAdapterTest {
 
     partitionKeys = ImmutableList.of(partitionColumn1, partitionColumn2, partitionColumn3);
     partitionValues = ImmutableList.of(partition);
-    messageReaderAdapter = new MessageReaderAdapter(messageReader, apiaryEventHelper);
+    messageReaderAdapter = new MessageReaderAdapter(messageReader);
     when(partition.getValues()).thenReturn(PARTITION_VALUES);
     when(dummyHiveTable.getPartitionKeys()).thenReturn(partitionKeys);
   }
@@ -115,118 +116,6 @@ public class MessageReaderAdapterTest {
         .partitionValues(PARTITION_VALUES)
         .environmentContext(EMPTY_MAP)
         .parameters(EMPTY_MAP)
-        .build();
-
-    MetaStoreEvent actual = messageReaderAdapter.next();
-
-    assertMetaStoreEvent(expected, actual);
-  }
-
-  @Test
-  public void apiaryAddPartitionEvent() {
-    when(messageReader.next()).thenReturn(addApiaryPartitionEvent);
-    configureMockedEvent(addApiaryPartitionEvent);
-    when(apiaryEventHelper.getPartitionKeys(TEST_DB, TEST_TABLE, SOURCE_METASTORE_URIS)).thenReturn(PARTITION_COLUMNS);
-
-    when(addApiaryPartitionEvent.getSourceMetastoreUris()).thenReturn(SOURCE_METASTORE_URIS);
-    when(addApiaryPartitionEvent.getPartition()).thenReturn(PARTITION_VALUES);
-    when(addApiaryPartitionEvent.getEventType()).thenReturn(EventType.ADD_PARTITION);
-
-    MetaStoreEvent expected = MetaStoreEvent
-        .builder(EventType.ADD_PARTITION, TEST_DB, TEST_TABLE)
-        .partitionColumns(PARTITION_COLUMNS)
-        .partitionValues(PARTITION_VALUES)
-        .environmentContext(EMPTY_MAP)
-        .parameters(EMPTY_MAP)
-        .build();
-
-    MetaStoreEvent actual = messageReaderAdapter.next();
-
-    assertMetaStoreEvent(expected, actual);
-  }
-
-  @Test
-  public void apiaryAlterPartitionEvent() {
-    when(messageReader.next()).thenReturn(alterApiaryPartitionEvent);
-    configureMockedEvent(alterApiaryPartitionEvent);
-    when(apiaryEventHelper.getPartitionKeys(TEST_DB, TEST_TABLE, SOURCE_METASTORE_URIS)).thenReturn(PARTITION_COLUMNS);
-
-    when(alterApiaryPartitionEvent.getSourceMetastoreUris()).thenReturn(SOURCE_METASTORE_URIS);
-    when(alterApiaryPartitionEvent.getPartition()).thenReturn(PARTITION_VALUES);
-    when(alterApiaryPartitionEvent.getEventType()).thenReturn(EventType.ALTER_PARTITION);
-
-    MetaStoreEvent expected = MetaStoreEvent
-        .builder(EventType.ALTER_PARTITION, TEST_DB, TEST_TABLE)
-        .partitionColumns(PARTITION_COLUMNS)
-        .partitionValues(PARTITION_VALUES)
-        .environmentContext(EMPTY_MAP)
-        .parameters(EMPTY_MAP)
-        .build();
-
-    MetaStoreEvent actual = messageReaderAdapter.next();
-
-    assertMetaStoreEvent(expected, actual);
-  }
-
-  @Test
-  public void apiaryDropPartitionEvent() {
-    when(messageReader.next()).thenReturn(dropApiaryPartitionEvent);
-    configureMockedEvent(dropApiaryPartitionEvent);
-    when(apiaryEventHelper.getPartitionKeys(TEST_DB, TEST_TABLE, SOURCE_METASTORE_URIS)).thenReturn(PARTITION_COLUMNS);
-
-    when(dropApiaryPartitionEvent.getSourceMetastoreUris()).thenReturn(SOURCE_METASTORE_URIS);
-    when(dropApiaryPartitionEvent.getPartition()).thenReturn(PARTITION_VALUES);
-    when(dropApiaryPartitionEvent.getEventType()).thenReturn(EventType.DROP_PARTITION);
-
-    MetaStoreEvent expected = MetaStoreEvent
-        .builder(EventType.DROP_PARTITION, TEST_DB, TEST_TABLE)
-        .partitionColumns(PARTITION_COLUMNS)
-        .partitionValues(PARTITION_VALUES)
-        .deleteData(true)
-        .environmentContext(EMPTY_MAP)
-        .build();
-
-    MetaStoreEvent actual = messageReaderAdapter.next();
-
-    assertMetaStoreEvent(expected, actual);
-  }
-
-  @Test
-  public void apiaryInsertTableEvent() {
-    Map<String, String> partitionKeyValues = IntStream
-        .range(0, partitionKeys.size())
-        .collect(LinkedHashMap::new,
-            (m, i) -> m.put(partitionKeys.get(i).getName(), partitionValues.get(0).getValues().get(i)), Map::putAll);
-
-    when(messageReader.next()).thenReturn(insertApiaryTableEvent);
-    configureMockedEvent(insertApiaryTableEvent);
-
-    when(insertApiaryTableEvent.getKeyValues()).thenReturn(partitionKeyValues);
-    when(insertApiaryTableEvent.getEventType()).thenReturn(EventType.INSERT);
-
-    MetaStoreEvent expected = MetaStoreEvent
-        .builder(EventType.INSERT, TEST_DB, TEST_TABLE)
-        .partitionColumns(PARTITION_COLUMNS)
-        .partitionValues(PARTITION_VALUES)
-        .environmentContext(EMPTY_MAP)
-        .parameters(EMPTY_MAP)
-        .build();
-
-    MetaStoreEvent actual = messageReaderAdapter.next();
-
-    assertMetaStoreEvent(expected, actual);
-  }
-
-  @Test
-  public void apiaryDropTableEvent() {
-    when(messageReader.next()).thenReturn(dropApiaryTableEvent);
-    configureMockedEvent(dropApiaryTableEvent);
-    when(dropApiaryTableEvent.getEventType()).thenReturn(EventType.DROP_TABLE);
-
-    MetaStoreEvent expected = MetaStoreEvent
-        .builder(EventType.DROP_TABLE, TEST_DB, TEST_TABLE)
-        .deleteData(true)
-        .environmentContext(EMPTY_MAP)
         .build();
 
     MetaStoreEvent actual = messageReaderAdapter.next();
@@ -330,6 +219,122 @@ public class MessageReaderAdapterTest {
         .builder(EventType.ON_CREATE_TABLE, TEST_DB, TEST_TABLE)
         .environmentContext(EMPTY_MAP)
         .parameters(EMPTY_MAP)
+        .build();
+
+    MetaStoreEvent actual = messageReaderAdapter.next();
+
+    assertMetaStoreEvent(expected, actual);
+  }
+
+  @Test
+  public void apiaryAddPartitionEvent() {
+    when(messageReader.next()).thenReturn(addApiaryPartitionEvent);
+    configureMockedEvent(addApiaryPartitionEvent);
+
+    when(addApiaryPartitionEvent.getSourceMetastoreUris()).thenReturn(SOURCE_METASTORE_URIS);
+    when(addApiaryPartitionEvent.getPartitionKeys()).thenReturn(PARTITION_COLUMNS);
+    when(addApiaryPartitionEvent.getPartitionValues()).thenReturn(PARTITION_VALUES);
+    when(addApiaryPartitionEvent.getEventType()).thenReturn(EventType.ADD_PARTITION);
+
+    MetaStoreEvent expected = MetaStoreEvent
+        .builder(EventType.ADD_PARTITION, TEST_DB, TEST_TABLE)
+        .partitionColumns(PARTITION_COLUMNS)
+        .partitionValues(PARTITION_VALUES)
+        .environmentContext(EMPTY_MAP)
+        .parameters(PARAMETERS)
+        .build();
+
+    MetaStoreEvent actual = messageReaderAdapter.next();
+
+    assertMetaStoreEvent(expected, actual);
+  }
+
+  @Test
+  public void apiaryAlterPartitionEvent() {
+    when(messageReader.next()).thenReturn(alterApiaryPartitionEvent);
+    configureMockedEvent(alterApiaryPartitionEvent);
+
+    when(alterApiaryPartitionEvent.getSourceMetastoreUris()).thenReturn(SOURCE_METASTORE_URIS);
+    when(alterApiaryPartitionEvent.getPartitionKeys()).thenReturn(PARTITION_COLUMNS);
+    when(alterApiaryPartitionEvent.getPartitionValues()).thenReturn(PARTITION_VALUES);
+    when(alterApiaryPartitionEvent.getEventType()).thenReturn(EventType.ALTER_PARTITION);
+
+    MetaStoreEvent expected = MetaStoreEvent
+        .builder(EventType.ALTER_PARTITION, TEST_DB, TEST_TABLE)
+        .partitionColumns(PARTITION_COLUMNS)
+        .partitionValues(PARTITION_VALUES)
+        .environmentContext(EMPTY_MAP)
+        .parameters(PARAMETERS)
+        .build();
+
+    MetaStoreEvent actual = messageReaderAdapter.next();
+
+    assertMetaStoreEvent(expected, actual);
+  }
+
+  @Test
+  public void apiaryDropPartitionEvent() {
+    when(messageReader.next()).thenReturn(dropApiaryPartitionEvent);
+    configureMockedEvent(dropApiaryPartitionEvent);
+
+    when(dropApiaryPartitionEvent.getSourceMetastoreUris()).thenReturn(SOURCE_METASTORE_URIS);
+    when(dropApiaryPartitionEvent.getPartitionKeys()).thenReturn(PARTITION_COLUMNS);
+    when(dropApiaryPartitionEvent.getPartitionValues()).thenReturn(PARTITION_VALUES);
+    when(dropApiaryPartitionEvent.getEventType()).thenReturn(EventType.DROP_PARTITION);
+
+    MetaStoreEvent expected = MetaStoreEvent
+        .builder(EventType.DROP_PARTITION, TEST_DB, TEST_TABLE)
+        .partitionColumns(PARTITION_COLUMNS)
+        .partitionValues(PARTITION_VALUES)
+        .deleteData(true)
+        .parameters(PARAMETERS)
+        .environmentContext(EMPTY_MAP)
+        .build();
+
+    MetaStoreEvent actual = messageReaderAdapter.next();
+
+    assertMetaStoreEvent(expected, actual);
+  }
+
+  @Test
+  public void apiaryInsertTableEvent() {
+    Map<String, String> partitionKeyValues = IntStream
+        .range(0, partitionKeys.size())
+        .collect(LinkedHashMap::new,
+            (m, i) -> m.put(partitionKeys.get(i).getName(), partitionValues.get(0).getValues().get(i)), Map::putAll);
+
+    when(messageReader.next()).thenReturn(insertApiaryTableEvent);
+    configureMockedEvent(insertApiaryTableEvent);
+
+    when(insertApiaryTableEvent.getKeyValues()).thenReturn(partitionKeyValues);
+    when(insertApiaryTableEvent.getSourceMetastoreUris()).thenReturn(SOURCE_METASTORE_URIS);
+    when(insertApiaryTableEvent.getEventType()).thenReturn(EventType.INSERT);
+
+    MetaStoreEvent expected = MetaStoreEvent
+        .builder(EventType.INSERT, TEST_DB, TEST_TABLE)
+        .partitionColumns(PARTITION_COLUMNS)
+        .partitionValues(PARTITION_VALUES)
+        .environmentContext(EMPTY_MAP)
+        .parameters(PARAMETERS)
+        .build();
+
+    MetaStoreEvent actual = messageReaderAdapter.next();
+
+    assertMetaStoreEvent(expected, actual);
+  }
+
+  @Test
+  public void apiaryDropTableEvent() {
+    when(messageReader.next()).thenReturn(dropApiaryTableEvent);
+    configureMockedEvent(dropApiaryTableEvent);
+    when(dropApiaryTableEvent.getEventType()).thenReturn(EventType.DROP_TABLE);
+    when(dropApiaryTableEvent.getSourceMetastoreUris()).thenReturn(SOURCE_METASTORE_URIS);
+
+    MetaStoreEvent expected = MetaStoreEvent
+        .builder(EventType.DROP_TABLE, TEST_DB, TEST_TABLE)
+        .deleteData(true)
+        .environmentContext(EMPTY_MAP)
+        .parameters(PARAMETERS)
         .build();
 
     MetaStoreEvent actual = messageReaderAdapter.next();

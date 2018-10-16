@@ -15,20 +15,7 @@
  */
 package com.hotels.shunting.yard.common.event.apiary;
 
-import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
-
-/*
- * {
- *   \"protocolVersion\":\"1.0\",
- *   \"eventType\":\"CREATE_TABLE\",
- *   \"dbName\":\"some_db\",
- *   \"tableName\":\"some_table\",
- *   \"sourceMetastoreUris\":\"thrift://host:9083\"
- * }
- *
- */
-
-public class SerializableApiaryCreateTableEvent extends SerializableListenerEvent {
+public class SerializableApiaryCreateTableEvent extends SerializableApiaryListenerEvent {
   private static final long serialVersionUID = 1L;
 
   private String protocolVersion;
@@ -54,6 +41,7 @@ public class SerializableApiaryCreateTableEvent extends SerializableListenerEven
     return tableName;
   }
 
+  @Override
   public String getSourceMetastoreUris() {
     return sourceMetastoreUris;
   }
