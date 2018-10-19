@@ -36,16 +36,17 @@ import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryAddPartiti
 import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryAlterPartitionEvent;
 import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryDropPartitionEvent;
 import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryInsertTableEvent;
-import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryListenerEvent;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 
 public class MessageReaderAdapter implements MetaStoreEventReader {
 
   private final MessageReader messageReader;
+  private final String sourceHiveMetastoreUris;
 
-  public MessageReaderAdapter(MessageReader messageReader) {
+  public MessageReaderAdapter(MessageReader messageReader, String sourceHiveMetastoreUris) {
     this.messageReader = messageReader;
+    this.sourceHiveMetastoreUris = sourceHiveMetastoreUris;
   }
 
   @Override
@@ -74,8 +75,7 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
     EventType eventType = listenerEvent.getEventType();
 
     if (eventType.isApiaryEvent()) {
-      SerializableApiaryListenerEvent apiaryListenerEvent = (SerializableApiaryListenerEvent) listenerEvent;
-      builder.parameter(METASTOREURIS.varname, apiaryListenerEvent.getSourceMetastoreUris());
+      builder.parameter(METASTOREURIS.varname, sourceHiveMetastoreUris);
     }
 
     switch (eventType) {
@@ -112,27 +112,27 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
 
     case ADD_PARTITION: {
       SerializableApiaryAddPartitionEvent addPartition = (SerializableApiaryAddPartitionEvent) listenerEvent;
-      addPartitionColumns(builder, addPartition.getPartitionKeys());
-      addPartitionValues1(builder, addPartition.getPartitionValues());
+      builder.partitionColumns(new ArrayList<>(addPartition.getPartitionKeys().keySet()));
+      builder.partitionValues(addPartition.getPartitionValues());
       break;
     }
     case ALTER_PARTITION: {
       SerializableApiaryAlterPartitionEvent alterPartition = (SerializableApiaryAlterPartitionEvent) listenerEvent;
-      addPartitionColumns(builder, alterPartition.getPartitionKeys());
-      addPartitionValues1(builder, alterPartition.getPartitionValues());
+      builder.partitionColumns(new ArrayList<>(alterPartition.getPartitionKeys().keySet()));
+      builder.partitionValues(alterPartition.getPartitionValues());
       break;
     }
     case DROP_PARTITION: {
       SerializableApiaryDropPartitionEvent dropPartition = (SerializableApiaryDropPartitionEvent) listenerEvent;
-      addPartitionColumns(builder, dropPartition.getPartitionKeys());
-      addPartitionValues1(builder, dropPartition.getPartitionValues());
+      builder.partitionColumns(new ArrayList<>(dropPartition.getPartitionKeys().keySet()));
+      builder.partitionValues(dropPartition.getPartitionValues());
       builder.deleteData(true);
       break;
     }
     case INSERT: {
       SerializableApiaryInsertTableEvent insertTable = (SerializableApiaryInsertTableEvent) listenerEvent;
-      addPartitionColumns(builder, new ArrayList<>(insertTable.getKeyValues().keySet()));
-      addPartitionValues1(builder, new ArrayList<>(insertTable.getKeyValues().values()));
+      builder.partitionColumns(new ArrayList<>(insertTable.getPartitionKeyValues().keySet()));
+      builder.partitionValues(new ArrayList<>(insertTable.getPartitionKeyValues().values()));
       break;
     }
     case DROP_TABLE: {
@@ -145,14 +145,6 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
       break;
     }
     return builder.build();
-  }
-
-  private void addPartitionColumns(MetaStoreEvent.Builder builder, List<String> partitionKeys) {
-    builder.partitionColumns(partitionKeys);
-  }
-
-  private void addPartitionValues1(MetaStoreEvent.Builder builder, List<String> partitionValues) {
-    builder.partitionValues(partitionValues);
   }
 
   private void addPartitionColumns(MetaStoreEvent.Builder builder, Table table) {

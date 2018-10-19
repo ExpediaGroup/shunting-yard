@@ -15,7 +15,13 @@
  */
 package com.hotels.shunting.yard.common.event.apiary;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.hadoop.hive.metastore.api.FieldSchema;
+import org.apache.hadoop.hive.metastore.api.Partition;
+import org.apache.hadoop.hive.metastore.events.AlterPartitionEvent;
 
 public class SerializableApiaryAlterPartitionEvent extends SerializableApiaryListenerEvent {
   private static final long serialVersionUID = 1L;
@@ -23,10 +29,25 @@ public class SerializableApiaryAlterPartitionEvent extends SerializableApiaryLis
   private String protocolVersion;
   private String dbName;
   private String tableName;
-  private List<String> partitionKeys;
+  private Map<String, String> partitionKeys;
   private List<String> partitionValues;
   private List<String> oldPartitionValues;
-  private String sourceMetastoreUris;
+
+  SerializableApiaryAlterPartitionEvent() {}
+
+  public SerializableApiaryAlterPartitionEvent(AlterPartitionEvent event) {
+    super(event);
+    dbName = event.getTable().getDbName();
+    tableName = event.getTable().getTableName();
+    partitionKeys = new LinkedHashMap<>();
+    Partition partition = event.getNewPartition();
+    for (FieldSchema fieldSchema : partition.getSd().getCols()) {
+      partitionKeys.put(fieldSchema.getName(), fieldSchema.getType());
+    }
+    partitionValues = partition.getValues();
+
+    oldPartitionValues = event.getOldPartition().getValues();
+  }
 
   public String getProtocolVersion() {
     return protocolVersion;
@@ -46,7 +67,7 @@ public class SerializableApiaryAlterPartitionEvent extends SerializableApiaryLis
     return tableName;
   }
 
-  public List<String> getPartitionKeys() {
+  public Map<String, String> getPartitionKeys() {
     return partitionKeys;
   }
 
@@ -56,10 +77,5 @@ public class SerializableApiaryAlterPartitionEvent extends SerializableApiaryLis
 
   public List<String> getOldPartitionValues() {
     return oldPartitionValues;
-  }
-
-  @Override
-  public String getSourceMetastoreUris() {
-    return sourceMetastoreUris;
   }
 }

@@ -46,6 +46,7 @@ import com.hotels.shunting.yard.common.messaging.MessageReader;
 import com.hotels.shunting.yard.common.messaging.MessageReaderFactory;
 import com.hotels.shunting.yard.replicator.exec.conf.EventReceiverConfiguration;
 import com.hotels.shunting.yard.replicator.exec.conf.ReplicaCatalog;
+import com.hotels.shunting.yard.replicator.exec.conf.SourceCatalog;
 import com.hotels.shunting.yard.replicator.exec.event.aggregation.DefaultMetaStoreEventAggregator;
 import com.hotels.shunting.yard.replicator.exec.event.aggregation.MetaStoreEventAggregator;
 import com.hotels.shunting.yard.replicator.exec.external.Marshaller;
@@ -135,11 +136,12 @@ public class CommonBeans {
   MessageReaderAdapter messageReaderAdapter(
       HiveConf replicaHiveConf,
       MetaStoreEventSerDe metaStoreEventSerDe,
-      EventReceiverConfiguration messageReaderConfig) {
+      EventReceiverConfiguration messageReaderConfig,
+      SourceCatalog sourceCatalog) {
     MessageReaderFactory messaReaderFactory = MessageReaderFactory
         .newInstance(messageReaderConfig.getMessageReaderFactoryClass());
     MessageReader messageReader = messaReaderFactory.newInstance(replicaHiveConf, metaStoreEventSerDe);
-    return new MessageReaderAdapter(messageReader);
+    return new MessageReaderAdapter(messageReader, sourceCatalog.getHiveMetastoreUris());
   }
 
   @Bean

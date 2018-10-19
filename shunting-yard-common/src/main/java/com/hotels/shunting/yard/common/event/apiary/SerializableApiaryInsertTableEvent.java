@@ -18,16 +18,35 @@ package com.hotels.shunting.yard.common.event.apiary;
 import java.util.List;
 import java.util.Map;
 
-public class SerializableApiaryInsertTableEvent extends SerializableApiaryListenerEvent {
+import org.apache.hadoop.hive.metastore.events.InsertEvent;
+
+import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
+
+public class SerializableApiaryInsertTableEvent extends SerializableListenerEvent {
   private static final long serialVersionUID = 1L;
+
+  /**
+   * This class deliberately extends {@link SerializableListenerEvent} and not {@link SerializableApiaryListenerEvent}
+   * as the sourceMetastoreUris is not available in the {@link InsertEvent}.
+   */
 
   private String protocolVersion;
   private String dbName;
   private String tableName;
   private List<String> files;
   private List<String> fileChecksums;
-  private Map<String, String> keyValues;
-  private String sourceMetastoreUris;
+  private Map<String, String> partitionKeyValues;
+
+  SerializableApiaryInsertTableEvent() {}
+
+  public SerializableApiaryInsertTableEvent(InsertEvent event) {
+    super(event);
+    dbName = event.getDb();
+    tableName = event.getTable();
+    files = event.getFiles();
+    fileChecksums = event.getFileChecksums();
+    partitionKeyValues = event.getPartitionKeyValues();
+  }
 
   public String getProtocolVersion() {
     return protocolVersion;
@@ -47,11 +66,6 @@ public class SerializableApiaryInsertTableEvent extends SerializableApiaryListen
     return tableName;
   }
 
-  @Override
-  public String getSourceMetastoreUris() {
-    return sourceMetastoreUris;
-  }
-
   public List<String> getFiles() {
     return files;
   }
@@ -60,8 +74,8 @@ public class SerializableApiaryInsertTableEvent extends SerializableApiaryListen
     return fileChecksums;
   }
 
-  public Map<String, String> getKeyValues() {
-    return keyValues;
+  public Map<String, String> getPartitionKeyValues() {
+    return partitionKeyValues;
   }
 
 }

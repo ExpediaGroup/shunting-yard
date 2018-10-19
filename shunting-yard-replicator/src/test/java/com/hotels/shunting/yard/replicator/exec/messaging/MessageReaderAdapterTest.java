@@ -21,6 +21,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +60,8 @@ import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 public class MessageReaderAdapterTest {
 
   private static final List<String> PARTITION_VALUES = ImmutableList.of("value_1", "value_2", "value_3");
-  private static final List<String> PARTITION_COLUMNS = ImmutableList.of("Column_1", "Column_2", "Column_3");
+  private static final Map<String, String> PARTITION_KEYS_MAP = ImmutableMap
+      .of("column_1", "string", "column_2", "integer", "column_3", "string");
   private static final Map<String, String> EMPTY_MAP = ImmutableMap.of();
   private static final String TEST_DB = "test_db";
   private static final String TEST_TABLE = "test_table";
@@ -91,13 +93,13 @@ public class MessageReaderAdapterTest {
 
   @Before
   public void init() {
-    FieldSchema partitionColumn1 = new FieldSchema("Column_1", "String", "");
-    FieldSchema partitionColumn2 = new FieldSchema("Column_2", "String", "");
-    FieldSchema partitionColumn3 = new FieldSchema("Column_3", "String", "");
+    FieldSchema partitionColumn1 = new FieldSchema("column_1", "string", "");
+    FieldSchema partitionColumn2 = new FieldSchema("column_2", "integer", "");
+    FieldSchema partitionColumn3 = new FieldSchema("column_3", "string", "");
 
     partitionKeys = ImmutableList.of(partitionColumn1, partitionColumn2, partitionColumn3);
     partitionValues = ImmutableList.of(partition);
-    messageReaderAdapter = new MessageReaderAdapter(messageReader);
+    messageReaderAdapter = new MessageReaderAdapter(messageReader, SOURCE_METASTORE_URIS);
     when(partition.getValues()).thenReturn(PARTITION_VALUES);
     when(dummyHiveTable.getPartitionKeys()).thenReturn(partitionKeys);
   }
@@ -112,7 +114,7 @@ public class MessageReaderAdapterTest {
 
     MetaStoreEvent expected = MetaStoreEvent
         .builder(EventType.ON_ADD_PARTITION, TEST_DB, TEST_TABLE)
-        .partitionColumns(PARTITION_COLUMNS)
+        .partitionColumns(new ArrayList<String>(PARTITION_KEYS_MAP.keySet()))
         .partitionValues(PARTITION_VALUES)
         .environmentContext(EMPTY_MAP)
         .parameters(EMPTY_MAP)
@@ -133,7 +135,7 @@ public class MessageReaderAdapterTest {
 
     MetaStoreEvent expected = MetaStoreEvent
         .builder(EventType.ON_ALTER_PARTITION, TEST_DB, TEST_TABLE)
-        .partitionColumns(PARTITION_COLUMNS)
+        .partitionColumns(new ArrayList<String>(PARTITION_KEYS_MAP.keySet()))
         .partitionValues(PARTITION_VALUES)
         .environmentContext(EMPTY_MAP)
         .parameters(EMPTY_MAP)
@@ -155,7 +157,7 @@ public class MessageReaderAdapterTest {
 
     MetaStoreEvent expected = MetaStoreEvent
         .builder(EventType.ON_DROP_PARTITION, TEST_DB, TEST_TABLE)
-        .partitionColumns(PARTITION_COLUMNS)
+        .partitionColumns(new ArrayList<String>(PARTITION_KEYS_MAP.keySet()))
         .partitionValues(PARTITION_VALUES)
         .deleteData(true)
         .environmentContext(EMPTY_MAP)
@@ -198,7 +200,7 @@ public class MessageReaderAdapterTest {
 
     MetaStoreEvent expected = MetaStoreEvent
         .builder(EventType.ON_INSERT, TEST_DB, TEST_TABLE)
-        .partitionColumns(PARTITION_COLUMNS)
+        .partitionColumns(new ArrayList<String>(PARTITION_KEYS_MAP.keySet()))
         .partitionValues(PARTITION_VALUES)
         .environmentContext(EMPTY_MAP)
         .parameters(EMPTY_MAP)
@@ -231,14 +233,13 @@ public class MessageReaderAdapterTest {
     when(messageReader.next()).thenReturn(addApiaryPartitionEvent);
     configureMockedEvent(addApiaryPartitionEvent);
 
-    when(addApiaryPartitionEvent.getSourceMetastoreUris()).thenReturn(SOURCE_METASTORE_URIS);
-    when(addApiaryPartitionEvent.getPartitionKeys()).thenReturn(PARTITION_COLUMNS);
+    when(addApiaryPartitionEvent.getPartitionKeys()).thenReturn(PARTITION_KEYS_MAP);
     when(addApiaryPartitionEvent.getPartitionValues()).thenReturn(PARTITION_VALUES);
     when(addApiaryPartitionEvent.getEventType()).thenReturn(EventType.ADD_PARTITION);
 
     MetaStoreEvent expected = MetaStoreEvent
         .builder(EventType.ADD_PARTITION, TEST_DB, TEST_TABLE)
-        .partitionColumns(PARTITION_COLUMNS)
+        .partitionColumns(new ArrayList<String>(PARTITION_KEYS_MAP.keySet()))
         .partitionValues(PARTITION_VALUES)
         .environmentContext(EMPTY_MAP)
         .parameters(PARAMETERS)
@@ -254,14 +255,13 @@ public class MessageReaderAdapterTest {
     when(messageReader.next()).thenReturn(alterApiaryPartitionEvent);
     configureMockedEvent(alterApiaryPartitionEvent);
 
-    when(alterApiaryPartitionEvent.getSourceMetastoreUris()).thenReturn(SOURCE_METASTORE_URIS);
-    when(alterApiaryPartitionEvent.getPartitionKeys()).thenReturn(PARTITION_COLUMNS);
+    when(alterApiaryPartitionEvent.getPartitionKeys()).thenReturn(PARTITION_KEYS_MAP);
     when(alterApiaryPartitionEvent.getPartitionValues()).thenReturn(PARTITION_VALUES);
     when(alterApiaryPartitionEvent.getEventType()).thenReturn(EventType.ALTER_PARTITION);
 
     MetaStoreEvent expected = MetaStoreEvent
         .builder(EventType.ALTER_PARTITION, TEST_DB, TEST_TABLE)
-        .partitionColumns(PARTITION_COLUMNS)
+        .partitionColumns(new ArrayList<String>(PARTITION_KEYS_MAP.keySet()))
         .partitionValues(PARTITION_VALUES)
         .environmentContext(EMPTY_MAP)
         .parameters(PARAMETERS)
@@ -277,14 +277,13 @@ public class MessageReaderAdapterTest {
     when(messageReader.next()).thenReturn(dropApiaryPartitionEvent);
     configureMockedEvent(dropApiaryPartitionEvent);
 
-    when(dropApiaryPartitionEvent.getSourceMetastoreUris()).thenReturn(SOURCE_METASTORE_URIS);
-    when(dropApiaryPartitionEvent.getPartitionKeys()).thenReturn(PARTITION_COLUMNS);
+    when(dropApiaryPartitionEvent.getPartitionKeys()).thenReturn(PARTITION_KEYS_MAP);
     when(dropApiaryPartitionEvent.getPartitionValues()).thenReturn(PARTITION_VALUES);
     when(dropApiaryPartitionEvent.getEventType()).thenReturn(EventType.DROP_PARTITION);
 
     MetaStoreEvent expected = MetaStoreEvent
         .builder(EventType.DROP_PARTITION, TEST_DB, TEST_TABLE)
-        .partitionColumns(PARTITION_COLUMNS)
+        .partitionColumns(new ArrayList<String>(PARTITION_KEYS_MAP.keySet()))
         .partitionValues(PARTITION_VALUES)
         .deleteData(true)
         .parameters(PARAMETERS)
@@ -306,13 +305,12 @@ public class MessageReaderAdapterTest {
     when(messageReader.next()).thenReturn(insertApiaryTableEvent);
     configureMockedEvent(insertApiaryTableEvent);
 
-    when(insertApiaryTableEvent.getKeyValues()).thenReturn(partitionKeyValues);
-    when(insertApiaryTableEvent.getSourceMetastoreUris()).thenReturn(SOURCE_METASTORE_URIS);
+    when(insertApiaryTableEvent.getPartitionKeyValues()).thenReturn(partitionKeyValues);
     when(insertApiaryTableEvent.getEventType()).thenReturn(EventType.INSERT);
 
     MetaStoreEvent expected = MetaStoreEvent
         .builder(EventType.INSERT, TEST_DB, TEST_TABLE)
-        .partitionColumns(PARTITION_COLUMNS)
+        .partitionColumns(new ArrayList<String>(PARTITION_KEYS_MAP.keySet()))
         .partitionValues(PARTITION_VALUES)
         .environmentContext(EMPTY_MAP)
         .parameters(PARAMETERS)
@@ -328,7 +326,6 @@ public class MessageReaderAdapterTest {
     when(messageReader.next()).thenReturn(dropApiaryTableEvent);
     configureMockedEvent(dropApiaryTableEvent);
     when(dropApiaryTableEvent.getEventType()).thenReturn(EventType.DROP_TABLE);
-    when(dropApiaryTableEvent.getSourceMetastoreUris()).thenReturn(SOURCE_METASTORE_URIS);
 
     MetaStoreEvent expected = MetaStoreEvent
         .builder(EventType.DROP_TABLE, TEST_DB, TEST_TABLE)

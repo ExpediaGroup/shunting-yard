@@ -15,13 +15,22 @@
  */
 package com.hotels.shunting.yard.common.event.apiary;
 
+import org.apache.hadoop.hive.metastore.events.DropTableEvent;
+
 public class SerializableApiaryDropTableEvent extends SerializableApiaryListenerEvent {
   private static final long serialVersionUID = 1L;
 
   private String protocolVersion;
   private String dbName;
   private String tableName;
-  private String sourceMetastoreUris;
+
+  SerializableApiaryDropTableEvent() {}
+
+  SerializableApiaryDropTableEvent(DropTableEvent event) {
+    super(event);
+    dbName = event.getTable().getDbName();
+    tableName = event.getTable().getTableName();
+  }
 
   public String getProtocolVersion() {
     return protocolVersion;
@@ -39,10 +48,5 @@ public class SerializableApiaryDropTableEvent extends SerializableApiaryListener
   @Override
   public String getTableName() {
     return tableName;
-  }
-
-  @Override
-  public String getSourceMetastoreUris() {
-    return sourceMetastoreUris;
   }
 }
