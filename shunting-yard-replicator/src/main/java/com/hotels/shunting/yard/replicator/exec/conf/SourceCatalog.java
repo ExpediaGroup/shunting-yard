@@ -40,4 +40,5 @@ public class SourceCatalog {
   public void setHiveMetastoreUris(String hiveMetastoreUris) {
     this.hiveMetastoreUris = hiveMetastoreUris;
   }
+
 }

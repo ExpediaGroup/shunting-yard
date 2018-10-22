@@ -91,7 +91,6 @@ public class CommonBeans {
     putConfigurationProperties(replicaCatalog.getConfigurationProperties(), properties);
     putConfigurationProperties(messageReaderConfig.getConfigurationProperties(), properties);
     HiveConf hiveConf = new HiveConfFactory(siteXml, properties).newInstance();
-
     return hiveConf;
   }
 

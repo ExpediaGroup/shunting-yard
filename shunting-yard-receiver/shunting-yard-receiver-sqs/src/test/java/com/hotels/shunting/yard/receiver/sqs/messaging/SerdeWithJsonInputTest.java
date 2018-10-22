@@ -43,7 +43,6 @@ import com.hotels.shunting.yard.common.io.jackson.JsonMetaStoreEventSerDe;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SerdeWithJsonInputTest {
-
   private final MetaStoreEventSerDe serDe = new JsonMetaStoreEventSerDe();
   private final static String ADD_PARTITION_EVENT = "{\"protocolVersion\":\"1.0\",\"eventType\":\"ADD_PARTITION\",\"dbName\":\"some_db\",\"tableName\":\"some_table\",\"partitionKeys\":{\"col_1\": \"string\", \"col_2\": \"integer\",\"col_3\": \"string\"}, \"partitionValues\":[\"val_1\", \"val_2\", \"val_3\"]}";
   private final static String ALTER_PARTITION_EVENT = "{\"protocolVersion\":\"1.0\",\"eventType\":\"ALTER_PARTITION\",\"dbName\":\"some_db\",\"tableName\":\"some_table\",\"partitionKeys\": {\"col_1\": \"string\", \"col_2\": \"integer\",\"col_3\": \"string\"}, \"partitionValues\":[\"val_1\", \"val_2\", \"val_3\"],\"oldPartitionValues\": [\"val_4\", \"val_5\", \"val_6\"]}";
@@ -165,4 +164,5 @@ public class SerdeWithJsonInputTest {
     assertThat(dropTableEvent.getProtocolVersion()).isEqualTo("1.0");
     assertThat(dropTableEvent.getEventType()).isEqualTo(EventType.DROP_TABLE);
   }
+
 }
