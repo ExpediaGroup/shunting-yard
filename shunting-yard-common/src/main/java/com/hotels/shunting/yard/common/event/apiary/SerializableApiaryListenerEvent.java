@@ -34,10 +34,6 @@ public abstract class SerializableApiaryListenerEvent extends SerializableListen
     super(event);
   }
 
-  /**
-   * Thrift URI of the source Hive Metastore
-   */
-
   @Override
   public abstract String getDatabaseName();
 
