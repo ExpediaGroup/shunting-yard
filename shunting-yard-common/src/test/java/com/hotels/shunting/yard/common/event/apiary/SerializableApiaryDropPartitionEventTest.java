@@ -21,8 +21,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
 
+import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.apache.hadoop.hive.metastore.api.Partition;
+import org.apache.hadoop.hive.metastore.api.StorageDescriptor;
 import org.apache.hadoop.hive.metastore.api.Table;
 import org.apache.hadoop.hive.metastore.events.DropPartitionEvent;
 import org.junit.Before;
@@ -31,25 +35,42 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(MockitoJUnitRunner.class)
-public class SerializableDropPartitionEventTest {
+import com.google.common.collect.ImmutableList;
 
+import com.hotels.shunting.yard.common.event.EventType;
+
+@RunWith(MockitoJUnitRunner.class)
+public class SerializableApiaryDropPartitionEventTest {
   private static final String DATABASE = "db";
   private static final String TABLE = "tbl";
+  private static final List<String> PARTITION_VALUES = ImmutableList.of("value_1", "value_2", "value_3");
 
   private @Mock DropPartitionEvent dropPartitionEvent;
   private @Mock Table table;
   private @Mock Partition partition;
+  private @Mock StorageDescriptor sd;
 
-  private SerializableDropPartitionEvent event;
+  private SerializableApiaryDropPartitionEvent event;
+
+  private List<FieldSchema> partitionKeys;
 
   @Before
   public void init() {
+    FieldSchema partitionColumn1 = new FieldSchema("column_1", "string", "");
+    FieldSchema partitionColumn2 = new FieldSchema("column_2", "string", "");
+    FieldSchema partitionColumn3 = new FieldSchema("column_3", "string", "");
+
+    partitionKeys = ImmutableList.of(partitionColumn1, partitionColumn2, partitionColumn3);
+
     when(table.getDbName()).thenReturn(DATABASE);
     when(table.getTableName()).thenReturn(TABLE);
+    when(partition.getValues()).thenReturn(PARTITION_VALUES);
+    when(partition.getSd()).thenReturn(sd);
+    when(sd.getCols()).thenReturn(partitionKeys);
     when(dropPartitionEvent.getTable()).thenReturn(table);
     when(dropPartitionEvent.getPartitionIterator()).thenReturn(Arrays.asList(partition).iterator());
-    event = new SerializableDropPartitionEvent(dropPartitionEvent);
+    when(dropPartitionEvent.getStatus()).thenReturn(true);
+    event = new SerializableApiaryDropPartitionEvent(dropPartitionEvent);
   }
 
   @Test
@@ -64,31 +85,32 @@ public class SerializableDropPartitionEventTest {
 
   @Test
   public void eventType() {
-    assertThat(event.getEventType()).isSameAs(EventType.ON_DROP_PARTITION);
-  }
-
-  @Test
-  public void table() {
-    assertThat(event.getTable()).isSameAs(table);
+    assertThat(event.getEventType()).isSameAs(EventType.DROP_PARTITION);
   }
 
   @Test
   public void partitions() {
-    assertThat(event.getPartitions()).isEqualTo(Arrays.asList(partition));
-    assertThat(event.getPartitions()).isEqualTo(Arrays.asList(partition));
+    LinkedHashMap<String, String> partitionKeysMap = new LinkedHashMap<>();
+
+    for (int i = 0; i < partitionKeys.size(); i++) {
+      partitionKeysMap.put(partitionKeys.get(i).getName(), partitionKeys.get(i).getType());
+    }
+
+    assertThat(event.getPartitionValues()).isEqualTo(PARTITION_VALUES);
+    assertThat(event.getPartitionKeys()).isEqualTo(partitionKeysMap);
   }
 
   @Test(expected = NullPointerException.class)
   public void nullPartitionIterator() {
     when(dropPartitionEvent.getPartitionIterator()).thenReturn(null);
-    new SerializableDropPartitionEvent(dropPartitionEvent);
+    new SerializableApiaryDropPartitionEvent(dropPartitionEvent);
   }
 
   @Test
   public void emptyPartitionIterator() {
     when(dropPartitionEvent.getPartitionIterator()).thenReturn(EMPTY_LIST.iterator());
-    SerializableDropPartitionEvent event = new SerializableDropPartitionEvent(dropPartitionEvent);
-    assertThat(event.getPartitions()).isEqualTo(EMPTY_LIST);
+    SerializableApiaryDropPartitionEvent event = new SerializableApiaryDropPartitionEvent(dropPartitionEvent);
+    assertThat(event.getPartitionValues()).isEqualTo(EMPTY_LIST);
   }
 
 }

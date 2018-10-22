@@ -15,6 +15,7 @@
  */
 package com.hotels.shunting.yard.common.event.apiary;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -40,6 +41,7 @@ public class SerializableApiaryAddPartitionEvent extends SerializableApiaryListe
     dbName = event.getTable().getDbName();
     tableName = event.getTable().getTableName();
     partitionKeys = new LinkedHashMap<>();
+    partitionValues = new ArrayList<>();
 
     Iterator<Partition> iterator = event.getPartitionIterator();
 

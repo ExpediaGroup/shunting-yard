@@ -15,12 +15,9 @@
  */
 package com.hotels.shunting.yard.common.event.apiary;
 
-import static java.util.Collections.EMPTY_LIST;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -28,7 +25,7 @@ import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.apache.hadoop.hive.metastore.api.Partition;
 import org.apache.hadoop.hive.metastore.api.StorageDescriptor;
 import org.apache.hadoop.hive.metastore.api.Table;
-import org.apache.hadoop.hive.metastore.events.AddPartitionEvent;
+import org.apache.hadoop.hive.metastore.events.AlterPartitionEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,18 +37,20 @@ import com.google.common.collect.ImmutableList;
 import com.hotels.shunting.yard.common.event.EventType;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SerializableApiaryAddPartitionEventTest {
+public class SerializableApiaryAlterPartitionEventTest {
   private static final String DATABASE = "db";
   private static final String TABLE = "tbl";
   private static final List<String> PARTITION_VALUES = ImmutableList.of("value_1", "value_2", "value_3");
+  private static final List<String> OLD_PARTITION_VALUES = ImmutableList.of("value_4", "value_5", "value_6");
 
-  private @Mock AddPartitionEvent addPartitionEvent;
+  private @Mock AlterPartitionEvent alterPartitionEvent;
   private @Mock Table table;
-  private @Mock Partition partition;
+  private @Mock Partition newPartition;
+  private @Mock Partition oldPartition;
+
   private @Mock StorageDescriptor sd;
 
-  private SerializableApiaryAddPartitionEvent event;
-
+  private SerializableApiaryAlterPartitionEvent event;
   private List<FieldSchema> partitionKeys;
 
   @Before
@@ -64,13 +63,15 @@ public class SerializableApiaryAddPartitionEventTest {
 
     when(table.getDbName()).thenReturn(DATABASE);
     when(table.getTableName()).thenReturn(TABLE);
-    when(partition.getValues()).thenReturn(PARTITION_VALUES);
-    when(partition.getSd()).thenReturn(sd);
+    when(oldPartition.getValues()).thenReturn(OLD_PARTITION_VALUES);
+    when(newPartition.getValues()).thenReturn(PARTITION_VALUES);
+    when(newPartition.getSd()).thenReturn(sd);
     when(sd.getCols()).thenReturn(partitionKeys);
-    when(addPartitionEvent.getTable()).thenReturn(table);
-    when(addPartitionEvent.getPartitionIterator()).thenReturn(Arrays.asList(partition).iterator());
-    when(addPartitionEvent.getStatus()).thenReturn(true);
-    event = new SerializableApiaryAddPartitionEvent(addPartitionEvent);
+    when(alterPartitionEvent.getTable()).thenReturn(table);
+    when(alterPartitionEvent.getNewPartition()).thenReturn(newPartition);
+    when(alterPartitionEvent.getOldPartition()).thenReturn(oldPartition);
+    when(alterPartitionEvent.getStatus()).thenReturn(true);
+    event = new SerializableApiaryAlterPartitionEvent(alterPartitionEvent);
   }
 
   @Test
@@ -85,11 +86,11 @@ public class SerializableApiaryAddPartitionEventTest {
 
   @Test
   public void eventType() {
-    assertThat(event.getEventType()).isSameAs(EventType.ADD_PARTITION);
+    assertThat(event.getEventType()).isSameAs(EventType.ALTER_PARTITION);
   }
 
   @Test
-  public void partitions() {
+  public void newPartition() {
     LinkedHashMap<String, String> partitionKeysMap = new LinkedHashMap<>();
 
     for (int i = 0; i < partitionKeys.size(); i++) {
@@ -100,17 +101,9 @@ public class SerializableApiaryAddPartitionEventTest {
     assertThat(event.getPartitionKeys()).isEqualTo(partitionKeysMap);
   }
 
-  @Test(expected = NullPointerException.class)
-  public void nullPartitionIterator() {
-    when(addPartitionEvent.getPartitionIterator()).thenReturn(null);
-    new SerializableApiaryAddPartitionEvent(addPartitionEvent);
-  }
-
   @Test
-  public void emptyPartitionIterator() {
-    when(addPartitionEvent.getPartitionIterator()).thenReturn(EMPTY_LIST.iterator());
-    SerializableApiaryAddPartitionEvent event = new SerializableApiaryAddPartitionEvent(addPartitionEvent);
-    assertThat(event.getPartitionValues()).isEqualTo(EMPTY_LIST);
+  public void oldPartition() {
+    assertThat(event.getOldPartitionValues()).isEqualTo(OLD_PARTITION_VALUES);
   }
 
 }

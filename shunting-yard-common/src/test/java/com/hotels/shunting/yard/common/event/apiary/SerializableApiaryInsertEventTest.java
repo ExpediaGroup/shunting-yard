@@ -28,8 +28,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
+import com.hotels.shunting.yard.common.event.EventType;
+
 @RunWith(MockitoJUnitRunner.class)
-public class SerializableInsertEventTest {
+public class SerializableApiaryInsertEventTest {
 
   private static final String DATABASE = "db";
   private static final String TABLE = "tbl";
@@ -40,7 +42,7 @@ public class SerializableInsertEventTest {
 
   private @Mock InsertEvent insertEvent;
 
-  private SerializableInsertEvent event;
+  private SerializableApiaryInsertTableEvent event;
 
   @Before
   public void init() {
@@ -49,7 +51,7 @@ public class SerializableInsertEventTest {
     when(insertEvent.getPartitionKeyValues()).thenReturn(ImmutableMap.of(KEY, VALUE));
     when(insertEvent.getFiles()).thenReturn(ImmutableList.of(FILE));
     when(insertEvent.getFileChecksums()).thenReturn(ImmutableList.of(CHECKSUM));
-    event = new SerializableInsertEvent(insertEvent);
+    event = new SerializableApiaryInsertTableEvent(insertEvent);
   }
 
   @Test
@@ -64,12 +66,12 @@ public class SerializableInsertEventTest {
 
   @Test
   public void eventType() {
-    assertThat(event.getEventType()).isSameAs(EventType.ON_INSERT);
+    assertThat(event.getEventType()).isSameAs(EventType.INSERT);
   }
 
   @Test
   public void keyValues() {
-    assertThat(event.getKeyValues()).isEqualTo(ImmutableMap.of(KEY, VALUE));
+    assertThat(event.getPartitionKeyValues()).isEqualTo(ImmutableMap.of(KEY, VALUE));
   }
 
   @Test

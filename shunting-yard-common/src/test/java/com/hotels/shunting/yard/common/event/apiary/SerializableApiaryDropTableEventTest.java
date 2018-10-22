@@ -26,8 +26,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import com.hotels.shunting.yard.common.event.EventType;
+
 @RunWith(MockitoJUnitRunner.class)
-public class SerializableDropTableEventTest {
+public class SerializableApiaryDropTableEventTest {
 
   private static final String DATABASE = "db";
   private static final String TABLE = "tbl";
@@ -35,14 +37,14 @@ public class SerializableDropTableEventTest {
   private @Mock DropTableEvent dropTableEvent;
   private @Mock Table table;
 
-  private SerializableDropTableEvent event;
+  private SerializableApiaryDropTableEvent event;
 
   @Before
   public void init() {
     when(table.getDbName()).thenReturn(DATABASE);
     when(table.getTableName()).thenReturn(TABLE);
     when(dropTableEvent.getTable()).thenReturn(table);
-    event = new SerializableDropTableEvent(dropTableEvent);
+    event = new SerializableApiaryDropTableEvent(dropTableEvent);
   }
 
   @Test
@@ -57,12 +59,7 @@ public class SerializableDropTableEventTest {
 
   @Test
   public void eventType() {
-    assertThat(event.getEventType()).isSameAs(EventType.ON_DROP_TABLE);
-  }
-
-  @Test
-  public void table() {
-    assertThat(event.getTable()).isSameAs(table);
+    assertThat(event.getEventType()).isSameAs(EventType.DROP_TABLE);
   }
 
 }

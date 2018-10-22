@@ -19,53 +19,46 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import org.apache.hadoop.hive.metastore.api.Table;
-import org.apache.hadoop.hive.metastore.events.AlterTableEvent;
+import org.apache.hadoop.hive.metastore.events.CreateTableEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import com.hotels.shunting.yard.common.event.EventType;
+
 @RunWith(MockitoJUnitRunner.class)
-public class SerializableAlterTableEventTest {
+public class SerializableApiaryCreateTableEventTest {
 
-  private static final String NEW_DATABASE = "new_db";
-  private static final String NEW_TABLE = "new_tbl";
+  private static final String DATABASE = "db";
+  private static final String TABLE = "tbl";
 
-  private @Mock AlterTableEvent alterTableEvent;
-  private @Mock Table newTable;
-  private @Mock Table oldTable;
+  private @Mock CreateTableEvent createTableEvent;
+  private @Mock Table table;
 
-  private SerializableAlterTableEvent event;
+  private SerializableApiaryCreateTableEvent event;
 
   @Before
   public void init() {
-    when(newTable.getDbName()).thenReturn(NEW_DATABASE);
-    when(newTable.getTableName()).thenReturn(NEW_TABLE);
-    when(alterTableEvent.getNewTable()).thenReturn(newTable);
-    when(alterTableEvent.getOldTable()).thenReturn(oldTable);
-    event = new SerializableAlterTableEvent(alterTableEvent);
+    when(table.getDbName()).thenReturn(DATABASE);
+    when(table.getTableName()).thenReturn(TABLE);
+    when(createTableEvent.getTable()).thenReturn(table);
+    event = new SerializableApiaryCreateTableEvent(createTableEvent);
   }
 
   @Test
   public void databaseName() {
-    assertThat(event.getDatabaseName()).isEqualTo(NEW_DATABASE);
+    assertThat(event.getDatabaseName()).isEqualTo(DATABASE);
   }
 
   @Test
   public void tableName() {
-    assertThat(event.getTableName()).isEqualTo(NEW_TABLE);
+    assertThat(event.getTableName()).isEqualTo(TABLE);
   }
 
   @Test
   public void eventType() {
-    assertThat(event.getEventType()).isSameAs(EventType.ON_ALTER_TABLE);
+    assertThat(event.getEventType()).isSameAs(EventType.CREATE_TABLE);
   }
-
-  @Test
-  public void tables() {
-    assertThat(event.getNewTable()).isSameAs(newTable);
-    assertThat(event.getOldTable()).isSameAs(oldTable);
-  }
-
 }
