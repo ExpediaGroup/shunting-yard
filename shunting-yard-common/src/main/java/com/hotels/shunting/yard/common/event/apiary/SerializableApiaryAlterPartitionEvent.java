@@ -78,4 +78,5 @@ public class SerializableApiaryAlterPartitionEvent extends SerializableApiaryLis
   public List<String> getOldPartitionValues() {
     return oldPartitionValues;
   }
+
 }

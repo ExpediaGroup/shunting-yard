@@ -49,4 +49,5 @@ public class SerializableApiaryCreateTableEvent extends SerializableApiaryListen
   public String getTableName() {
     return tableName;
   }
+
 }

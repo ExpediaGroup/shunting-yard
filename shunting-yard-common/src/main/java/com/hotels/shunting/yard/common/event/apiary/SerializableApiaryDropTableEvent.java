@@ -49,4 +49,5 @@ public class SerializableApiaryDropTableEvent extends SerializableApiaryListener
   public String getTableName() {
     return tableName;
   }
+
 }

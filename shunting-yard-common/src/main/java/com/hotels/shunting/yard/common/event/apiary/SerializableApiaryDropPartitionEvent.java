@@ -79,4 +79,5 @@ public class SerializableApiaryDropPartitionEvent extends SerializableApiaryList
   public List<String> getPartitionValues() {
     return partitionValues;
   }
+
 }

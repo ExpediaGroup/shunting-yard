@@ -80,4 +80,5 @@ public class SerializableApiaryAddPartitionEvent extends SerializableApiaryListe
   public List<String> getPartitionValues() {
     return partitionValues;
   }
+
 }
