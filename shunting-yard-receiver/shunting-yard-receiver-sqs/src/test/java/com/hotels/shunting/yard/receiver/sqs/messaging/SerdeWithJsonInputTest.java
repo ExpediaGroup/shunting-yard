@@ -44,13 +44,24 @@ import com.hotels.shunting.yard.common.io.jackson.JsonMetaStoreEventSerDe;
 @RunWith(MockitoJUnitRunner.class)
 public class SerdeWithJsonInputTest {
   private final MetaStoreEventSerDe serDe = new JsonMetaStoreEventSerDe();
-  private final static String ADD_PARTITION_EVENT = "{\"protocolVersion\":\"1.0\",\"eventType\":\"ADD_PARTITION\",\"dbName\":\"some_db\",\"tableName\":\"some_table\",\"partitionKeys\":{\"col_1\": \"string\", \"col_2\": \"integer\",\"col_3\": \"string\"}, \"partitionValues\":[\"val_1\", \"val_2\", \"val_3\"]}";
-  private final static String ALTER_PARTITION_EVENT = "{\"protocolVersion\":\"1.0\",\"eventType\":\"ALTER_PARTITION\",\"dbName\":\"some_db\",\"tableName\":\"some_table\",\"partitionKeys\": {\"col_1\": \"string\", \"col_2\": \"integer\",\"col_3\": \"string\"}, \"partitionValues\":[\"val_1\", \"val_2\", \"val_3\"],\"oldPartitionValues\": [\"val_4\", \"val_5\", \"val_6\"]}";
-  private final static String DROP_PARTITION_EVENT = "{\"protocolVersion\":\"1.0\",\"eventType\":\"DROP_PARTITION\",\"dbName\":\"some_db\",\"tableName\":\"some_table\",\"partitionKeys\": {\"col_1\": \"string\", \"col_2\": \"integer\",\"col_3\": \"string\"},\"partitionValues\":[\"val_1\", \"val_2\", \"val_3\"]}";
 
-  private final static String CREATE_TABLE_EVENT = "{\"protocolVersion\":\"1.0\",\"eventType\":\"CREATE_TABLE\",\"dbName\":\"some_db\",\"tableName\":\"some_table\"}";
-  private final static String INSERT_EVENT = "{\"protocolVersion\": \"1.0\",\"eventType\": \"INSERT\",\"dbName\": \"some_db\",\"tableName\": \"some_table\",\"files\": [\"file:/a/b.txt\",\"file:/a/c.txt\"],\"fileChecksums\": [\"123\",\"456\"],\"partitionKeyValues\": {\"col_1\": \"val_1\",\"col_2\": \"val_2\", \"col_3\": \"val_3\"}}";
-  private final static String DROP_TABLE_EVENT = "{\"protocolVersion\":\"1.0\",\"eventType\":\"DROP_TABLE\",\"dbName\":\"some_db\",\"tableName\":\"some_table\"}";
+  private final static String BASE_EVENT_SNS = "{"
+      + "  \"Type\" : \"Notification\","
+      + "  \"MessageId\" : \"9b0f34bc-ae00-57c4-97a0-60f5b002b3d0\","
+      + "  \"TopicArn\" : \"arn:aws:sns:us-west-2:440407435941:abhimanyu-sns-test\","
+      + "  \"Timestamp\" : \"2018-10-23T13:01:54.507Z\","
+      + "  \"SignatureVersion\" : \"1\","
+      + "  \"Signature\" : \"P9vAm5YsTRZkQOcgJ5YEkyTAwppGE8G8Y018RMUMLFiRpsSTJ+DGErNiMwz+qUv4RyBg3yEnwK0Nc+OTAcgkc9RARLN0OpoWG7cYt+N/m6orrDqe33EA7krocYiO+a6+lVu3/oNVUZVvBZ+mahizSRRnCzVaJszFhvpPS3rYCfssI/1zpx9s6gMpUehpU7ZK7DCTvG7zsfYIUO1Df/mMdESrO19pVOfYjVavk6K3nU+y+1TmDduEcBaUFzOLmTRAxprgmoq1JrTJMl0V5TOkMdWFn3+hzx/5q82RDQdmAVVKZWy/nfiuwB/S5YZOJywP6EaudaX1wgwpdhE0RTqVXQ==\","
+      + "  \"SigningCertURL\" : \"https://sns.us-west-2.amazonaws.com/SimpleNotificationService-ac565b8b1a6c5d002d285f9598aa1d9b.pem\","
+      + "  \"UnsubscribeURL\" : \"https://sns.us-west-2.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:us-west-2:440407435941:abhimanyu-sns-test:fc4bd684-c38b-4eaf-a718-fac879c6a996\",";
+
+  private final static String ADD_PARTITION_EVENT = "\"Message\" : \"{\\\"protocolVersion\\\":\\\"1.0\\\",\\\"eventType\\\":\\\"ADD_PARTITION\\\",\\\"dbName\\\":\\\"some_db\\\",\\\"tableName\\\":\\\"some_table\\\",\\\"partitionKeys\\\":{\\\"col_1\\\": \\\"string\\\", \\\"col_2\\\": \\\"integer\\\",\\\"col_3\\\": \\\"string\\\"},\\\"partitionValues\\\":[\\\"val_1\\\", \\\"val_2\\\", \\\"val_3\\\"]}\"";
+  private final static String ALTER_PARTITION_EVENT = "\"Message\" : \"{\\\"protocolVersion\\\":\\\"1.0\\\",\\\"eventType\\\":\\\"ALTER_PARTITION\\\",\\\"dbName\\\":\\\"some_db\\\",\\\"tableName\\\":\\\"some_table\\\",\\\"partitionKeys\\\": {\\\"col_1\\\": \\\"string\\\", \\\"col_2\\\": \\\"integer\\\",\\\"col_3\\\": \\\"string\\\"}, \\\"partitionValues\\\":[\\\"val_1\\\", \\\"val_2\\\", \\\"val_3\\\"],\\\"oldPartitionValues\\\": [\\\"val_4\\\", \\\"val_5\\\", \\\"val_6\\\"]}\"";
+  private final static String DROP_PARTITION_EVENT = "\"Message\" : \"{\\\"protocolVersion\\\":\\\"1.0\\\",\\\"eventType\\\":\\\"DROP_PARTITION\\\",\\\"dbName\\\":\\\"some_db\\\",\\\"tableName\\\":\\\"some_table\\\",\\\"partitionKeys\\\": {\\\"col_1\\\": \\\"string\\\", \\\"col_2\\\": \\\"integer\\\",\\\"col_3\\\": \\\"string\\\"},\\\"partitionValues\\\":[\\\"val_1\\\", \\\"val_2\\\", \\\"val_3\\\"]}\"";
+
+  private final static String CREATE_TABLE_EVENT = "\"Message\" : \"{\\\"protocolVersion\\\":\\\"1.0\\\",\\\"eventType\\\":\\\"CREATE_TABLE\\\",\\\"dbName\\\":\\\"some_db\\\",\\\"tableName\\\":\\\"some_table\\\"}\"";
+  private final static String DROP_TABLE_EVENT = "\"Message\" : \"{\\\"protocolVersion\\\":\\\"1.0\\\",\\\"eventType\\\":\\\"DROP_TABLE\\\",\\\"dbName\\\":\\\"some_db\\\",\\\"tableName\\\":\\\"some_table\\\"}\"";
+  private final static String INSERT_EVENT = "\"Message\" : \"{\\\"protocolVersion\\\": \\\"1.0\\\",\\\"eventType\\\": \\\"INSERT\\\",\\\"dbName\\\": \\\"some_db\\\",\\\"tableName\\\": \\\"some_table\\\",\\\"files\\\": [\\\"file:/a/b.txt\\\",\\\"file:/a/c.txt\\\"],\\\"fileChecksums\\\": [\\\"123\\\",\\\"456\\\"],\\\"partitionKeyValues\\\": {\\\"col_1\\\": \\\"val_1\\\",\\\"col_2\\\": \\\"val_2\\\", \\\"col_3\\\": \\\"val_3\\\"}}\"";
 
   private static final Map<String, String> PARTITION_KEYS_MAP = ImmutableMap
       .of("col_1", "string", "col_2", "integer", "col_3", "string");
@@ -79,7 +90,7 @@ public class SerdeWithJsonInputTest {
 
   @Test
   public void addPartitionEvent() throws Exception {
-    Message message = new Message().withBody(ADD_PARTITION_EVENT);
+    Message message = new Message().withBody(getSnsMessage(ADD_PARTITION_EVENT));
     SerializableListenerEvent processedEvent = serDe.unmarshal(decoder.decode(message));
     SerializableApiaryAddPartitionEvent addPartitionEvent = (SerializableApiaryAddPartitionEvent) processedEvent;
 
@@ -93,7 +104,7 @@ public class SerdeWithJsonInputTest {
 
   @Test
   public void alterPartitionEvent() throws Exception {
-    Message message = new Message().withBody(ALTER_PARTITION_EVENT);
+    Message message = new Message().withBody(getSnsMessage(ALTER_PARTITION_EVENT));
     SerializableListenerEvent processedEvent = serDe.unmarshal(decoder.decode(message));
     SerializableApiaryAlterPartitionEvent alterPartitionEvent = (SerializableApiaryAlterPartitionEvent) processedEvent;
 
@@ -109,7 +120,7 @@ public class SerdeWithJsonInputTest {
 
   @Test
   public void dropPartitionEvent() throws Exception {
-    Message message = new Message().withBody(DROP_PARTITION_EVENT);
+    Message message = new Message().withBody(getSnsMessage(DROP_PARTITION_EVENT));
     SerializableListenerEvent processedEvent = serDe.unmarshal(decoder.decode(message));
     SerializableApiaryDropPartitionEvent dropPartitionEvent = (SerializableApiaryDropPartitionEvent) processedEvent;
 
@@ -123,7 +134,7 @@ public class SerdeWithJsonInputTest {
 
   @Test
   public void createTableEvent() throws Exception {
-    Message message = new Message().withBody(CREATE_TABLE_EVENT);
+    Message message = new Message().withBody(getSnsMessage(CREATE_TABLE_EVENT));
     SerializableListenerEvent processedEvent = serDe.unmarshal(decoder.decode(message));
     SerializableApiaryCreateTableEvent createTableEvent = (SerializableApiaryCreateTableEvent) processedEvent;
 
@@ -139,7 +150,7 @@ public class SerdeWithJsonInputTest {
     List<String> expectedFileChecksums = ImmutableList.of("123", "456");
     Map<String, String> PARTITION_KEY_VALUE_MAP = ImmutableMap.of("col_1", "val_1", "col_2", "val_2", "col_3", "val_3");
 
-    Message message = new Message().withBody(INSERT_EVENT);
+    Message message = new Message().withBody(getSnsMessage(INSERT_EVENT));
     SerializableListenerEvent processedEvent = serDe.unmarshal(decoder.decode(message));
     SerializableApiaryInsertTableEvent insertTableEvent = (SerializableApiaryInsertTableEvent) processedEvent;
 
@@ -155,7 +166,7 @@ public class SerdeWithJsonInputTest {
 
   @Test
   public void dropTableEvent() throws Exception {
-    Message message = new Message().withBody(DROP_TABLE_EVENT);
+    Message message = new Message().withBody(getSnsMessage(DROP_TABLE_EVENT));
     SerializableListenerEvent processedEvent = serDe.unmarshal(decoder.decode(message));
     SerializableApiaryDropTableEvent dropTableEvent = (SerializableApiaryDropTableEvent) processedEvent;
 
@@ -163,6 +174,10 @@ public class SerdeWithJsonInputTest {
     assertThat(dropTableEvent.getTableName()).isEqualTo(TEST_TABLE);
     assertThat(dropTableEvent.getProtocolVersion()).isEqualTo("1.0");
     assertThat(dropTableEvent.getEventType()).isEqualTo(EventType.DROP_TABLE);
+  }
+
+  private String getSnsMessage(String eventMessage) {
+    return BASE_EVENT_SNS + eventMessage + "}";
   }
 
 }

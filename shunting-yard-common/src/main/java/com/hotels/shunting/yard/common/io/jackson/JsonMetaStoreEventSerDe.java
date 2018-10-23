@@ -85,13 +85,14 @@ public class JsonMetaStoreEventSerDe implements MetaStoreEventSerDe {
         log.debug("Marshalled event is: {}", new String(payload));
       }
       ByteArrayInputStream buffer = new ByteArrayInputStream(payload);
+      SnsMessage snsMessage = mapper.readerFor(SnsMessage.class).readValue(buffer);
+
       // As we don't know the type in advance we can only deserialize the event twice:
       // 1. Create a dummy object just to find out the type
-      T genericEvent = mapper.readerFor(HeplerSerializableListenerEvent.class).readValue(buffer);
+      T genericEvent = mapper.readerFor(HelperSerializableListenerEvent.class).readValue(snsMessage.getMessage());
       log.debug("Unmarshal event of type: {}", genericEvent.getEventType());
       // 2. Deserialize the actual object
-      buffer.reset();
-      T event = mapper.readerFor(genericEvent.getEventType().eventClass()).readValue(buffer);
+      T event = mapper.readerFor(genericEvent.getEventType().eventClass()).readValue(snsMessage.getMessage());
       log.debug("Unmarshalled event is: {}", event);
       return event;
     } catch (Exception e) {
@@ -101,13 +102,13 @@ public class JsonMetaStoreEventSerDe implements MetaStoreEventSerDe {
     }
   }
 
-  static class HeplerSerializableListenerEvent extends SerializableListenerEvent {
+  static class HelperSerializableListenerEvent extends SerializableListenerEvent {
     private static final long serialVersionUID = 1L;
     private static final ListenerEvent DUMMY_EVENT = new CreateTableEvent(null, false, null);
 
     private EventType eventType;
 
-    HeplerSerializableListenerEvent() {
+    HelperSerializableListenerEvent() {
       super(DUMMY_EVENT);
     }
 
