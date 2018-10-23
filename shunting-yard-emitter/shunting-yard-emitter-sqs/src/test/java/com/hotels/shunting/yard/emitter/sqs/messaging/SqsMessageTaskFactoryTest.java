@@ -32,14 +32,13 @@ import com.hotels.shunting.yard.common.messaging.MessageTask;
 public class SqsMessageTaskFactoryTest {
 
   private static final String QUEUE_URL = "queue";
-  private static final String GROUP_ID = "group";
 
   private @Mock Message message;
 
   @Test
   public void taskType() {
     AmazonSQS producer = mock(AmazonSQS.class);
-    MessageTask task = new SqsMessageTaskFactory(QUEUE_URL, GROUP_ID, producer).newTask(message);
+    MessageTask task = new SqsMessageTaskFactory(QUEUE_URL, producer).newTask(message);
     assertThat(task).isInstanceOf(SqsMessageTask.class);
   }
 

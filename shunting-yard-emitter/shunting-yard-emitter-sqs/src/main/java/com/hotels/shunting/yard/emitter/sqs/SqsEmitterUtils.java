@@ -17,7 +17,6 @@ package com.hotels.shunting.yard.emitter.sqs;
 
 import static com.hotels.shunting.yard.common.Preconditions.checkNotNull;
 import static com.hotels.shunting.yard.common.PropertyUtils.stringProperty;
-import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.GROUP_ID;
 import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.QUEUE;
 import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.REGION;
 
@@ -40,10 +39,6 @@ public final class SqsEmitterUtils {
 
   public static String region(Configuration conf) {
     return checkNotNull(stringProperty(conf, REGION), "Property " + REGION + " is not set");
-  }
-
-  public static String groupId(Configuration conf) {
-    return checkNotNull(stringProperty(conf, GROUP_ID), "Property " + GROUP_ID + " is not set");
   }
 
   public static AWSCredentialsProvider credentials(final Configuration conf) {

@@ -23,7 +23,6 @@ import com.hotels.shunting.yard.common.io.jackson.JsonMetaStoreEventSerDe;
 public enum SqsProducerProperty implements Property {
   QUEUE("queue", null),
   REGION("region", US_WEST_2.getName()),
-  GROUP_ID("group.id", null),
   AWS_ACCESS_KEY("aws.access.key", null),
   AWS_SECRET_KEY("aws.secret.key", null),
   SERDE_CLASS("serde.class", JsonMetaStoreEventSerDe.class.getName());

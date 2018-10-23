@@ -16,7 +16,6 @@
 package com.hotels.shunting.yard.emitter.sqs.messaging;
 
 import static com.hotels.shunting.yard.emitter.sqs.SqsEmitterUtils.credentials;
-import static com.hotels.shunting.yard.emitter.sqs.SqsEmitterUtils.groupId;
 import static com.hotels.shunting.yard.emitter.sqs.SqsEmitterUtils.queue;
 import static com.hotels.shunting.yard.emitter.sqs.SqsEmitterUtils.region;
 
@@ -37,23 +36,21 @@ public class SqsMessageTaskFactory implements MessageTaskFactory {
 
   private final AmazonSQS producer;
   private final String topic;
-  private final String messageGroupId;
 
   public SqsMessageTaskFactory(Configuration conf) {
-    this(queue(conf), groupId(conf),
+    this(queue(conf),
         AmazonSQSClientBuilder.standard().withRegion(region(conf)).withCredentials(credentials(conf)).build());
   }
 
   @VisibleForTesting
-  SqsMessageTaskFactory(String topic, String messageGroupId, AmazonSQS producer) {
+  SqsMessageTaskFactory(String topic, AmazonSQS producer) {
     this.producer = producer;
     this.topic = topic;
-    this.messageGroupId = messageGroupId;
   }
 
   @Override
   public MessageTask newTask(Message message) {
-    return new SqsMessageTask(producer, topic, messageGroupId, message);
+    return new SqsMessageTask(producer, topic, message);
   }
 
 }

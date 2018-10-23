@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.AWS_ACCESS_KEY;
 import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.AWS_SECRET_KEY;
-import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.GROUP_ID;
 import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.QUEUE;
 import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.REGION;
 import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.SERDE_CLASS;
@@ -51,13 +50,6 @@ public class SqsProducerPropertyTest {
     assertThat(REGION.unPrefixedKey()).isEqualTo("region");
     assertThat(REGION.key()).isEqualTo(prefixedKey("region"));
     assertThat(REGION.defaultValue()).isEqualTo("us-west-2");
-  }
-
-  @Test
-  public void groupId() {
-    assertThat(GROUP_ID.unPrefixedKey()).isEqualTo("group.id");
-    assertThat(GROUP_ID.key()).isEqualTo(prefixedKey("group.id"));
-    assertThat(GROUP_ID.defaultValue()).isNull();
   }
 
   @Test

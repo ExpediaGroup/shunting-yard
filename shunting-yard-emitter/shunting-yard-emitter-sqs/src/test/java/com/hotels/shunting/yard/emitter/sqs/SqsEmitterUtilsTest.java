@@ -17,10 +17,8 @@ package com.hotels.shunting.yard.emitter.sqs;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import static com.hotels.shunting.yard.emitter.sqs.SqsEmitterUtils.groupId;
 import static com.hotels.shunting.yard.emitter.sqs.SqsEmitterUtils.queue;
 import static com.hotels.shunting.yard.emitter.sqs.SqsEmitterUtils.region;
-import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.GROUP_ID;
 import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.QUEUE;
 import static com.hotels.shunting.yard.emitter.sqs.SqsProducerProperty.REGION;
 
@@ -53,18 +51,6 @@ public class SqsEmitterUtilsTest {
   public void regionIsNull() {
     conf.set(REGION.key(), null);
     region(conf);
-  }
-
-  @Test
-  public void groupIdIsNotNull() {
-    conf.set(GROUP_ID.key(), "group");
-    assertThat(groupId(conf)).isEqualTo("group");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void groupIdIsNull() {
-    conf.set(GROUP_ID.key(), null);
-    groupId(conf);
   }
 
 }

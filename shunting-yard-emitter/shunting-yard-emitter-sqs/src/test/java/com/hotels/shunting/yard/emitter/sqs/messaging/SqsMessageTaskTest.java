@@ -35,7 +35,6 @@ import com.hotels.shunting.yard.common.messaging.Message;
 public class SqsMessageTaskTest {
 
   private static final String TOPIC_URL = "topic";
-  private static final String GROUP_ID = "group";
   private static final byte[] PAYLOAD = "payload".getBytes();
 
   private @Mock AmazonSQS producer;
@@ -46,7 +45,7 @@ public class SqsMessageTaskTest {
   @Before
   public void init() {
     when(message.getPayload()).thenReturn(PAYLOAD);
-    sqsTask = new SqsMessageTask(producer, TOPIC_URL, GROUP_ID, message);
+    sqsTask = new SqsMessageTask(producer, TOPIC_URL, message);
   }
 
   @Test

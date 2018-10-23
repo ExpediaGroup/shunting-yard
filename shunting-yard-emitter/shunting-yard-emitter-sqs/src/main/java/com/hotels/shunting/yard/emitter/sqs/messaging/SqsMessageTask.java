@@ -29,25 +29,20 @@ class SqsMessageTask implements MessageTask {
 
   private final AmazonSQS producer;
   private final String topic;
-  private final String messageGroupId;
   private final byte[] payload;
 
-  SqsMessageTask(AmazonSQS producer, String topic, String messageGroupId, Message message) {
+  SqsMessageTask(AmazonSQS producer, String topic, Message message) {
     this.producer = producer;
     this.topic = topic;
-    this.messageGroupId = messageGroupId;
     payload = message.getPayload();
   }
 
   @Override
   public void run() {
-    LOG.info("Sending message to topic {} and group ID {}", topic, messageGroupId);
+    LOG.info("Sending message to topic {}", topic);
     producer
-        .sendMessage(new SendMessageRequest()
-            .withQueueUrl(topic)
-            .withMessageGroupId(messageGroupId)
-            .withMessageBody(new String(payload))
-            .withDelaySeconds(0));
+        .sendMessage(
+            new SendMessageRequest().withQueueUrl(topic).withMessageBody(new String(payload)).withDelaySeconds(0));
   }
 
 }
