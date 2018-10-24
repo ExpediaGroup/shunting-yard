@@ -25,11 +25,6 @@ import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 public class SerializableApiaryInsertTableEvent extends SerializableListenerEvent {
   private static final long serialVersionUID = 1L;
 
-  /**
-   * This class deliberately extends {@link SerializableListenerEvent} and not {@link SerializableApiaryListenerEvent}
-   * as the sourceMetastoreUris is not available in the {@link InsertEvent}.
-   */
-
   private String protocolVersion;
   private String dbName;
   private String tableName;
