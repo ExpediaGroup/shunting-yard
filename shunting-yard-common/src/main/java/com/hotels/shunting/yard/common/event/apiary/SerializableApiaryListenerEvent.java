@@ -35,7 +35,7 @@ public abstract class SerializableApiaryListenerEvent extends SerializableListen
   }
 
   @Override
-  public abstract String getDatabaseName();
+  public abstract String getDbName();
 
   @Override
   public abstract String getTableName();

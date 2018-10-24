@@ -122,7 +122,7 @@ public class JsonMetaStoreEventSerDe implements MetaStoreEventSerDe {
     }
 
     @Override
-    public String getDatabaseName() {
+    public String getDbName() {
       return null;
     }
 

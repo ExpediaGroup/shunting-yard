@@ -19,18 +19,8 @@ import static org.apache.hadoop.hive.conf.HiveConf.ConfVars.METASTOREURIS;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.apache.hadoop.hive.metastore.api.Partition;
-import org.apache.hadoop.hive.metastore.api.Table;
 
 import com.hotels.shunting.yard.common.event.EventType;
-import com.hotels.shunting.yard.common.event.SerializableAddPartitionEvent;
-import com.hotels.shunting.yard.common.event.SerializableAlterPartitionEvent;
-import com.hotels.shunting.yard.common.event.SerializableDropPartitionEvent;
-import com.hotels.shunting.yard.common.event.SerializableDropTableEvent;
-import com.hotels.shunting.yard.common.event.SerializableInsertEvent;
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryAddPartitionEvent;
 import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryAlterPartitionEvent;
@@ -66,50 +56,16 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
 
   private MetaStoreEvent map(SerializableListenerEvent listenerEvent) {
     MetaStoreEvent.Builder builder = MetaStoreEvent
-        .builder(listenerEvent.getEventType(), listenerEvent.getDatabaseName(), listenerEvent.getTableName())
+        .builder(listenerEvent.getEventType(), listenerEvent.getDbName(), listenerEvent.getTableName())
         .parameters(listenerEvent.getParameters())
+        .parameter(METASTOREURIS.varname, sourceHiveMetastoreUris)
         .environmentContext(
             listenerEvent.getEnvironmentContext() != null ? listenerEvent.getEnvironmentContext().getProperties()
                 : null);
 
     EventType eventType = listenerEvent.getEventType();
 
-    if (eventType.isApiaryEvent()) {
-      builder.parameter(METASTOREURIS.varname, sourceHiveMetastoreUris);
-    }
-
     switch (eventType) {
-    case ON_ADD_PARTITION: {
-      SerializableAddPartitionEvent addPartition = (SerializableAddPartitionEvent) listenerEvent;
-      addPartitionColumns(builder, addPartition.getTable());
-      addPartitionValues(builder, addPartition.getPartitions());
-      break;
-    }
-    case ON_ALTER_PARTITION: {
-      SerializableAlterPartitionEvent alterPartition = (SerializableAlterPartitionEvent) listenerEvent;
-      addPartitionColumns(builder, alterPartition.getTable());
-      builder.partitionValues(alterPartition.getNewPartition().getValues());
-      break;
-    }
-    case ON_DROP_PARTITION: {
-      SerializableDropPartitionEvent dropPartition = (SerializableDropPartitionEvent) listenerEvent;
-      addPartitionColumns(builder, dropPartition.getTable());
-      addPartitionValues(builder, dropPartition.getPartitions());
-      builder.deleteData(dropPartition.getDeleteData());
-      break;
-    }
-    case ON_DROP_TABLE: {
-      SerializableDropTableEvent dropTable = (SerializableDropTableEvent) listenerEvent;
-      builder.deleteData(dropTable.getDeleteData());
-      break;
-    }
-    case ON_INSERT: {
-      SerializableInsertEvent insert = (SerializableInsertEvent) listenerEvent;
-      builder.partitionColumns(new ArrayList<>(insert.getKeyValues().keySet()));
-      builder.partitionValues(new ArrayList<>(insert.getKeyValues().values()));
-      break;
-    }
-
     case ADD_PARTITION: {
       SerializableApiaryAddPartitionEvent addPartition = (SerializableApiaryAddPartitionEvent) listenerEvent;
       builder.partitionColumns(new ArrayList<>(addPartition.getPartitionKeys().keySet()));
@@ -145,14 +101,6 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
       break;
     }
     return builder.build();
-  }
-
-  private void addPartitionColumns(MetaStoreEvent.Builder builder, Table table) {
-    builder.partitionColumns(table.getPartitionKeys().stream().map(f -> f.getName()).collect(Collectors.toList()));
-  }
-
-  private void addPartitionValues(MetaStoreEvent.Builder builder, List<Partition> partitions) {
-    partitions.stream().map(p -> p.getValues()).forEach(pl -> builder.partitionValues(pl));
   }
 
 }

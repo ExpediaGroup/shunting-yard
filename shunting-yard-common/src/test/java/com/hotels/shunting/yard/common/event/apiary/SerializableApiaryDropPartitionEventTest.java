@@ -75,7 +75,7 @@ public class SerializableApiaryDropPartitionEventTest {
 
   @Test
   public void databaseName() {
-    assertThat(event.getDatabaseName()).isEqualTo(DATABASE);
+    assertThat(event.getDbName()).isEqualTo(DATABASE);
   }
 
   @Test

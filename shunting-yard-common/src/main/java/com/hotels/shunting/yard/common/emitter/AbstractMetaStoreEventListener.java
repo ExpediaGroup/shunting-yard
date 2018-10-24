@@ -75,7 +75,7 @@ public abstract class AbstractMetaStoreEventListener extends MetaStoreEventListe
   private Message withPayload(SerializableListenerEvent event) throws MetaException {
     return Message
         .builder()
-        .database(event.getDatabaseName())
+        .database(event.getDbName())
         .table(event.getTableName())
         .payload(getMetaStoreEventSerDe().marshal(event))
         .build();

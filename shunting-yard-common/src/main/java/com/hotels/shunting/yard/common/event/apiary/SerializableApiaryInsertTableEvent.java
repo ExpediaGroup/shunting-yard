@@ -52,12 +52,8 @@ public class SerializableApiaryInsertTableEvent extends SerializableListenerEven
     return protocolVersion;
   }
 
-  public String getDbName() {
-    return dbName;
-  }
-
   @Override
-  public String getDatabaseName() {
+  public String getDbName() {
     return dbName;
   }
 

@@ -46,14 +46,14 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.hotels.shunting.yard.common.event.SerializableAddPartitionEvent;
-import com.hotels.shunting.yard.common.event.SerializableAlterPartitionEvent;
-import com.hotels.shunting.yard.common.event.SerializableAlterTableEvent;
-import com.hotels.shunting.yard.common.event.SerializableCreateTableEvent;
-import com.hotels.shunting.yard.common.event.SerializableDropPartitionEvent;
-import com.hotels.shunting.yard.common.event.SerializableDropTableEvent;
-import com.hotels.shunting.yard.common.event.SerializableInsertEvent;
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
+import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryAddPartitionEvent;
+import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryAlterPartitionEvent;
+import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryAlterTableEvent;
+import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryCreateTableEvent;
+import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryDropPartitionEvent;
+import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryDropTableEvent;
+import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryInsertTableEvent;
 
 @RunWith(Parameterized.class)
 public abstract class AbstractMetaStoreEventSerDeTest {
@@ -72,49 +72,49 @@ public abstract class AbstractMetaStoreEventSerDeTest {
     return handler;
   }
 
-  private static SerializableCreateTableEvent serializableCreateTableEvent() throws Exception {
+  private static SerializableApiaryCreateTableEvent serializableCreateTableEvent() throws Exception {
     CreateTableEvent event = new CreateTableEvent(createTable(), true, mockHandler());
     event.setEnvironmentContext(createEnvironmentContext());
-    return new SerializableCreateTableEvent(event);
+    return new SerializableApiaryCreateTableEvent(event);
   }
 
-  private static SerializableAlterTableEvent serializableAlterTableEvent() throws Exception {
+  private static SerializableApiaryAlterTableEvent serializableAlterTableEvent() throws Exception {
     AlterTableEvent event = new AlterTableEvent(createTable(), createTable(new FieldSchema("new_col", "string", null)),
         true, mockHandler());
     event.setEnvironmentContext(createEnvironmentContext());
-    return new SerializableAlterTableEvent(event);
+    return new SerializableApiaryAlterTableEvent(event);
   }
 
-  private static SerializableDropTableEvent serializableDropTableEvent() throws Exception {
+  private static SerializableApiaryDropTableEvent serializableDropTableEvent() throws Exception {
     DropTableEvent event = new DropTableEvent(createTable(), true, false, mockHandler());
     event.setEnvironmentContext(createEnvironmentContext());
-    return new SerializableDropTableEvent(event);
+    return new SerializableApiaryDropTableEvent(event);
   }
 
-  private static SerializableAddPartitionEvent serializableAddPartitionEvent() throws Exception {
+  private static SerializableApiaryAddPartitionEvent serializableAddPartitionEvent() throws Exception {
     AddPartitionEvent event = new AddPartitionEvent(createTable(), createPartition("a"), true, mockHandler());
     event.setEnvironmentContext(createEnvironmentContext());
-    return new SerializableAddPartitionEvent(event);
+    return new SerializableApiaryAddPartitionEvent(event);
   }
 
-  private static SerializableAlterPartitionEvent serializableAlterPartitionEvent() throws Exception {
+  private static SerializableApiaryAlterPartitionEvent serializableAlterPartitionEvent() throws Exception {
     AlterPartitionEvent event = new AlterPartitionEvent(createPartition("a"), createPartition("b"), createTable(), true,
         mockHandler());
     event.setEnvironmentContext(createEnvironmentContext());
-    return new SerializableAlterPartitionEvent(event);
+    return new SerializableApiaryAlterPartitionEvent(event);
   }
 
-  private static SerializableDropPartitionEvent serializableDropPartitionEvent() throws Exception {
+  private static SerializableApiaryDropPartitionEvent serializableDropPartitionEvent() throws Exception {
     DropPartitionEvent event = new DropPartitionEvent(createTable(), createPartition("a"), true, false, mockHandler());
     event.setEnvironmentContext(createEnvironmentContext());
-    return new SerializableDropPartitionEvent(event);
+    return new SerializableApiaryDropPartitionEvent(event);
   }
 
-  private static SerializableInsertEvent serializableInsertEvent() throws Exception {
+  private static SerializableApiaryInsertTableEvent serializableInsertEvent() throws Exception {
     InsertEvent event = new InsertEvent(DATABASE, TABLE, Arrays.asList("a"), mockInsertEventRequestData(), true,
         mockHandler());
     event.setEnvironmentContext(createEnvironmentContext());
-    return new SerializableInsertEvent(event);
+    return new SerializableApiaryInsertTableEvent(event);
   }
 
   @Parameters(name = "{index}: {0}")

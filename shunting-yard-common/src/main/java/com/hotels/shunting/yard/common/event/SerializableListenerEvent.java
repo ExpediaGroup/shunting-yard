@@ -59,12 +59,12 @@ public abstract class SerializableListenerEvent implements Serializable {
     return EventType.forClass(this.getClass());
   }
 
-  public abstract String getDatabaseName();
+  public abstract String getDbName();
 
   public abstract String getTableName();
 
   public String getQualifiedTableName() {
-    return String.join(".", getDatabaseName(), getTableName());
+    return String.join(".", getDbName(), getTableName());
   }
 
   public boolean getStatus() {

@@ -17,7 +17,9 @@ package com.hotels.shunting.yard.common.event.apiary;
 
 import org.apache.hadoop.hive.metastore.events.CreateTableEvent;
 
-public class SerializableApiaryCreateTableEvent extends SerializableApiaryListenerEvent {
+import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
+
+public class SerializableApiaryCreateTableEvent extends SerializableListenerEvent {
   private static final long serialVersionUID = 1L;
 
   private String protocolVersion;
@@ -36,12 +38,8 @@ public class SerializableApiaryCreateTableEvent extends SerializableApiaryListen
     return protocolVersion;
   }
 
-  public String getDbName() {
-    return dbName;
-  }
-
   @Override
-  public String getDatabaseName() {
+  public String getDbName() {
     return dbName;
   }
 

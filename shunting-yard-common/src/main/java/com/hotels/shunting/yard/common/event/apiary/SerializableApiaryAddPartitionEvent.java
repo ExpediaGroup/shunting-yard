@@ -25,7 +25,9 @@ import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.apache.hadoop.hive.metastore.api.Partition;
 import org.apache.hadoop.hive.metastore.events.AddPartitionEvent;
 
-public class SerializableApiaryAddPartitionEvent extends SerializableApiaryListenerEvent {
+import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
+
+public class SerializableApiaryAddPartitionEvent extends SerializableListenerEvent {
   private static final long serialVersionUID = 1L;
 
   private String protocolVersion;
@@ -59,12 +61,8 @@ public class SerializableApiaryAddPartitionEvent extends SerializableApiaryListe
     return protocolVersion;
   }
 
-  public String getDbName() {
-    return dbName;
-  }
-
   @Override
-  public String getDatabaseName() {
+  public String getDbName() {
     return dbName;
   }
 

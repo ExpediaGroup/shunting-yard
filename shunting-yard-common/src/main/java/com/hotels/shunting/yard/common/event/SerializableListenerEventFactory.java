@@ -30,6 +30,14 @@ import org.apache.hadoop.hive.metastore.events.InsertEvent;
 import org.apache.hadoop.hive.metastore.events.ListenerEvent;
 import org.apache.hive.common.util.HiveVersionInfo;
 
+import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryAddPartitionEvent;
+import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryAlterPartitionEvent;
+import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryAlterTableEvent;
+import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryCreateTableEvent;
+import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryDropPartitionEvent;
+import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryDropTableEvent;
+import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryInsertTableEvent;
+
 public class SerializableListenerEventFactory {
 
   private final Configuration config;
@@ -44,32 +52,32 @@ public class SerializableListenerEventFactory {
     return event;
   }
 
-  public SerializableCreateTableEvent create(CreateTableEvent event) {
-    return new SerializableCreateTableEvent(addParams(event));
+  public SerializableApiaryCreateTableEvent create(CreateTableEvent event) {
+    return new SerializableApiaryCreateTableEvent(addParams(event));
   }
 
-  public SerializableAlterTableEvent create(AlterTableEvent event) {
-    return new SerializableAlterTableEvent(addParams(event));
+  public SerializableApiaryAlterTableEvent create(AlterTableEvent event) {
+    return new SerializableApiaryAlterTableEvent(addParams(event));
   }
 
-  public SerializableDropTableEvent create(DropTableEvent event) {
-    return new SerializableDropTableEvent(addParams(event));
+  public SerializableApiaryDropTableEvent create(DropTableEvent event) {
+    return new SerializableApiaryDropTableEvent(addParams(event));
   }
 
-  public SerializableAddPartitionEvent create(AddPartitionEvent event) {
-    return new SerializableAddPartitionEvent(addParams(event));
+  public SerializableApiaryAddPartitionEvent create(AddPartitionEvent event) {
+    return new SerializableApiaryAddPartitionEvent(addParams(event));
   }
 
-  public SerializableAlterPartitionEvent create(AlterPartitionEvent event) {
-    return new SerializableAlterPartitionEvent(addParams(event));
+  public SerializableApiaryAlterPartitionEvent create(AlterPartitionEvent event) {
+    return new SerializableApiaryAlterPartitionEvent(addParams(event));
   }
 
-  public SerializableDropPartitionEvent create(DropPartitionEvent event) {
-    return new SerializableDropPartitionEvent(addParams(event));
+  public SerializableApiaryDropPartitionEvent create(DropPartitionEvent event) {
+    return new SerializableApiaryDropPartitionEvent(addParams(event));
   }
 
-  public SerializableInsertEvent create(InsertEvent event) {
-    return new SerializableInsertEvent(addParams(event));
+  public SerializableApiaryInsertTableEvent create(InsertEvent event) {
+    return new SerializableApiaryInsertTableEvent(addParams(event));
   }
 
 }

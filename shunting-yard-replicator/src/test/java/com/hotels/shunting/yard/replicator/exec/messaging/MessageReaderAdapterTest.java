@@ -29,7 +29,6 @@ import java.util.stream.IntStream;
 
 import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.apache.hadoop.hive.metastore.api.Partition;
-import org.apache.hadoop.hive.metastore.api.Table;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,12 +39,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 import com.hotels.shunting.yard.common.event.EventType;
-import com.hotels.shunting.yard.common.event.SerializableAddPartitionEvent;
-import com.hotels.shunting.yard.common.event.SerializableAlterPartitionEvent;
-import com.hotels.shunting.yard.common.event.SerializableCreateTableEvent;
-import com.hotels.shunting.yard.common.event.SerializableDropPartitionEvent;
-import com.hotels.shunting.yard.common.event.SerializableDropTableEvent;
-import com.hotels.shunting.yard.common.event.SerializableInsertEvent;
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryAddPartitionEvent;
 import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryAlterPartitionEvent;
@@ -70,13 +63,6 @@ public class MessageReaderAdapterTest {
 
   private MessageReaderAdapter messageReaderAdapter;
 
-  private @Mock SerializableAddPartitionEvent addPartitionEvent;
-  private @Mock SerializableAlterPartitionEvent alterPartitionEvent;
-  private @Mock SerializableDropPartitionEvent dropPartitionEvent;
-  private @Mock SerializableDropTableEvent dropTableEvent;
-  private @Mock SerializableInsertEvent insertEvent;
-  private @Mock SerializableCreateTableEvent createTableEvent;
-
   private @Mock SerializableApiaryAddPartitionEvent addApiaryPartitionEvent;
   private @Mock SerializableApiaryAlterPartitionEvent alterApiaryPartitionEvent;
   private @Mock SerializableApiaryDropPartitionEvent dropApiaryPartitionEvent;
@@ -85,7 +71,6 @@ public class MessageReaderAdapterTest {
   private @Mock SerializableApiaryDropTableEvent dropApiaryTableEvent;
 
   private @Mock MessageReader messageReader;
-  private @Mock Table dummyHiveTable;
   private @Mock Partition partition;
 
   private List<Partition> partitionValues;
@@ -101,126 +86,18 @@ public class MessageReaderAdapterTest {
     partitionValues = ImmutableList.of(partition);
     messageReaderAdapter = new MessageReaderAdapter(messageReader, SOURCE_METASTORE_URIS);
     when(partition.getValues()).thenReturn(PARTITION_VALUES);
-    when(dummyHiveTable.getPartitionKeys()).thenReturn(partitionKeys);
-  }
-
-  @Test
-  public void addPartitionEvent() {
-    when(messageReader.next()).thenReturn(addPartitionEvent);
-    configureMockedEvent(addPartitionEvent);
-    when(addPartitionEvent.getTable()).thenReturn(dummyHiveTable);
-    when(addPartitionEvent.getPartitions()).thenReturn(partitionValues);
-    when(addPartitionEvent.getEventType()).thenReturn(EventType.ON_ADD_PARTITION);
-
-    MetaStoreEvent expected = MetaStoreEvent
-        .builder(EventType.ON_ADD_PARTITION, TEST_DB, TEST_TABLE)
-        .partitionColumns(new ArrayList<String>(PARTITION_KEYS_MAP.keySet()))
-        .partitionValues(PARTITION_VALUES)
-        .environmentContext(EMPTY_MAP)
-        .parameters(EMPTY_MAP)
-        .build();
-
-    MetaStoreEvent actual = messageReaderAdapter.next();
-
-    assertMetaStoreEvent(expected, actual);
-  }
-
-  @Test
-  public void alterPartitionEvent() {
-    when(messageReader.next()).thenReturn(alterPartitionEvent);
-    configureMockedEvent(alterPartitionEvent);
-    when(alterPartitionEvent.getTable()).thenReturn(dummyHiveTable);
-    when(alterPartitionEvent.getNewPartition()).thenReturn(partition);
-    when(alterPartitionEvent.getEventType()).thenReturn(EventType.ON_ALTER_PARTITION);
-
-    MetaStoreEvent expected = MetaStoreEvent
-        .builder(EventType.ON_ALTER_PARTITION, TEST_DB, TEST_TABLE)
-        .partitionColumns(new ArrayList<String>(PARTITION_KEYS_MAP.keySet()))
-        .partitionValues(PARTITION_VALUES)
-        .environmentContext(EMPTY_MAP)
-        .parameters(EMPTY_MAP)
-        .build();
-
-    MetaStoreEvent actual = messageReaderAdapter.next();
-
-    assertMetaStoreEvent(expected, actual);
-  }
-
-  @Test
-  public void dropPartitionEvent() {
-    when(messageReader.next()).thenReturn(dropPartitionEvent);
-    configureMockedEvent(dropPartitionEvent);
-    when(dropPartitionEvent.getTable()).thenReturn(dummyHiveTable);
-    when(dropPartitionEvent.getPartitions()).thenReturn(partitionValues);
-    when(dropPartitionEvent.getEventType()).thenReturn(EventType.ON_DROP_PARTITION);
-    when(dropPartitionEvent.getDeleteData()).thenReturn(true);
-
-    MetaStoreEvent expected = MetaStoreEvent
-        .builder(EventType.ON_DROP_PARTITION, TEST_DB, TEST_TABLE)
-        .partitionColumns(new ArrayList<String>(PARTITION_KEYS_MAP.keySet()))
-        .partitionValues(PARTITION_VALUES)
-        .deleteData(true)
-        .environmentContext(EMPTY_MAP)
-        .build();
-
-    MetaStoreEvent actual = messageReaderAdapter.next();
-
-    assertMetaStoreEvent(expected, actual);
-  }
-
-  @Test
-  public void dropTableEvent() {
-    when(messageReader.next()).thenReturn(dropTableEvent);
-    configureMockedEvent(dropTableEvent);
-    when(dropTableEvent.getEventType()).thenReturn(EventType.ON_DROP_TABLE);
-    when(dropTableEvent.getDeleteData()).thenReturn(true);
-
-    MetaStoreEvent expected = MetaStoreEvent
-        .builder(EventType.ON_DROP_TABLE, TEST_DB, TEST_TABLE)
-        .deleteData(true)
-        .environmentContext(EMPTY_MAP)
-        .build();
-
-    MetaStoreEvent actual = messageReaderAdapter.next();
-
-    assertMetaStoreEvent(expected, actual);
-  }
-
-  @Test
-  public void insertEvent() {
-    Map<String, String> partitionKeyValues = IntStream
-        .range(0, partitionKeys.size())
-        .collect(LinkedHashMap::new,
-            (m, i) -> m.put(partitionKeys.get(i).getName(), partitionValues.get(0).getValues().get(i)), Map::putAll);
-
-    when(messageReader.next()).thenReturn(insertEvent);
-    configureMockedEvent(insertEvent);
-    when(insertEvent.getKeyValues()).thenReturn(partitionKeyValues);
-    when(insertEvent.getEventType()).thenReturn(EventType.ON_INSERT);
-
-    MetaStoreEvent expected = MetaStoreEvent
-        .builder(EventType.ON_INSERT, TEST_DB, TEST_TABLE)
-        .partitionColumns(new ArrayList<String>(PARTITION_KEYS_MAP.keySet()))
-        .partitionValues(PARTITION_VALUES)
-        .environmentContext(EMPTY_MAP)
-        .parameters(EMPTY_MAP)
-        .build();
-
-    MetaStoreEvent actual = messageReaderAdapter.next();
-
-    assertMetaStoreEvent(expected, actual);
   }
 
   @Test
   public void ignoresCreateTableEvent() {
     when(messageReader.next()).thenReturn(createApiaryTableEvent);
     configureMockedEvent(createApiaryTableEvent);
-    when(createApiaryTableEvent.getEventType()).thenReturn(EventType.ON_CREATE_TABLE);
+    when(createApiaryTableEvent.getEventType()).thenReturn(EventType.CREATE_TABLE);
 
     MetaStoreEvent expected = MetaStoreEvent
-        .builder(EventType.ON_CREATE_TABLE, TEST_DB, TEST_TABLE)
+        .builder(EventType.CREATE_TABLE, TEST_DB, TEST_TABLE)
         .environmentContext(EMPTY_MAP)
-        .parameters(EMPTY_MAP)
+        .parameters(PARAMETERS)
         .build();
 
     MetaStoreEvent actual = messageReaderAdapter.next();
@@ -352,7 +229,7 @@ public class MessageReaderAdapterTest {
   }
 
   private void configureMockedEvent(SerializableListenerEvent serializableListenerEvent) {
-    when(serializableListenerEvent.getDatabaseName()).thenReturn(TEST_DB);
+    when(serializableListenerEvent.getDbName()).thenReturn(TEST_DB);
     when(serializableListenerEvent.getTableName()).thenReturn(TEST_TABLE);
   }
 

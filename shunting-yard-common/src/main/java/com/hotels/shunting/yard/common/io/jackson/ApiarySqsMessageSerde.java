@@ -76,7 +76,6 @@ public class ApiarySqsMessageSerde {
   }
 
   public <T extends SerializableListenerEvent> T unmarshal(byte[] payload) throws MetaException {
-
     try {
       System.out.println(new String(payload));
       if (log.isDebugEnabled()) {
@@ -84,7 +83,6 @@ public class ApiarySqsMessageSerde {
       }
       ByteArrayInputStream buffer = new ByteArrayInputStream(payload);
       SqsMessage sqsMessage = mapper.readerFor(SqsMessage.class).readValue(buffer);
-
       T event = delegateSerDe.unmarshal(sqsMessage.getMessage().getBytes());
       return event;
     } catch (Exception e) {
@@ -92,6 +90,7 @@ public class ApiarySqsMessageSerde {
       log.error(message, e);
       throw new MetaException(message);
     }
+
   }
 
 }

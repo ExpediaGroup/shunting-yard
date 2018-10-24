@@ -74,22 +74,16 @@ public class CircusTrainReplicationMetaStoreEventListener implements Replication
 
     switch (event.getEventType()) {
     case DROP_TABLE:
-    case ON_DROP_TABLE:
       onDropTable(event);
       break;
     case DROP_PARTITION:
-    case ON_DROP_PARTITION:
       onDropPartition(event);
       break;
     case ADD_PARTITION:
     case ALTER_PARTITION:
+    case ALTER_TABLE:
     case CREATE_TABLE:
     case INSERT:
-    case ON_CREATE_TABLE:
-    case ON_ALTER_TABLE:
-    case ON_ADD_PARTITION:
-    case ON_ALTER_PARTITION:
-    case ON_INSERT:
       replicate(event);
       break;
     default:

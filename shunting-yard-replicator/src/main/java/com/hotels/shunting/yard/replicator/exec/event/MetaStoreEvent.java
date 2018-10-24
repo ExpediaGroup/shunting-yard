@@ -21,8 +21,6 @@ import static com.google.common.base.Preconditions.checkState;
 
 import static com.hotels.shunting.yard.common.event.EventType.DROP_PARTITION;
 import static com.hotels.shunting.yard.common.event.EventType.DROP_TABLE;
-import static com.hotels.shunting.yard.common.event.EventType.ON_DROP_PARTITION;
-import static com.hotels.shunting.yard.common.event.EventType.ON_DROP_TABLE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -120,10 +118,7 @@ public class MetaStoreEvent {
   }
 
   private static boolean isDropEvent(EventType eventType) {
-    return eventType == ON_DROP_PARTITION
-        || eventType == ON_DROP_TABLE
-        || eventType == DROP_PARTITION
-        || eventType == DROP_TABLE;
+    return eventType == DROP_PARTITION || eventType == DROP_TABLE;
   }
 
   private final EventType eventType;

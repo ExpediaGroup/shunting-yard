@@ -96,7 +96,7 @@ public class SerdeWithJsonInputTest {
     SerializableListenerEvent processedEvent = serDe.unmarshal(decoder.decode(message));
     SerializableApiaryAddPartitionEvent addPartitionEvent = (SerializableApiaryAddPartitionEvent) processedEvent;
 
-    assertThat(addPartitionEvent.getDatabaseName()).isEqualTo(TEST_DB);
+    assertThat(addPartitionEvent.getDbName()).isEqualTo(TEST_DB);
     assertThat(addPartitionEvent.getTableName()).isEqualTo(TEST_TABLE);
     assertThat(addPartitionEvent.getProtocolVersion()).isEqualTo("1.0");
     assertThat(addPartitionEvent.getEventType()).isEqualTo(EventType.ADD_PARTITION);
@@ -110,7 +110,7 @@ public class SerdeWithJsonInputTest {
     SerializableListenerEvent processedEvent = serDe.unmarshal(decoder.decode(message));
     SerializableApiaryAlterPartitionEvent alterPartitionEvent = (SerializableApiaryAlterPartitionEvent) processedEvent;
 
-    assertThat(alterPartitionEvent.getDatabaseName()).isEqualTo(TEST_DB);
+    assertThat(alterPartitionEvent.getDbName()).isEqualTo(TEST_DB);
     assertThat(alterPartitionEvent.getTableName()).isEqualTo(TEST_TABLE);
     assertThat(alterPartitionEvent.getProtocolVersion()).isEqualTo("1.0");
     assertThat(alterPartitionEvent.getEventType()).isEqualTo(EventType.ALTER_PARTITION);
@@ -126,7 +126,7 @@ public class SerdeWithJsonInputTest {
     SerializableListenerEvent processedEvent = serDe.unmarshal(decoder.decode(message));
     SerializableApiaryDropPartitionEvent dropPartitionEvent = (SerializableApiaryDropPartitionEvent) processedEvent;
 
-    assertThat(dropPartitionEvent.getDatabaseName()).isEqualTo(TEST_DB);
+    assertThat(dropPartitionEvent.getDbName()).isEqualTo(TEST_DB);
     assertThat(dropPartitionEvent.getTableName()).isEqualTo(TEST_TABLE);
     assertThat(dropPartitionEvent.getProtocolVersion()).isEqualTo("1.0");
     assertThat(dropPartitionEvent.getEventType()).isEqualTo(EventType.DROP_PARTITION);
@@ -140,7 +140,7 @@ public class SerdeWithJsonInputTest {
     SerializableListenerEvent processedEvent = serDe.unmarshal(decoder.decode(message));
     SerializableApiaryCreateTableEvent createTableEvent = (SerializableApiaryCreateTableEvent) processedEvent;
 
-    assertThat(createTableEvent.getDatabaseName()).isEqualTo(TEST_DB);
+    assertThat(createTableEvent.getDbName()).isEqualTo(TEST_DB);
     assertThat(createTableEvent.getTableName()).isEqualTo(TEST_TABLE);
     assertThat(createTableEvent.getProtocolVersion()).isEqualTo("1.0");
     assertThat(createTableEvent.getEventType()).isEqualTo(EventType.CREATE_TABLE);
@@ -156,7 +156,7 @@ public class SerdeWithJsonInputTest {
     SerializableListenerEvent processedEvent = serDe.unmarshal(decoder.decode(message));
     SerializableApiaryInsertTableEvent insertTableEvent = (SerializableApiaryInsertTableEvent) processedEvent;
 
-    assertThat(insertTableEvent.getDatabaseName()).isEqualTo(TEST_DB);
+    assertThat(insertTableEvent.getDbName()).isEqualTo(TEST_DB);
     assertThat(insertTableEvent.getTableName()).isEqualTo(TEST_TABLE);
     assertThat(insertTableEvent.getProtocolVersion()).isEqualTo("1.0");
     assertThat(insertTableEvent.getEventType()).isEqualTo(EventType.INSERT);
@@ -172,7 +172,7 @@ public class SerdeWithJsonInputTest {
     SerializableListenerEvent processedEvent = serDe.unmarshal(decoder.decode(message));
     SerializableApiaryDropTableEvent dropTableEvent = (SerializableApiaryDropTableEvent) processedEvent;
 
-    assertThat(dropTableEvent.getDatabaseName()).isEqualTo(TEST_DB);
+    assertThat(dropTableEvent.getDbName()).isEqualTo(TEST_DB);
     assertThat(dropTableEvent.getTableName()).isEqualTo(TEST_TABLE);
     assertThat(dropTableEvent.getProtocolVersion()).isEqualTo("1.0");
     assertThat(dropTableEvent.getEventType()).isEqualTo(EventType.DROP_TABLE);
