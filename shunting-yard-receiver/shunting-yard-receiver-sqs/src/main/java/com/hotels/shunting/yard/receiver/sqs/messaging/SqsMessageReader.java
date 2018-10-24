@@ -33,19 +33,19 @@ import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import com.google.common.annotations.VisibleForTesting;
 
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
-import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 import com.hotels.shunting.yard.common.io.SerDeException;
+import com.hotels.shunting.yard.common.io.jackson.ApiarySqsMessageSerde;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
 
 public class SqsMessageReader implements MessageReader {
   private final String queueUrl;
-  private final MetaStoreEventSerDe eventSerDe;
+  private final ApiarySqsMessageSerde sqsSerDe;
   private final int waitTimeSeconds;
   private final AmazonSQS consumer;
   private final MessageDecoder messageDecoder;
   private Iterator<Message> records;
 
-  public SqsMessageReader(Configuration conf, MetaStoreEventSerDe eventSerDe) {
+  public SqsMessageReader(Configuration conf, ApiarySqsMessageSerde eventSerDe) {
     this(conf, eventSerDe,
         AmazonSQSClientBuilder.standard().withRegion(region(conf)).withCredentials(credentials(conf)).build(),
         MessageDecoder.DEFAULT);
@@ -54,12 +54,12 @@ public class SqsMessageReader implements MessageReader {
   @VisibleForTesting
   SqsMessageReader(
       Configuration conf,
-      MetaStoreEventSerDe eventSerDe,
+      ApiarySqsMessageSerde sqsSerDe,
       AmazonSQS consumer,
       MessageDecoder messageDecoder) {
     queueUrl = queue(conf);
     waitTimeSeconds = waitTimeSeconds(conf);
-    this.eventSerDe = eventSerDe;
+    this.sqsSerDe = sqsSerDe;
     this.consumer = consumer;
     this.messageDecoder = messageDecoder;
   }
@@ -89,21 +89,23 @@ public class SqsMessageReader implements MessageReader {
 
   private void readRecordsIfNeeded() {
     while (records == null || !records.hasNext()) {
-      ReceiveMessageRequest request = new ReceiveMessageRequest().withQueueUrl(queueUrl).withWaitTimeSeconds(
-          waitTimeSeconds);
+      ReceiveMessageRequest request = new ReceiveMessageRequest()
+          .withQueueUrl(queueUrl)
+          .withWaitTimeSeconds(waitTimeSeconds);
       records = consumer.receiveMessage(request).getMessages().iterator();
     }
   }
 
   private void delete(Message message) {
-    DeleteMessageRequest request = new DeleteMessageRequest().withQueueUrl(queueUrl).withReceiptHandle(
-        message.getReceiptHandle());
+    DeleteMessageRequest request = new DeleteMessageRequest()
+        .withQueueUrl(queueUrl)
+        .withReceiptHandle(message.getReceiptHandle());
     consumer.deleteMessage(request);
   }
 
   private SerializableListenerEvent eventPayLoad(Message message) {
     try {
-      return eventSerDe.unmarshal(messageDecoder.decode(message));
+      return sqsSerDe.unmarshal(messageDecoder.decode(message));
     } catch (Exception e) {
       throw new SerDeException("Unable to unmarshall event", e);
     }

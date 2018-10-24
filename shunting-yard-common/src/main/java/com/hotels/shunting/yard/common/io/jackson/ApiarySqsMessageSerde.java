@@ -23,8 +23,6 @@ import java.io.IOException;
 
 import org.apache.hadoop.hive.metastore.api.MetaException;
 import org.apache.hadoop.hive.metastore.api.SkewedInfo;
-import org.apache.hadoop.hive.metastore.events.CreateTableEvent;
-import org.apache.hadoop.hive.metastore.events.ListenerEvent;
 import org.apache.thrift.TBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,16 +30,17 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-import com.hotels.shunting.yard.common.event.EventType;
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 
-public class JsonMetaStoreEventSerDe implements MetaStoreEventSerDe {
+public class ApiarySqsMessageSerde {
   private static final Logger log = LoggerFactory.getLogger(JsonMetaStoreEventSerDe.class);
 
   private final ObjectMapper mapper;
+  private final MetaStoreEventSerDe delegateSerDe;
 
-  public JsonMetaStoreEventSerDe() {
+  public ApiarySqsMessageSerde(MetaStoreEventSerDe delegateSerDe) {
+    this.delegateSerDe = delegateSerDe;
     SimpleModule thriftModule = new SimpleModule("ThriftModule");
     registerSerializers(thriftModule);
     registerDeserializers(thriftModule);
@@ -59,76 +58,39 @@ public class JsonMetaStoreEventSerDe implements MetaStoreEventSerDe {
     module.addDeserializer(SkewedInfo.class, new SkewedInfoDeserializer());
   }
 
-  @Override
-  public byte[] marshal(SerializableListenerEvent listenerEvent) throws MetaException {
+  public byte[] marshal(SqsMessage message) throws MetaException {
     try {
-      log.debug("Marshalling event: {}", listenerEvent);
+      log.debug("Marshalling SqsMessage: {}", message);
       ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-      mapper.writer().writeValue(buffer, listenerEvent);
+      mapper.writer().writeValue(buffer, message);
       byte[] bytes = buffer.toByteArray();
       if (log.isDebugEnabled()) {
-        log.debug("Marshalled event is: {}", new String(bytes));
+        log.debug("Marshalled SqsMessage is: {}", new String(bytes));
       }
       return bytes;
     } catch (IOException e) {
-      String message = "Unable to marshal event " + listenerEvent;
-      log.error(message, e);
-      throw new MetaException(message);
+      String errorMessage = "Unable to marshal payload " + message;
+      log.error(errorMessage, e);
+      throw new MetaException(errorMessage);
     }
   }
 
-  @Override
   public <T extends SerializableListenerEvent> T unmarshal(byte[] payload) throws MetaException {
+
     try {
       System.out.println(new String(payload));
       if (log.isDebugEnabled()) {
-        log.debug("Marshalled event is: {}", new String(payload));
+        log.debug("Unmarshalled payload is: {}", new String(payload));
       }
       ByteArrayInputStream buffer = new ByteArrayInputStream(payload);
+      SqsMessage sqsMessage = mapper.readerFor(SqsMessage.class).readValue(buffer);
 
-      // As we don't know the type in advance we can only deserialize the event twice:
-      // 1. Create a dummy object just to find out the type
-      T genericEvent = mapper.readerFor(HelperSerializableListenerEvent.class).readValue(buffer);
-      log.debug("Unmarshal event of type: {}", genericEvent.getEventType());
-      buffer.reset();
-      // 2. Deserialize the actual object
-      T event = mapper.readerFor(genericEvent.getEventType().eventClass()).readValue(buffer);
-      log.debug("Unmarshalled event is: {}", event);
+      T event = delegateSerDe.unmarshal(sqsMessage.getMessage().getBytes());
       return event;
     } catch (Exception e) {
       String message = "Unable to unmarshal event from payload";
       log.error(message, e);
       throw new MetaException(message);
-    }
-  }
-
-  static class HelperSerializableListenerEvent extends SerializableListenerEvent {
-    private static final long serialVersionUID = 1L;
-    private static final ListenerEvent DUMMY_EVENT = new CreateTableEvent(null, false, null);
-
-    private EventType eventType;
-
-    HelperSerializableListenerEvent() {
-      super(DUMMY_EVENT);
-    }
-
-    @Override
-    public EventType getEventType() {
-      return eventType;
-    }
-
-    public void setEventType(EventType eventType) {
-      this.eventType = eventType;
-    }
-
-    @Override
-    public String getDatabaseName() {
-      return null;
-    }
-
-    @Override
-    public String getTableName() {
-      return null;
     }
   }
 

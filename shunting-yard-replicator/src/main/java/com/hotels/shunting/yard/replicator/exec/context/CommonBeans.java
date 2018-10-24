@@ -42,6 +42,7 @@ import com.hotels.hcommon.hive.metastore.client.api.MetaStoreClientFactory;
 import com.hotels.hcommon.hive.metastore.client.closeable.CloseableMetaStoreClientFactory;
 import com.hotels.hcommon.hive.metastore.conf.HiveConfFactory;
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
+import com.hotels.shunting.yard.common.io.jackson.ApiarySqsMessageSerde;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
 import com.hotels.shunting.yard.common.messaging.MessageReaderFactory;
 import com.hotels.shunting.yard.replicator.exec.conf.EventReceiverConfiguration;
@@ -127,6 +128,11 @@ public class CommonBeans {
   }
 
   @Bean
+  ApiarySqsMessageSerde sqsMessageSerDe(MetaStoreEventSerDe metaStoreEventSerDe) {
+    return new ApiarySqsMessageSerde(metaStoreEventSerDe);
+  }
+
+  @Bean
   MetaStoreEventAggregator eventAggregator() {
     return new DefaultMetaStoreEventAggregator();
   }
@@ -134,12 +140,12 @@ public class CommonBeans {
   @Bean
   MessageReaderAdapter messageReaderAdapter(
       HiveConf replicaHiveConf,
-      MetaStoreEventSerDe metaStoreEventSerDe,
+      ApiarySqsMessageSerde sqsMessageSerDe,
       EventReceiverConfiguration messageReaderConfig,
       SourceCatalog sourceCatalog) {
     MessageReaderFactory messaReaderFactory = MessageReaderFactory
         .newInstance(messageReaderConfig.getMessageReaderFactoryClass());
-    MessageReader messageReader = messaReaderFactory.newInstance(replicaHiveConf, metaStoreEventSerDe);
+    MessageReader messageReader = messaReaderFactory.newInstance(replicaHiveConf, sqsMessageSerDe);
     return new MessageReaderAdapter(messageReader, sourceCatalog.getHiveMetastoreUris());
   }
 

@@ -17,15 +17,15 @@ package com.hotels.shunting.yard.receiver.sqs.messaging;
 
 import org.apache.hadoop.conf.Configuration;
 
-import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
+import com.hotels.shunting.yard.common.io.jackson.ApiarySqsMessageSerde;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
 import com.hotels.shunting.yard.common.messaging.MessageReaderFactory;
 
 public class SqsMessageReaderFactory implements MessageReaderFactory {
 
   @Override
-  public MessageReader newInstance(Configuration conf, MetaStoreEventSerDe metaStoreEventSerDe) {
-    return new SqsMessageReader(conf, metaStoreEventSerDe);
+  public MessageReader newInstance(Configuration conf, ApiarySqsMessageSerde sqsMessageSerde) {
+    return new SqsMessageReader(conf, sqsMessageSerde);
   }
 
 }

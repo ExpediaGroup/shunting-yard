@@ -35,7 +35,7 @@ public class SqsProducerPropertyTest {
 
   @Test
   public void numberOfProperties() {
-    assertThat(SqsProducerProperty.values().length).isEqualTo(6);
+    assertThat(SqsProducerProperty.values().length).isEqualTo(5);
   }
 
   @Test

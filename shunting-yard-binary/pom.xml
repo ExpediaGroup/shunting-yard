@@ -19,16 +19,6 @@
     </dependency>
     <dependency>
       <groupId>com.hotels</groupId>
-      <artifactId>shunting-yard-receiver-kafka</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.hotels</groupId>
-      <artifactId>shunting-yard-receiver-kinesis</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.hotels</groupId>
       <artifactId>shunting-yard-receiver-sqs</artifactId>
       <version>${project.version}</version>
     </dependency>

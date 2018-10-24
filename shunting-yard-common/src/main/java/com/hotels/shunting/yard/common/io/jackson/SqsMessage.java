@@ -22,7 +22,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @NotThreadSafe
-public class SnsMessage implements Serializable {
+public class SqsMessage implements Serializable {
   private static final long serialVersionUID = 1L;
 
   @JsonProperty("Type")
@@ -51,6 +51,19 @@ public class SnsMessage implements Serializable {
 
   @JsonProperty("UnsubscribeURL")
   private String unsubscribeURL;
+
+  // public SqsMessage(
+  // SerializableListenerEvent event,
+  // String type,
+  // String messageId,
+  // String topicArn,
+  // String timestamp,
+  // String signatureVersion,
+  // String signature,
+  // String signingCertURL,
+  // String unsubscribeURL) {
+  //
+  // }
 
   public String getType() {
     return type;

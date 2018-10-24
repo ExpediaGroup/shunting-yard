@@ -45,8 +45,8 @@ import com.amazonaws.services.sqs.model.ReceiveMessageResult;
 import com.google.common.collect.ImmutableList;
 
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
-import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 import com.hotels.shunting.yard.common.io.SerDeException;
+import com.hotels.shunting.yard.common.io.jackson.ApiarySqsMessageSerde;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SqsMessageReaderTest {
@@ -56,7 +56,7 @@ public class SqsMessageReaderTest {
   private static final String RECEIPT_HANDLER = "receipt_handler";
   private static final byte[] MESSAGE_CONTENT = "message".getBytes();
 
-  private @Mock MetaStoreEventSerDe serDe;
+  private @Mock ApiarySqsMessageSerde serDe;
   private @Mock AmazonSQS consumer;
   private @Mock MessageDecoder decoder;
   private @Mock ReceiveMessageResult receiveMessageResult;

@@ -18,7 +18,7 @@ package com.hotels.shunting.yard.common.messaging;
 import org.apache.hadoop.conf.Configuration;
 
 import com.hotels.shunting.yard.common.ShuntingYardException;
-import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
+import com.hotels.shunting.yard.common.io.jackson.ApiarySqsMessageSerde;
 
 public interface MessageReaderFactory {
 
@@ -37,6 +37,6 @@ public interface MessageReaderFactory {
     }
   }
 
-  MessageReader newInstance(Configuration conf, MetaStoreEventSerDe metaStoreEventSerDe);
+  MessageReader newInstance(Configuration conf, ApiarySqsMessageSerde sqsMessageSerde);
 
 }

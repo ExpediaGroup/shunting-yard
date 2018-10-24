@@ -39,13 +39,15 @@ import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryDropPartit
 import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryDropTableEvent;
 import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryInsertTableEvent;
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
+import com.hotels.shunting.yard.common.io.jackson.ApiarySqsMessageSerde;
 import com.hotels.shunting.yard.common.io.jackson.JsonMetaStoreEventSerDe;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SerdeWithJsonInputTest {
-  private final MetaStoreEventSerDe serDe = new JsonMetaStoreEventSerDe();
+  private final MetaStoreEventSerDe jsonSerDe = new JsonMetaStoreEventSerDe();
+  private final ApiarySqsMessageSerde serDe = new ApiarySqsMessageSerde(jsonSerDe);
 
-  private final static String BASE_EVENT_SNS = "{"
+  private final static String BASE_EVENT_FROM_SNS = "{"
       + "  \"Type\" : \"Notification\","
       + "  \"MessageId\" : \"9b0f34bc-ae00-57c4-97a0-60f5b002b3d0\","
       + "  \"TopicArn\" : \"arn:aws:sns:us-west-2:440407435941:abhimanyu-sns-test\","
@@ -177,7 +179,7 @@ public class SerdeWithJsonInputTest {
   }
 
   private String getSnsMessage(String eventMessage) {
-    return BASE_EVENT_SNS + eventMessage + "}";
+    return BASE_EVENT_FROM_SNS + eventMessage + "}";
   }
 
 }

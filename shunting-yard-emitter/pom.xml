@@ -11,8 +11,6 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>shunting-yard-emitter-kafka</module>
-    <module>shunting-yard-emitter-kinesis</module>
     <module>shunting-yard-emitter-sqs</module>
   </modules>
 
