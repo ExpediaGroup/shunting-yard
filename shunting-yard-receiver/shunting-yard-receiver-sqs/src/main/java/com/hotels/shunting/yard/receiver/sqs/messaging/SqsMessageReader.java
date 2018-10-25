@@ -34,18 +34,18 @@ import com.google.common.annotations.VisibleForTesting;
 
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 import com.hotels.shunting.yard.common.io.SerDeException;
-import com.hotels.shunting.yard.common.io.jackson.ApiarySqsMessageSerde;
+import com.hotels.shunting.yard.common.io.jackson.ApiarySqsMessageSerDe;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
 
 public class SqsMessageReader implements MessageReader {
   private final String queueUrl;
-  private final ApiarySqsMessageSerde sqsSerDe;
+  private final ApiarySqsMessageSerDe sqsSerDe;
   private final int waitTimeSeconds;
   private final AmazonSQS consumer;
   private final MessageDecoder messageDecoder;
   private Iterator<Message> records;
 
-  public SqsMessageReader(Configuration conf, ApiarySqsMessageSerde eventSerDe) {
+  public SqsMessageReader(Configuration conf, ApiarySqsMessageSerDe eventSerDe) {
     this(conf, eventSerDe,
         AmazonSQSClientBuilder.standard().withRegion(region(conf)).withCredentials(credentials(conf)).build(),
         MessageDecoder.DEFAULT);
@@ -54,7 +54,7 @@ public class SqsMessageReader implements MessageReader {
   @VisibleForTesting
   SqsMessageReader(
       Configuration conf,
-      ApiarySqsMessageSerde sqsSerDe,
+      ApiarySqsMessageSerDe sqsSerDe,
       AmazonSQS consumer,
       MessageDecoder messageDecoder) {
     queueUrl = queue(conf);

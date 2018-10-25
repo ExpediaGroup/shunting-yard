@@ -33,13 +33,13 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 
-public class ApiarySqsMessageSerde {
+public class ApiarySqsMessageSerDe {
   private static final Logger log = LoggerFactory.getLogger(JsonMetaStoreEventSerDe.class);
 
   private final ObjectMapper mapper;
   private final MetaStoreEventSerDe delegateSerDe;
 
-  public ApiarySqsMessageSerde(MetaStoreEventSerDe delegateSerDe) {
+  public ApiarySqsMessageSerDe(MetaStoreEventSerDe delegateSerDe) {
     this.delegateSerDe = delegateSerDe;
     SimpleModule thriftModule = new SimpleModule("ThriftModule");
     registerSerializers(thriftModule);
