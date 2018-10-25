@@ -80,7 +80,6 @@ public class JsonMetaStoreEventSerDe implements MetaStoreEventSerDe {
   @Override
   public <T extends SerializableListenerEvent> T unmarshal(byte[] payload) throws MetaException {
     try {
-      System.out.println(new String(payload));
       if (log.isDebugEnabled()) {
         log.debug("Marshalled event is: {}", new String(payload));
       }
