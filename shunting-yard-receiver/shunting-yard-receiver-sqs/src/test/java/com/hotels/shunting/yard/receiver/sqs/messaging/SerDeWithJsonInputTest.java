@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.hadoop.hive.metastore.api.FieldSchema;
+import org.apache.hadoop.hive.metastore.api.MetaException;
 import org.apache.hadoop.hive.metastore.api.Table;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +42,7 @@ import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryInsertTabl
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 import com.hotels.shunting.yard.common.io.jackson.ApiarySqsMessageSerDe;
 import com.hotels.shunting.yard.common.io.jackson.JsonMetaStoreEventSerDe;
+import com.hotels.shunting.yard.common.io.jackson.SqsMessage;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SerDeWithJsonInputTest {
@@ -176,6 +178,14 @@ public class SerDeWithJsonInputTest {
     assertThat(dropTableEvent.getTableName()).isEqualTo(TEST_TABLE);
     assertThat(dropTableEvent.getProtocolVersion()).isEqualTo("1.0");
     assertThat(dropTableEvent.getEventType()).isEqualTo(EventType.DROP_TABLE);
+  }
+
+  @Test
+  public void marshalTest() throws MetaException {
+    SqsMessage sqsMessage = new SqsMessage("notification", "test_id", "test_arn", "message", "timestamp",
+        "signature_version", "signature", "signature_cert_url", "unsubscribe_url");
+    String expectedJson = "{\"Type\":\"notification\",\"MessageId\":\"test_id\",\"TopicArn\":\"test_arn\",\"Message\":\"message\",\"Timestamp\":\"timestamp\",\"SignatureVersion\":\"signature_version\",\"Signature\":\"signature\",\"SigningCertURL\":\"signature_cert_url\",\"UnsubscribeURL\":\"unsubscribe_url\"}";
+    assertThat(expectedJson.getBytes()).isEqualTo(serDe.marshal(sqsMessage));
   }
 
   private String getSnsMessage(String eventMessage) {

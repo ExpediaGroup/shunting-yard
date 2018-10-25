@@ -43,7 +43,7 @@ public class SerializableApiaryAlterPartitionEvent extends SerializableListenerE
     tableName = event.getTable().getTableName();
     partitionKeys = new LinkedHashMap<>();
     Partition partition = event.getNewPartition();
-    for (FieldSchema fieldSchema : partition.getSd().getCols()) {
+    for (FieldSchema fieldSchema : event.getTable().getPartitionKeys()) {
       partitionKeys.put(fieldSchema.getName(), fieldSchema.getType());
     }
     partitionValues = partition.getValues();

@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.apache.hadoop.hive.metastore.api.Partition;
-import org.apache.hadoop.hive.metastore.api.StorageDescriptor;
 import org.apache.hadoop.hive.metastore.api.Table;
 import org.apache.hadoop.hive.metastore.events.DropPartitionEvent;
 import org.junit.Before;
@@ -48,7 +47,6 @@ public class SerializableApiaryDropPartitionEventTest {
   private @Mock DropPartitionEvent dropPartitionEvent;
   private @Mock Table table;
   private @Mock Partition partition;
-  private @Mock StorageDescriptor sd;
 
   private SerializableApiaryDropPartitionEvent event;
 
@@ -57,16 +55,15 @@ public class SerializableApiaryDropPartitionEventTest {
   @Before
   public void init() {
     FieldSchema partitionColumn1 = new FieldSchema("column_1", "string", "");
-    FieldSchema partitionColumn2 = new FieldSchema("column_2", "string", "");
+    FieldSchema partitionColumn2 = new FieldSchema("column_2", "integer", "");
     FieldSchema partitionColumn3 = new FieldSchema("column_3", "string", "");
 
     partitionKeys = ImmutableList.of(partitionColumn1, partitionColumn2, partitionColumn3);
 
     when(table.getDbName()).thenReturn(DATABASE);
     when(table.getTableName()).thenReturn(TABLE);
+    when(table.getPartitionKeys()).thenReturn(partitionKeys);
     when(partition.getValues()).thenReturn(PARTITION_VALUES);
-    when(partition.getSd()).thenReturn(sd);
-    when(sd.getCols()).thenReturn(partitionKeys);
     when(dropPartitionEvent.getTable()).thenReturn(table);
     when(dropPartitionEvent.getPartitionIterator()).thenReturn(Arrays.asList(partition).iterator());
     when(dropPartitionEvent.getStatus()).thenReturn(true);

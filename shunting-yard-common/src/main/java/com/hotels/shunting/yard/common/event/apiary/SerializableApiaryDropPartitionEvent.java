@@ -49,7 +49,7 @@ public class SerializableApiaryDropPartitionEvent extends SerializableListenerEv
     // there will be only one partition in one event from Apiary
     while (iterator.hasNext()) {
       Partition partition = iterator.next();
-      for (FieldSchema fieldSchema : partition.getSd().getCols()) {
+      for (FieldSchema fieldSchema : event.getTable().getPartitionKeys()) {
         partitionKeys.put(fieldSchema.getName(), fieldSchema.getType());
       }
       partitionValues = partition.getValues();
