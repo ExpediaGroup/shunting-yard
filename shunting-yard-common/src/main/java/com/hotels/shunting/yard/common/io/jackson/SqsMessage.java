@@ -52,19 +52,6 @@ public class SqsMessage implements Serializable {
   @JsonProperty("UnsubscribeURL")
   private String unsubscribeURL;
 
-  // public SqsMessage(
-  // SerializableListenerEvent event,
-  // String type,
-  // String messageId,
-  // String topicArn,
-  // String timestamp,
-  // String signatureVersion,
-  // String signature,
-  // String signingCertURL,
-  // String unsubscribeURL) {
-  //
-  // }
-
   public String getType() {
     return type;
   }

@@ -43,7 +43,7 @@ import com.hotels.shunting.yard.common.io.jackson.ApiarySqsMessageSerDe;
 import com.hotels.shunting.yard.common.io.jackson.JsonMetaStoreEventSerDe;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SerdeWithJsonInputTest {
+public class SerDeWithJsonInputTest {
   private final MetaStoreEventSerDe jsonSerDe = new JsonMetaStoreEventSerDe();
   private final ApiarySqsMessageSerDe serDe = new ApiarySqsMessageSerDe(jsonSerDe);
 
