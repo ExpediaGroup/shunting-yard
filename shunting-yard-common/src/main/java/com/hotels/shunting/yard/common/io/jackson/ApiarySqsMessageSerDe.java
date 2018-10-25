@@ -34,7 +34,7 @@ import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 
 public class ApiarySqsMessageSerDe {
-  private static final Logger log = LoggerFactory.getLogger(JsonMetaStoreEventSerDe.class);
+  private static final Logger log = LoggerFactory.getLogger(ApiarySqsMessageSerDe.class);
 
   private final ObjectMapper mapper;
   private final MetaStoreEventSerDe delegateSerDe;

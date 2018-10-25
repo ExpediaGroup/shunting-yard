@@ -73,7 +73,7 @@ public class SqsMetaStoreEventListenerTest {
   private @Mock MetaStoreEventSerDe eventSerDe;
   private @Mock MessageTask messageTask;
   private @Mock MessageTaskFactory messageTaskFactory;
-  private @Mock SerializableListenerEventFactory SerializableListenerEventFactory;
+  private @Mock SerializableListenerEventFactory serializableListenerEventFactory;
   private @Mock ExecutorService executorService;
 
   private final Configuration config = new Configuration();
@@ -90,17 +90,17 @@ public class SqsMetaStoreEventListenerTest {
         return null;
       }
     }).when(executorService).submit(any(Runnable.class));
-    listener = new SqsMetaStoreEventListener(config, SerializableListenerEventFactory, eventSerDe, messageTaskFactory,
+    listener = new SqsMetaStoreEventListener(config, serializableListenerEventFactory, eventSerDe, messageTaskFactory,
         executorService);
   }
 
   @Test
   public void onCreateTable() throws Exception {
     CreateTableEvent event = mock(CreateTableEvent.class);
-    SerializableApiaryCreateTableEvent SerializableApiaryEvent = mock(SerializableApiaryCreateTableEvent.class);
-    when(SerializableApiaryEvent.getDbName()).thenReturn(DATABASE);
-    when(SerializableApiaryEvent.getTableName()).thenReturn(TABLE);
-    when(SerializableListenerEventFactory.create(event)).thenReturn(SerializableApiaryEvent);
+    SerializableApiaryCreateTableEvent serializableApiaryEvent = mock(SerializableApiaryCreateTableEvent.class);
+    when(serializableApiaryEvent.getDbName()).thenReturn(DATABASE);
+    when(serializableApiaryEvent.getTableName()).thenReturn(TABLE);
+    when(serializableListenerEventFactory.create(event)).thenReturn(serializableApiaryEvent);
     listener.onCreateTable(event);
     verify(messageTask).run();
   }
@@ -108,10 +108,10 @@ public class SqsMetaStoreEventListenerTest {
   @Test
   public void onAlterTable() throws Exception {
     AlterTableEvent event = mock(AlterTableEvent.class);
-    SerializableApiaryAlterTableEvent SerializableApiaryEvent = mock(SerializableApiaryAlterTableEvent.class);
-    when(SerializableApiaryEvent.getDbName()).thenReturn(DATABASE);
-    when(SerializableApiaryEvent.getTableName()).thenReturn(TABLE);
-    when(SerializableListenerEventFactory.create(event)).thenReturn(SerializableApiaryEvent);
+    SerializableApiaryAlterTableEvent serializableApiaryEvent = mock(SerializableApiaryAlterTableEvent.class);
+    when(serializableApiaryEvent.getDbName()).thenReturn(DATABASE);
+    when(serializableApiaryEvent.getTableName()).thenReturn(TABLE);
+    when(serializableListenerEventFactory.create(event)).thenReturn(serializableApiaryEvent);
     listener.onAlterTable(event);
     verify(messageTask).run();
   }
@@ -119,10 +119,10 @@ public class SqsMetaStoreEventListenerTest {
   @Test
   public void onDropTable() throws Exception {
     DropTableEvent event = mock(DropTableEvent.class);
-    SerializableApiaryDropTableEvent SerializableApiaryEvent = mock(SerializableApiaryDropTableEvent.class);
-    when(SerializableApiaryEvent.getDbName()).thenReturn(DATABASE);
-    when(SerializableApiaryEvent.getTableName()).thenReturn(TABLE);
-    when(SerializableListenerEventFactory.create(event)).thenReturn(SerializableApiaryEvent);
+    SerializableApiaryDropTableEvent serializableApiaryEvent = mock(SerializableApiaryDropTableEvent.class);
+    when(serializableApiaryEvent.getDbName()).thenReturn(DATABASE);
+    when(serializableApiaryEvent.getTableName()).thenReturn(TABLE);
+    when(serializableListenerEventFactory.create(event)).thenReturn(serializableApiaryEvent);
     listener.onDropTable(event);
     verify(messageTask).run();
   }
@@ -130,10 +130,10 @@ public class SqsMetaStoreEventListenerTest {
   @Test
   public void onAddPartition() throws Exception {
     AddPartitionEvent event = mock(AddPartitionEvent.class);
-    SerializableApiaryAddPartitionEvent SerializableApiaryEvent = mock(SerializableApiaryAddPartitionEvent.class);
-    when(SerializableApiaryEvent.getDbName()).thenReturn(DATABASE);
-    when(SerializableApiaryEvent.getTableName()).thenReturn(TABLE);
-    when(SerializableListenerEventFactory.create(event)).thenReturn(SerializableApiaryEvent);
+    SerializableApiaryAddPartitionEvent serializableApiaryEvent = mock(SerializableApiaryAddPartitionEvent.class);
+    when(serializableApiaryEvent.getDbName()).thenReturn(DATABASE);
+    when(serializableApiaryEvent.getTableName()).thenReturn(TABLE);
+    when(serializableListenerEventFactory.create(event)).thenReturn(serializableApiaryEvent);
     listener.onAddPartition(event);
     verify(messageTask).run();
   }
@@ -141,10 +141,10 @@ public class SqsMetaStoreEventListenerTest {
   @Test
   public void onAlterPartition() throws Exception {
     AlterPartitionEvent event = mock(AlterPartitionEvent.class);
-    SerializableApiaryAlterPartitionEvent SerializableApiaryEvent = mock(SerializableApiaryAlterPartitionEvent.class);
-    when(SerializableApiaryEvent.getDbName()).thenReturn(DATABASE);
-    when(SerializableApiaryEvent.getTableName()).thenReturn(TABLE);
-    when(SerializableListenerEventFactory.create(event)).thenReturn(SerializableApiaryEvent);
+    SerializableApiaryAlterPartitionEvent serializableApiaryEvent = mock(SerializableApiaryAlterPartitionEvent.class);
+    when(serializableApiaryEvent.getDbName()).thenReturn(DATABASE);
+    when(serializableApiaryEvent.getTableName()).thenReturn(TABLE);
+    when(serializableListenerEventFactory.create(event)).thenReturn(serializableApiaryEvent);
     listener.onAlterPartition(event);
     verify(messageTask).run();
   }
@@ -152,10 +152,10 @@ public class SqsMetaStoreEventListenerTest {
   @Test
   public void onDropPartition() throws Exception {
     DropPartitionEvent event = mock(DropPartitionEvent.class);
-    SerializableApiaryDropPartitionEvent SerializableApiaryEvent = mock(SerializableApiaryDropPartitionEvent.class);
-    when(SerializableApiaryEvent.getDbName()).thenReturn(DATABASE);
-    when(SerializableApiaryEvent.getTableName()).thenReturn(TABLE);
-    when(SerializableListenerEventFactory.create(event)).thenReturn(SerializableApiaryEvent);
+    SerializableApiaryDropPartitionEvent serializableApiaryEvent = mock(SerializableApiaryDropPartitionEvent.class);
+    when(serializableApiaryEvent.getDbName()).thenReturn(DATABASE);
+    when(serializableApiaryEvent.getTableName()).thenReturn(TABLE);
+    when(serializableListenerEventFactory.create(event)).thenReturn(serializableApiaryEvent);
     listener.onDropPartition(event);
     verify(messageTask).run();
   }
@@ -163,10 +163,10 @@ public class SqsMetaStoreEventListenerTest {
   @Test
   public void onInsert() throws Exception {
     InsertEvent event = mock(InsertEvent.class);
-    SerializableApiaryInsertTableEvent SerializableApiaryEvent = mock(SerializableApiaryInsertTableEvent.class);
-    when(SerializableApiaryEvent.getDbName()).thenReturn(DATABASE);
-    when(SerializableApiaryEvent.getTableName()).thenReturn(TABLE);
-    when(SerializableListenerEventFactory.create(event)).thenReturn(SerializableApiaryEvent);
+    SerializableApiaryInsertTableEvent serializableApiaryEvent = mock(SerializableApiaryInsertTableEvent.class);
+    when(serializableApiaryEvent.getDbName()).thenReturn(DATABASE);
+    when(serializableApiaryEvent.getTableName()).thenReturn(TABLE);
+    when(serializableListenerEventFactory.create(event)).thenReturn(serializableApiaryEvent);
     listener.onInsert(event);
     verify(messageTask).run();
   }
