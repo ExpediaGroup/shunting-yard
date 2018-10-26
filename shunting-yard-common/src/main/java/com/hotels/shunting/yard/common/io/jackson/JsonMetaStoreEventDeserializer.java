@@ -19,12 +19,12 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKN
 
 import java.io.StringReader;
 
-import org.apache.hadoop.hive.metastore.api.MetaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.hotels.shunting.yard.common.ShuntingYardException;
 import com.hotels.shunting.yard.common.event.EventType;
 import com.hotels.shunting.yard.common.event.ListenerEvent;
 import com.hotels.shunting.yard.common.io.MetaStoreEventDeserializer;
@@ -39,7 +39,7 @@ public class JsonMetaStoreEventDeserializer implements MetaStoreEventDeserialize
   }
 
   @Override
-  public <T extends ListenerEvent> T unmarshal(String payload) throws MetaException {
+  public <T extends ListenerEvent> T unmarshal(String payload) throws ShuntingYardException {
     try {
       log.debug("Marshalled event is: {}", payload);
       StringReader buffer = new StringReader(payload);
@@ -55,8 +55,7 @@ public class JsonMetaStoreEventDeserializer implements MetaStoreEventDeserialize
       return event;
     } catch (Exception e) {
       String message = "Unable to unmarshal event from payload";
-      log.error(message, e);
-      throw new MetaException(message);
+      throw new ShuntingYardException(message, e);
     }
   }
 
