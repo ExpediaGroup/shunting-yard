@@ -39,10 +39,7 @@ public class ApiarySqsMessageDeserializer {
 
   public <T extends ListenerEvent> T unmarshal(String payload) throws MetaException {
     try {
-      System.out.println(payload);
-      if (log.isDebugEnabled()) {
-        log.debug("Unmarshalled payload is: {}", payload);
-      }
+      log.debug("Unmarshalled payload is: {}", payload);
       SqsMessage sqsMessage = mapper.readerFor(SqsMessage.class).readValue(payload);
       T event = delegateSerDe.unmarshal(sqsMessage.getMessage());
       return event;
