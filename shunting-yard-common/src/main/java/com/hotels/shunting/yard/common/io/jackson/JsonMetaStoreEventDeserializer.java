@@ -17,8 +17,6 @@ package com.hotels.shunting.yard.common.io.jackson;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 
-import java.io.StringReader;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,15 +40,13 @@ public class JsonMetaStoreEventDeserializer implements MetaStoreEventDeserialize
   public <T extends ListenerEvent> T unmarshal(String payload) throws ShuntingYardException {
     try {
       log.debug("Marshalled event is: {}", payload);
-      StringReader buffer = new StringReader(payload);
 
       // As we don't know the type in advance we can only deserialize the event twice:
       // 1. Create a dummy object just to find out the type
-      T genericEvent = mapper.readerFor(HelperSerializableListenerEvent.class).readValue(buffer);
+      T genericEvent = mapper.readerFor(HelperSerializableListenerEvent.class).readValue(payload);
       log.debug("Unmarshal event of type: {}", genericEvent.getEventType());
-      buffer.reset();
       // 2. Deserialize the actual object
-      T event = mapper.readerFor(genericEvent.getEventType().eventClass()).readValue(buffer);
+      T event = mapper.readerFor(genericEvent.getEventType().eventClass()).readValue(payload);
       log.debug("Unmarshalled event is: {}", event);
       return event;
     } catch (Exception e) {

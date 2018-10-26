@@ -23,7 +23,6 @@
 
   <modules>
     <module>shunting-yard-common</module>
-    <module>shunting-yard-emitter</module>
     <module>shunting-yard-receiver</module>
     <module>shunting-yard-replicator</module>
     <module>shunting-yard-binary</module>
