@@ -41,7 +41,7 @@ import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 import com.hotels.hcommon.hive.metastore.client.api.MetaStoreClientFactory;
 import com.hotels.hcommon.hive.metastore.client.closeable.CloseableMetaStoreClientFactory;
 import com.hotels.hcommon.hive.metastore.conf.HiveConfFactory;
-import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
+import com.hotels.shunting.yard.common.io.MetaStoreEventDeserializer;
 import com.hotels.shunting.yard.common.io.jackson.ApiarySqsMessageDeserializer;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
 import com.hotels.shunting.yard.common.messaging.MessageReaderFactory;
@@ -123,13 +123,13 @@ public class CommonBeans {
   }
 
   @Bean
-  MetaStoreEventSerDe metaStoreEventSerDe(EventReceiverConfiguration messageReaderConfig) {
+  MetaStoreEventDeserializer metaStoreEventSerDe(EventReceiverConfiguration messageReaderConfig) {
     return messageReaderConfig.getSerDeType().instantiate();
   }
 
   @Bean
-  ApiarySqsMessageDeserializer sqsMessageSerDe(MetaStoreEventSerDe metaStoreEventSerDe) {
-    return new ApiarySqsMessageDeserializer(metaStoreEventSerDe);
+  ApiarySqsMessageDeserializer sqsMessageSerDe(MetaStoreEventDeserializer metaStoreEventDeserializer) {
+    return new ApiarySqsMessageDeserializer(metaStoreEventDeserializer);
   }
 
   @Bean

@@ -15,20 +15,20 @@
  */
 package com.hotels.shunting.yard.replicator.exec.conf;
 
-import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
+import com.hotels.shunting.yard.common.io.MetaStoreEventDeserializer;
 import com.hotels.shunting.yard.common.io.jackson.JsonMetaStoreEventDeserializer;
 
 public enum SerDeType {
   JSON(JsonMetaStoreEventDeserializer.class);
 
-  private final Class<? extends MetaStoreEventSerDe> serDeClass;
+  private final Class<? extends MetaStoreEventDeserializer> serDeClass;
 
-  private SerDeType(Class<? extends MetaStoreEventSerDe> serDeClass) {
+  private SerDeType(Class<? extends MetaStoreEventDeserializer> serDeClass) {
     this.serDeClass = serDeClass;
   }
 
-  public MetaStoreEventSerDe instantiate() {
-    return MetaStoreEventSerDe.serDeForClassName(serDeClass.getName());
+  public MetaStoreEventDeserializer instantiate() {
+    return MetaStoreEventDeserializer.serDeForClassName(serDeClass.getName());
   }
 
 }

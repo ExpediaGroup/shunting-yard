@@ -24,14 +24,15 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.hotels.shunting.yard.common.event.ListenerEvent;
+import com.hotels.shunting.yard.common.io.MetaStoreEventDeserializer;
 
 public class ApiarySqsMessageDeserializer {
   private static final Logger log = LoggerFactory.getLogger(ApiarySqsMessageDeserializer.class);
 
   private final ObjectMapper mapper = new ObjectMapper();;
-  private final JsonMetaStoreEventDeserializer delegateSerDe;
+  private final MetaStoreEventDeserializer delegateSerDe;
 
-  public ApiarySqsMessageDeserializer(JsonMetaStoreEventDeserializer delegateSerDe) {
+  public ApiarySqsMessageDeserializer(MetaStoreEventDeserializer delegateSerDe) {
     this.delegateSerDe = delegateSerDe;
     mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
   }

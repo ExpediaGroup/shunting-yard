@@ -27,8 +27,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.hotels.shunting.yard.common.event.EventType;
 import com.hotels.shunting.yard.common.event.ListenerEvent;
+import com.hotels.shunting.yard.common.io.MetaStoreEventDeserializer;
 
-public class JsonMetaStoreEventDeserializer {
+public class JsonMetaStoreEventDeserializer implements MetaStoreEventDeserializer {
   private static final Logger log = LoggerFactory.getLogger(JsonMetaStoreEventDeserializer.class);
 
   private final ObjectMapper mapper = new ObjectMapper();
@@ -37,6 +38,7 @@ public class JsonMetaStoreEventDeserializer {
     mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
   }
 
+  @Override
   public <T extends ListenerEvent> T unmarshal(String payload) throws MetaException {
     try {
       log.debug("Marshalled event is: {}", payload);

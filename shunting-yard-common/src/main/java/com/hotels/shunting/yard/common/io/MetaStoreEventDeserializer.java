@@ -20,9 +20,9 @@ import org.apache.hadoop.hive.metastore.api.MetaException;
 import com.hotels.shunting.yard.common.ShuntingYardException;
 import com.hotels.shunting.yard.common.event.ListenerEvent;
 
-public interface MetaStoreEventSerDe {
+public interface MetaStoreEventDeserializer {
 
-  static <T extends MetaStoreEventSerDe> T serDeForClassName(String className) {
+  static <T extends MetaStoreEventDeserializer> T serDeForClassName(String className) {
     try {
       Class<T> clazz = (Class<T>) Class.forName(className);
       return clazz.newInstance();
@@ -30,8 +30,6 @@ public interface MetaStoreEventSerDe {
       throw new ShuntingYardException("Unable to instantiate MetaStoreEventSerDe of class " + className, e);
     }
   }
-
-  String marshal(ListenerEvent listenerEvent) throws MetaException;
 
   <T extends ListenerEvent> T unmarshal(String payload) throws MetaException;
 
