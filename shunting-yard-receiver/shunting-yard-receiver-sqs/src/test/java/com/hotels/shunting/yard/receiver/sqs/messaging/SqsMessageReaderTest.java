@@ -44,9 +44,9 @@ import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import com.amazonaws.services.sqs.model.ReceiveMessageResult;
 import com.google.common.collect.ImmutableList;
 
-import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
+import com.hotels.shunting.yard.common.event.ListenerEvent;
 import com.hotels.shunting.yard.common.io.SerDeException;
-import com.hotels.shunting.yard.common.io.jackson.ApiarySqsMessageSerDe;
+import com.hotels.shunting.yard.common.io.jackson.ApiarySqsMessageDeserializer;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SqsMessageReaderTest {
@@ -54,16 +54,15 @@ public class SqsMessageReaderTest {
   private static final String QUEUE_NAME = "queue";
   private static final int WAIT_TIME = 1;
   private static final String RECEIPT_HANDLER = "receipt_handler";
-  private static final byte[] MESSAGE_CONTENT = "message".getBytes();
+  private static final String MESSAGE_CONTENT = "message";
 
-  private @Mock ApiarySqsMessageSerDe serDe;
+  private @Mock ApiarySqsMessageDeserializer serDe;
   private @Mock AmazonSQS consumer;
-  private @Mock MessageDecoder decoder;
   private @Mock ReceiveMessageResult receiveMessageResult;
   private @Mock List<Message> messages;
   private @Mock Iterator<Message> messageIterator;
   private @Mock Message message;
-  private @Mock SerializableListenerEvent event;
+  private @Mock ListenerEvent event;
 
   private @Captor ArgumentCaptor<ReceiveMessageRequest> receiveMessageRequestCaptor;
   private @Captor ArgumentCaptor<DeleteMessageRequest> deleteMessageRequestCaptor;
@@ -79,11 +78,11 @@ public class SqsMessageReaderTest {
     when(messageIterator.hasNext()).thenReturn(true, false);
     when(messageIterator.next()).thenReturn(message).thenThrow(NoSuchElementException.class);
     when(message.getReceiptHandle()).thenReturn(RECEIPT_HANDLER);
-    when(decoder.decode(message)).thenReturn(MESSAGE_CONTENT);
+    when(message.getBody()).thenReturn(MESSAGE_CONTENT);
     when(serDe.unmarshal(MESSAGE_CONTENT)).thenReturn(event);
     conf.set(QUEUE.key(), QUEUE_NAME);
     conf.set(WAIT_TIME_SECONDS.key(), String.valueOf(WAIT_TIME));
-    reader = new SqsMessageReader(conf, serDe, consumer, decoder);
+    reader = new SqsMessageReader(conf, serDe, consumer);
   }
 
   @Test
@@ -111,7 +110,6 @@ public class SqsMessageReaderTest {
     verify(consumer).deleteMessage(deleteMessageRequestCaptor.capture());
     assertThat(deleteMessageRequestCaptor.getValue().getQueueUrl()).isEqualTo(QUEUE_NAME);
     assertThat(deleteMessageRequestCaptor.getValue().getReceiptHandle()).isEqualTo(RECEIPT_HANDLER);
-    verify(decoder).decode(message);
     verify(serDe).unmarshal(MESSAGE_CONTENT);
   }
 
@@ -121,19 +119,12 @@ public class SqsMessageReaderTest {
     reader.next();
     verify(consumer, times(2)).receiveMessage(any(ReceiveMessageRequest.class));
     verify(consumer).deleteMessage(any(DeleteMessageRequest.class));
-    verify(decoder).decode(message);
     verify(serDe).unmarshal(MESSAGE_CONTENT);
   }
 
   @Test(expected = SerDeException.class)
-  public void decoderThrowsException() {
-    when(decoder.decode(any(Message.class))).thenThrow(RuntimeException.class);
-    reader.next();
-  }
-
-  @Test(expected = SerDeException.class)
-  public void unmarhsallThrowsException() throws Exception {
-    when(serDe.unmarshal(any(byte[].class))).thenThrow(RuntimeException.class);
+  public void unmarshallThrowsException() throws Exception {
+    when(serDe.unmarshal(any(String.class))).thenThrow(RuntimeException.class);
     reader.next();
   }
 

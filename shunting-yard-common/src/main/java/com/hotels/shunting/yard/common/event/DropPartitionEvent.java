@@ -13,21 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.shunting.yard.common.event.apiary;
+package com.hotels.shunting.yard.common.event;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.hadoop.hive.metastore.api.FieldSchema;
-import org.apache.hadoop.hive.metastore.api.Partition;
-import org.apache.hadoop.hive.metastore.events.AddPartitionEvent;
-
-import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
-
-public class SerializableApiaryAddPartitionEvent extends SerializableListenerEvent {
+public class DropPartitionEvent extends ListenerEvent {
   private static final long serialVersionUID = 1L;
 
   private String protocolVersion;
@@ -36,26 +27,7 @@ public class SerializableApiaryAddPartitionEvent extends SerializableListenerEve
   private Map<String, String> partitionKeys;
   private List<String> partitionValues;
 
-  SerializableApiaryAddPartitionEvent() {}
-
-  public SerializableApiaryAddPartitionEvent(AddPartitionEvent event) {
-    super(event);
-    dbName = event.getTable().getDbName();
-    tableName = event.getTable().getTableName();
-    partitionKeys = new LinkedHashMap<>();
-    partitionValues = new ArrayList<>();
-
-    Iterator<Partition> iterator = event.getPartitionIterator();
-
-    // there will be only one partition in one event from Apiary
-    while (iterator.hasNext()) {
-      Partition partition = iterator.next();
-      for (FieldSchema fieldSchema : event.getTable().getPartitionKeys()) {
-        partitionKeys.put(fieldSchema.getName(), fieldSchema.getType());
-      }
-      partitionValues = partition.getValues();
-    }
-  }
+  DropPartitionEvent() {}
 
   public String getProtocolVersion() {
     return protocolVersion;

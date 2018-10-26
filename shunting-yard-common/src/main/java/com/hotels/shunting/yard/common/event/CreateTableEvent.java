@@ -13,18 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.shunting.yard.common.io.java;
+package com.hotels.shunting.yard.common.event;
 
-import com.hotels.shunting.yard.common.io.AbstractMetaStoreEventSerDeTest;
-import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
+public class CreateTableEvent extends ListenerEvent {
+  private static final long serialVersionUID = 1L;
 
-public class JavaMetaStoreEventSerDeTest extends AbstractMetaStoreEventSerDeTest {
+  private String protocolVersion;
+  private String dbName;
+  private String tableName;
 
-  private final JavaMetaStoreEventSerDe serDe = new JavaMetaStoreEventSerDe();
+  CreateTableEvent() {}
+
+  public String getProtocolVersion() {
+    return protocolVersion;
+  }
 
   @Override
-  protected MetaStoreEventSerDe serDe() {
-    return serDe;
+  public String getDbName() {
+    return dbName;
+  }
+
+  @Override
+  public String getTableName() {
+    return tableName;
   }
 
 }

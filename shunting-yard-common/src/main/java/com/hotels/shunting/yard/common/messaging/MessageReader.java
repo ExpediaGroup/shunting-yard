@@ -18,11 +18,11 @@ package com.hotels.shunting.yard.common.messaging;
 import java.io.Closeable;
 import java.util.Iterator;
 
-import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
+import com.hotels.shunting.yard.common.event.ListenerEvent;
 
 /**
  * A {@code MessageReader} is in charge of retrieving events from the messaging infrastructure.
  */
-public interface MessageReader extends Iterator<SerializableListenerEvent>, Closeable {
+public interface MessageReader extends Iterator<ListenerEvent>, Closeable {
 
 }

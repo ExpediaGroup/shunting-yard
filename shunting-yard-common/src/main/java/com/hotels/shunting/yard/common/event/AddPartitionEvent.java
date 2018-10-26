@@ -13,35 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.shunting.yard.common.event.apiary;
+package com.hotels.shunting.yard.common.event;
 
 import java.util.List;
 import java.util.Map;
 
-import org.apache.hadoop.hive.metastore.events.InsertEvent;
-
-import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
-
-public class SerializableApiaryInsertTableEvent extends SerializableListenerEvent {
+public class AddPartitionEvent extends ListenerEvent {
   private static final long serialVersionUID = 1L;
 
   private String protocolVersion;
   private String dbName;
   private String tableName;
-  private List<String> files;
-  private List<String> fileChecksums;
-  private Map<String, String> partitionKeyValues;
+  private Map<String, String> partitionKeys;
+  private List<String> partitionValues;
 
-  SerializableApiaryInsertTableEvent() {}
-
-  public SerializableApiaryInsertTableEvent(InsertEvent event) {
-    super(event);
-    dbName = event.getDb();
-    tableName = event.getTable();
-    files = event.getFiles();
-    fileChecksums = event.getFileChecksums();
-    partitionKeyValues = event.getPartitionKeyValues();
-  }
+  AddPartitionEvent() {}
 
   public String getProtocolVersion() {
     return protocolVersion;
@@ -57,16 +43,12 @@ public class SerializableApiaryInsertTableEvent extends SerializableListenerEven
     return tableName;
   }
 
-  public List<String> getFiles() {
-    return files;
+  public Map<String, String> getPartitionKeys() {
+    return partitionKeys;
   }
 
-  public List<String> getFileChecksums() {
-    return fileChecksums;
-  }
-
-  public Map<String, String> getPartitionKeyValues() {
-    return partitionKeyValues;
+  public List<String> getPartitionValues() {
+    return partitionValues;
   }
 
 }

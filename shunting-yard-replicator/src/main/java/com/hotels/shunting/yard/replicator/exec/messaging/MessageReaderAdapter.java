@@ -21,11 +21,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.hotels.shunting.yard.common.event.EventType;
-import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
-import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryAddPartitionEvent;
-import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryAlterPartitionEvent;
-import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryDropPartitionEvent;
-import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryInsertTableEvent;
+import com.hotels.shunting.yard.common.event.AddPartitionEvent;
+import com.hotels.shunting.yard.common.event.AlterPartitionEvent;
+import com.hotels.shunting.yard.common.event.DropPartitionEvent;
+import com.hotels.shunting.yard.common.event.InsertTableEvent;
+import com.hotels.shunting.yard.common.event.ListenerEvent;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 
@@ -54,7 +54,7 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
     return map(messageReader.next());
   }
 
-  private MetaStoreEvent map(SerializableListenerEvent listenerEvent) {
+  private MetaStoreEvent map(ListenerEvent listenerEvent) {
     MetaStoreEvent.Builder builder = MetaStoreEvent
         .builder(listenerEvent.getEventType(), listenerEvent.getDbName(), listenerEvent.getTableName())
         .parameters(listenerEvent.getParameters())
@@ -67,26 +67,26 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
 
     switch (eventType) {
     case ADD_PARTITION: {
-      SerializableApiaryAddPartitionEvent addPartition = (SerializableApiaryAddPartitionEvent) listenerEvent;
+      AddPartitionEvent addPartition = (AddPartitionEvent) listenerEvent;
       builder.partitionColumns(new ArrayList<>(addPartition.getPartitionKeys().keySet()));
       builder.partitionValues(addPartition.getPartitionValues());
       break;
     }
     case ALTER_PARTITION: {
-      SerializableApiaryAlterPartitionEvent alterPartition = (SerializableApiaryAlterPartitionEvent) listenerEvent;
+      AlterPartitionEvent alterPartition = (AlterPartitionEvent) listenerEvent;
       builder.partitionColumns(new ArrayList<>(alterPartition.getPartitionKeys().keySet()));
       builder.partitionValues(alterPartition.getPartitionValues());
       break;
     }
     case DROP_PARTITION: {
-      SerializableApiaryDropPartitionEvent dropPartition = (SerializableApiaryDropPartitionEvent) listenerEvent;
+      DropPartitionEvent dropPartition = (DropPartitionEvent) listenerEvent;
       builder.partitionColumns(new ArrayList<>(dropPartition.getPartitionKeys().keySet()));
       builder.partitionValues(dropPartition.getPartitionValues());
       builder.deleteData(true);
       break;
     }
     case INSERT: {
-      SerializableApiaryInsertTableEvent insertTable = (SerializableApiaryInsertTableEvent) listenerEvent;
+      InsertTableEvent insertTable = (InsertTableEvent) listenerEvent;
       builder.partitionColumns(new ArrayList<>(insertTable.getPartitionKeyValues().keySet()));
       builder.partitionValues(new ArrayList<>(insertTable.getPartitionKeyValues().values()));
       break;

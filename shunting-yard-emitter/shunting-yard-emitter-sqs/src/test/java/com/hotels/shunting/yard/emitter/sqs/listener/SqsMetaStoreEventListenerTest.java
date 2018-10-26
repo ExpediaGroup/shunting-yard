@@ -49,15 +49,15 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
+import com.hotels.shunting.yard.common.event.SerializableApiaryAddPartitionEvent;
+import com.hotels.shunting.yard.common.event.SerializableApiaryAlterPartitionEvent;
+import com.hotels.shunting.yard.common.event.SerializableApiaryAlterTableEvent;
+import com.hotels.shunting.yard.common.event.SerializableApiaryCreateTableEvent;
+import com.hotels.shunting.yard.common.event.SerializableApiaryDropPartitionEvent;
+import com.hotels.shunting.yard.common.event.SerializableApiaryDropTableEvent;
+import com.hotels.shunting.yard.common.event.SerializableApiaryInsertTableEvent;
 import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 import com.hotels.shunting.yard.common.event.SerializableListenerEventFactory;
-import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryAddPartitionEvent;
-import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryAlterPartitionEvent;
-import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryAlterTableEvent;
-import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryCreateTableEvent;
-import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryDropPartitionEvent;
-import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryDropTableEvent;
-import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryInsertTableEvent;
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 import com.hotels.shunting.yard.common.messaging.Message;
 import com.hotels.shunting.yard.common.messaging.MessageTask;
@@ -68,7 +68,7 @@ public class SqsMetaStoreEventListenerTest {
 
   private static final String DATABASE = "db";
   private static final String TABLE = "tbl";
-  private static final byte[] PAYLOAD = "payload".getBytes();
+  private static final String PAYLOAD = "payload";
 
   private @Mock MetaStoreEventSerDe eventSerDe;
   private @Mock MessageTask messageTask;

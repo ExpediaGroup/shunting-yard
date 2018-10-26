@@ -18,7 +18,7 @@ package com.hotels.shunting.yard.common.io;
 import org.apache.hadoop.hive.metastore.api.MetaException;
 
 import com.hotels.shunting.yard.common.ShuntingYardException;
-import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
+import com.hotels.shunting.yard.common.event.ListenerEvent;
 
 public interface MetaStoreEventSerDe {
 
@@ -31,8 +31,8 @@ public interface MetaStoreEventSerDe {
     }
   }
 
-  byte[] marshal(SerializableListenerEvent listenerEvent) throws MetaException;
+  String marshal(ListenerEvent listenerEvent) throws MetaException;
 
-  <T extends SerializableListenerEvent> T unmarshal(byte[] payload) throws MetaException;
+  <T extends ListenerEvent> T unmarshal(String payload) throws MetaException;
 
 }

@@ -16,44 +16,32 @@
 package com.hotels.shunting.yard.common.event;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.annotation.concurrent.NotThreadSafe;
-
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.hadoop.hive.metastore.api.EnvironmentContext;
-import org.apache.hadoop.hive.metastore.events.ListenerEvent;
 
-/**
- * @see {@link ListenerEvent}
- */
-@NotThreadSafe
-public abstract class SerializableListenerEvent implements Serializable {
+public abstract class ListenerEvent implements Serializable {
   private static final long serialVersionUID = 1L;
 
   /**
    * Status of the event in {@link ListenerEvent}
    */
-  private boolean status;
+  private final boolean status = true;
 
   /**
    * Unmodifiable parameters in {@link ListenerEvent}
    */
-  private Map<String, String> parameters;
+  private final Map<String, String> parameters = new HashMap<>();
 
   /**
    * Properties passed by the client, to be used in execution hooks. EnvironmentContext in {@link ListenerEvent}
    */
   private EnvironmentContext environmentContext;
 
-  protected SerializableListenerEvent() {}
-
-  protected SerializableListenerEvent(ListenerEvent event) {
-    status = event.getStatus();
-    parameters = event.getParameters();
-    environmentContext = event.getEnvironmentContext();
-  }
+  protected ListenerEvent() {}
 
   public EventType getEventType() {
     return EventType.forClass(this.getClass());
@@ -84,10 +72,10 @@ public abstract class SerializableListenerEvent implements Serializable {
     if (this == obj) {
       return true;
     }
-    if (!(obj instanceof SerializableListenerEvent)) {
+    if (!(obj instanceof ListenerEvent)) {
       return false;
     }
-    SerializableListenerEvent other = (SerializableListenerEvent) obj;
+    ListenerEvent other = (ListenerEvent) obj;
     return Objects.equals(status, other.status)
         && Objects.equals(parameters, other.parameters)
         && Objects.equals(getEnvironmentContext(), other.getEnvironmentContext());

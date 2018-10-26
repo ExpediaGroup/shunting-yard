@@ -13,21 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.shunting.yard.receiver.sqs.messaging;
+package com.hotels.shunting.yard.common.event;
 
-import com.amazonaws.services.sqs.model.Message;
+public class AlterTableEvent extends ListenerEvent {
+  private static final long serialVersionUID = 1L;
 
-public interface MessageDecoder {
+  private String protocolVersion;
+  private String dbName;
+  private String tableName;
+  private String oldTableName;
 
-  public static final MessageDecoder DEFAULT = new MessageDecoder() {
+  AlterTableEvent() {}
 
-    @Override
-    public byte[] decode(Message message) {
-      return message.getBody().getBytes();
-    }
+  public String getProtocolVersion() {
+    return protocolVersion;
+  }
 
-  };
+  @Override
+  public String getDbName() {
+    return dbName;
+  }
 
-  byte[] decode(Message message);
+  @Override
+  public String getTableName() {
+    return tableName;
+  }
+
+  public String getOldTableName() {
+    return oldTableName;
+  }
 
 }

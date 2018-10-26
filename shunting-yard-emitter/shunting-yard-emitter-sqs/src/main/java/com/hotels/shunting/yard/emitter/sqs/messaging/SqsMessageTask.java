@@ -29,7 +29,7 @@ class SqsMessageTask implements MessageTask {
 
   private final AmazonSQS producer;
   private final String topic;
-  private final byte[] payload;
+  private final String payload;
 
   SqsMessageTask(AmazonSQS producer, String topic, Message message) {
     this.producer = producer;
@@ -40,9 +40,7 @@ class SqsMessageTask implements MessageTask {
   @Override
   public void run() {
     LOG.info("Sending message to topic {}", topic);
-    producer
-        .sendMessage(
-            new SendMessageRequest().withQueueUrl(topic).withMessageBody(new String(payload)).withDelaySeconds(0));
+    producer.sendMessage(new SendMessageRequest().withQueueUrl(topic).withMessageBody(payload).withDelaySeconds(0));
   }
 
 }

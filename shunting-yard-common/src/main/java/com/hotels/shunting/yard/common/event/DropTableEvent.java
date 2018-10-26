@@ -13,26 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.shunting.yard.common.event.apiary;
+package com.hotels.shunting.yard.common.event;
 
-import org.apache.hadoop.hive.metastore.events.CreateTableEvent;
-
-import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
-
-public class SerializableApiaryCreateTableEvent extends SerializableListenerEvent {
+public class DropTableEvent extends ListenerEvent {
   private static final long serialVersionUID = 1L;
 
   private String protocolVersion;
   private String dbName;
   private String tableName;
 
-  SerializableApiaryCreateTableEvent() {}
-
-  public SerializableApiaryCreateTableEvent(CreateTableEvent event) {
-    super(event);
-    dbName = event.getTable().getDbName();
-    tableName = event.getTable().getTableName();
-  }
+  DropTableEvent() {}
 
   public String getProtocolVersion() {
     return protocolVersion;

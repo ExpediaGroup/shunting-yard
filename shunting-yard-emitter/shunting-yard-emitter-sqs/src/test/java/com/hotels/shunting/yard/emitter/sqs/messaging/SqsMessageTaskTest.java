@@ -35,7 +35,7 @@ import com.hotels.shunting.yard.common.messaging.Message;
 public class SqsMessageTaskTest {
 
   private static final String TOPIC_URL = "topic";
-  private static final byte[] PAYLOAD = "payload".getBytes();
+  private static final String PAYLOAD = "payload";
 
   private @Mock AmazonSQS producer;
   private @Mock Message message;

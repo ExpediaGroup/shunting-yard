@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.shunting.yard.receiver.sqs.messaging;
+package com.hotels.shunting.yard.common.io.jackson;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,33 +21,27 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.hadoop.hive.metastore.api.FieldSchema;
-import org.apache.hadoop.hive.metastore.api.MetaException;
 import org.apache.hadoop.hive.metastore.api.Table;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import com.amazonaws.services.sqs.model.Message;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
+import com.hotels.shunting.yard.common.event.AddPartitionEvent;
+import com.hotels.shunting.yard.common.event.AlterPartitionEvent;
+import com.hotels.shunting.yard.common.event.CreateTableEvent;
+import com.hotels.shunting.yard.common.event.DropPartitionEvent;
+import com.hotels.shunting.yard.common.event.DropTableEvent;
 import com.hotels.shunting.yard.common.event.EventType;
-import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
-import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryAddPartitionEvent;
-import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryAlterPartitionEvent;
-import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryCreateTableEvent;
-import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryDropPartitionEvent;
-import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryDropTableEvent;
-import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryInsertTableEvent;
-import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
-import com.hotels.shunting.yard.common.io.jackson.ApiarySqsMessageSerDe;
-import com.hotels.shunting.yard.common.io.jackson.JsonMetaStoreEventSerDe;
-import com.hotels.shunting.yard.common.io.jackson.SqsMessage;
+import com.hotels.shunting.yard.common.event.InsertTableEvent;
+import com.hotels.shunting.yard.common.event.ListenerEvent;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SerDeWithJsonInputTest {
-  private final MetaStoreEventSerDe jsonSerDe = new JsonMetaStoreEventSerDe();
-  private final ApiarySqsMessageSerDe serDe = new ApiarySqsMessageSerDe(jsonSerDe);
+  private final JsonMetaStoreEventDeserializer jsonSerDe = new JsonMetaStoreEventDeserializer();
+  private final ApiarySqsMessageDeserializer serDe = new ApiarySqsMessageDeserializer(jsonSerDe);
 
   private final static String BASE_EVENT_FROM_SNS = "{"
       + "  \"Type\" : \"Notification\","
@@ -77,8 +71,6 @@ public class SerDeWithJsonInputTest {
   private Table table;
   private List<FieldSchema> partitionKeys;
 
-  private final MessageDecoder decoder = MessageDecoder.DEFAULT;
-
   public void init() {
     table = new Table();
 
@@ -94,9 +86,8 @@ public class SerDeWithJsonInputTest {
 
   @Test
   public void addPartitionEvent() throws Exception {
-    Message message = new Message().withBody(getSnsMessage(ADD_PARTITION_EVENT));
-    SerializableListenerEvent processedEvent = serDe.unmarshal(decoder.decode(message));
-    SerializableApiaryAddPartitionEvent addPartitionEvent = (SerializableApiaryAddPartitionEvent) processedEvent;
+    ListenerEvent processedEvent = serDe.unmarshal(getSnsMessage(ADD_PARTITION_EVENT));
+    AddPartitionEvent addPartitionEvent = (AddPartitionEvent) processedEvent;
 
     assertThat(addPartitionEvent.getDbName()).isEqualTo(TEST_DB);
     assertThat(addPartitionEvent.getTableName()).isEqualTo(TEST_TABLE);
@@ -108,9 +99,8 @@ public class SerDeWithJsonInputTest {
 
   @Test
   public void alterPartitionEvent() throws Exception {
-    Message message = new Message().withBody(getSnsMessage(ALTER_PARTITION_EVENT));
-    SerializableListenerEvent processedEvent = serDe.unmarshal(decoder.decode(message));
-    SerializableApiaryAlterPartitionEvent alterPartitionEvent = (SerializableApiaryAlterPartitionEvent) processedEvent;
+    ListenerEvent processedEvent = serDe.unmarshal(getSnsMessage(ALTER_PARTITION_EVENT));
+    AlterPartitionEvent alterPartitionEvent = (AlterPartitionEvent) processedEvent;
 
     assertThat(alterPartitionEvent.getDbName()).isEqualTo(TEST_DB);
     assertThat(alterPartitionEvent.getTableName()).isEqualTo(TEST_TABLE);
@@ -124,9 +114,8 @@ public class SerDeWithJsonInputTest {
 
   @Test
   public void dropPartitionEvent() throws Exception {
-    Message message = new Message().withBody(getSnsMessage(DROP_PARTITION_EVENT));
-    SerializableListenerEvent processedEvent = serDe.unmarshal(decoder.decode(message));
-    SerializableApiaryDropPartitionEvent dropPartitionEvent = (SerializableApiaryDropPartitionEvent) processedEvent;
+    ListenerEvent processedEvent = serDe.unmarshal(getSnsMessage(DROP_PARTITION_EVENT));
+    DropPartitionEvent dropPartitionEvent = (DropPartitionEvent) processedEvent;
 
     assertThat(dropPartitionEvent.getDbName()).isEqualTo(TEST_DB);
     assertThat(dropPartitionEvent.getTableName()).isEqualTo(TEST_TABLE);
@@ -138,9 +127,8 @@ public class SerDeWithJsonInputTest {
 
   @Test
   public void createTableEvent() throws Exception {
-    Message message = new Message().withBody(getSnsMessage(CREATE_TABLE_EVENT));
-    SerializableListenerEvent processedEvent = serDe.unmarshal(decoder.decode(message));
-    SerializableApiaryCreateTableEvent createTableEvent = (SerializableApiaryCreateTableEvent) processedEvent;
+    ListenerEvent processedEvent = serDe.unmarshal(getSnsMessage(CREATE_TABLE_EVENT));
+    CreateTableEvent createTableEvent = (CreateTableEvent) processedEvent;
 
     assertThat(createTableEvent.getDbName()).isEqualTo(TEST_DB);
     assertThat(createTableEvent.getTableName()).isEqualTo(TEST_TABLE);
@@ -154,9 +142,8 @@ public class SerDeWithJsonInputTest {
     List<String> expectedFileChecksums = ImmutableList.of("123", "456");
     Map<String, String> PARTITION_KEY_VALUE_MAP = ImmutableMap.of("col_1", "val_1", "col_2", "val_2", "col_3", "val_3");
 
-    Message message = new Message().withBody(getSnsMessage(INSERT_EVENT));
-    SerializableListenerEvent processedEvent = serDe.unmarshal(decoder.decode(message));
-    SerializableApiaryInsertTableEvent insertTableEvent = (SerializableApiaryInsertTableEvent) processedEvent;
+    ListenerEvent processedEvent = serDe.unmarshal(getSnsMessage(INSERT_EVENT));
+    InsertTableEvent insertTableEvent = (InsertTableEvent) processedEvent;
 
     assertThat(insertTableEvent.getDbName()).isEqualTo(TEST_DB);
     assertThat(insertTableEvent.getTableName()).isEqualTo(TEST_TABLE);
@@ -170,22 +157,13 @@ public class SerDeWithJsonInputTest {
 
   @Test
   public void dropTableEvent() throws Exception {
-    Message message = new Message().withBody(getSnsMessage(DROP_TABLE_EVENT));
-    SerializableListenerEvent processedEvent = serDe.unmarshal(decoder.decode(message));
-    SerializableApiaryDropTableEvent dropTableEvent = (SerializableApiaryDropTableEvent) processedEvent;
+    ListenerEvent processedEvent = serDe.unmarshal(getSnsMessage(DROP_TABLE_EVENT));
+    DropTableEvent dropTableEvent = (DropTableEvent) processedEvent;
 
     assertThat(dropTableEvent.getDbName()).isEqualTo(TEST_DB);
     assertThat(dropTableEvent.getTableName()).isEqualTo(TEST_TABLE);
     assertThat(dropTableEvent.getProtocolVersion()).isEqualTo("1.0");
     assertThat(dropTableEvent.getEventType()).isEqualTo(EventType.DROP_TABLE);
-  }
-
-  @Test
-  public void marshalTest() throws MetaException {
-    SqsMessage sqsMessage = new SqsMessage("notification", "test_id", "test_arn", "message", "timestamp",
-        "signature_version", "signature", "signature_cert_url", "unsubscribe_url");
-    String expectedJson = "{\"Type\":\"notification\",\"MessageId\":\"test_id\",\"TopicArn\":\"test_arn\",\"Message\":\"message\",\"Timestamp\":\"timestamp\",\"SignatureVersion\":\"signature_version\",\"Signature\":\"signature\",\"SigningCertURL\":\"signature_cert_url\",\"UnsubscribeURL\":\"unsubscribe_url\"}";
-    assertThat(expectedJson.getBytes()).isEqualTo(serDe.marshal(sqsMessage));
   }
 
   private String getSnsMessage(String eventMessage) {

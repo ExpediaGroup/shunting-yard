@@ -39,13 +39,13 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 import com.hotels.shunting.yard.common.event.EventType;
-import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
-import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryAddPartitionEvent;
-import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryAlterPartitionEvent;
-import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryCreateTableEvent;
-import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryDropPartitionEvent;
-import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryDropTableEvent;
-import com.hotels.shunting.yard.common.event.apiary.SerializableApiaryInsertTableEvent;
+import com.hotels.shunting.yard.common.event.AddPartitionEvent;
+import com.hotels.shunting.yard.common.event.AlterPartitionEvent;
+import com.hotels.shunting.yard.common.event.CreateTableEvent;
+import com.hotels.shunting.yard.common.event.DropPartitionEvent;
+import com.hotels.shunting.yard.common.event.DropTableEvent;
+import com.hotels.shunting.yard.common.event.InsertTableEvent;
+import com.hotels.shunting.yard.common.event.ListenerEvent;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 
@@ -63,12 +63,12 @@ public class MessageReaderAdapterTest {
 
   private MessageReaderAdapter messageReaderAdapter;
 
-  private @Mock SerializableApiaryAddPartitionEvent addApiaryPartitionEvent;
-  private @Mock SerializableApiaryAlterPartitionEvent alterApiaryPartitionEvent;
-  private @Mock SerializableApiaryDropPartitionEvent dropApiaryPartitionEvent;
-  private @Mock SerializableApiaryCreateTableEvent createApiaryTableEvent;
-  private @Mock SerializableApiaryInsertTableEvent insertApiaryTableEvent;
-  private @Mock SerializableApiaryDropTableEvent dropApiaryTableEvent;
+  private @Mock AddPartitionEvent addApiaryPartitionEvent;
+  private @Mock AlterPartitionEvent alterApiaryPartitionEvent;
+  private @Mock DropPartitionEvent dropApiaryPartitionEvent;
+  private @Mock CreateTableEvent createApiaryTableEvent;
+  private @Mock InsertTableEvent insertApiaryTableEvent;
+  private @Mock DropTableEvent dropApiaryTableEvent;
 
   private @Mock MessageReader messageReader;
   private @Mock Partition partition;
@@ -228,7 +228,7 @@ public class MessageReaderAdapterTest {
     verify(messageReader).close();
   }
 
-  private void configureMockedEvent(SerializableListenerEvent serializableListenerEvent) {
+  private void configureMockedEvent(ListenerEvent serializableListenerEvent) {
     when(serializableListenerEvent.getDbName()).thenReturn(TEST_DB);
     when(serializableListenerEvent.getTableName()).thenReturn(TEST_TABLE);
   }
