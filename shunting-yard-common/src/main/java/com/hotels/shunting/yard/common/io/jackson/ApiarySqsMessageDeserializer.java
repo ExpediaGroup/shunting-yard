@@ -39,7 +39,6 @@ public class ApiarySqsMessageDeserializer {
 
   public <T extends ListenerEvent> T unmarshal(String payload) throws ShuntingYardException {
     try {
-      System.out.println("Event: " + payload);
       log.debug("Unmarshalled payload is: {}", payload);
       SqsMessage sqsMessage = mapper.readerFor(SqsMessage.class).readValue(payload);
       T event = delegateSerDe.unmarshal(sqsMessage.getMessage());
