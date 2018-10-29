@@ -20,8 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.hadoop.hive.metastore.api.FieldSchema;
-import org.apache.hadoop.hive.metastore.api.Table;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -39,9 +37,10 @@ import com.hotels.shunting.yard.common.event.InsertTableEvent;
 import com.hotels.shunting.yard.common.event.ListenerEvent;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SerDeWithJsonInputTest {
-  private final JsonMetaStoreEventDeserializer jsonSerDe = new JsonMetaStoreEventDeserializer();
-  private final ApiarySqsMessageDeserializer serDe = new ApiarySqsMessageDeserializer(jsonSerDe);
+public class DeserializerWithJsonInputTest {
+  private final JsonMetaStoreEventDeserializer metaStoreEventDeserializer = new JsonMetaStoreEventDeserializer();
+  private final ApiarySqsMessageDeserializer sqsDeserializer = new ApiarySqsMessageDeserializer(
+      metaStoreEventDeserializer);
 
   private final static String BASE_EVENT_FROM_SNS = "{"
       + "  \"Type\" : \"Notification\","
@@ -68,25 +67,9 @@ public class SerDeWithJsonInputTest {
   private final static String TEST_DB = "some_db";
   private final static String TEST_TABLE = "some_table";
 
-  private Table table;
-  private List<FieldSchema> partitionKeys;
-
-  public void init() {
-    table = new Table();
-
-    FieldSchema partitionColumn1 = new FieldSchema("col_1", "String", "");
-    FieldSchema partitionColumn2 = new FieldSchema("col_2", "String", "");
-    FieldSchema partitionColumn3 = new FieldSchema("col_3", "String", "");
-    partitionKeys = ImmutableList.of(partitionColumn1, partitionColumn2, partitionColumn3);
-
-    table.setDbName(TEST_DB);
-    table.setTableName(TEST_TABLE);
-    table.setPartitionKeys(partitionKeys);
-  }
-
   @Test
   public void addPartitionEvent() throws Exception {
-    ListenerEvent processedEvent = serDe.unmarshal(getSnsMessage(ADD_PARTITION_EVENT));
+    ListenerEvent processedEvent = sqsDeserializer.unmarshal(getSnsMessage(ADD_PARTITION_EVENT));
     AddPartitionEvent addPartitionEvent = (AddPartitionEvent) processedEvent;
 
     assertThat(addPartitionEvent.getDbName()).isEqualTo(TEST_DB);
@@ -99,7 +82,7 @@ public class SerDeWithJsonInputTest {
 
   @Test
   public void alterPartitionEvent() throws Exception {
-    ListenerEvent processedEvent = serDe.unmarshal(getSnsMessage(ALTER_PARTITION_EVENT));
+    ListenerEvent processedEvent = sqsDeserializer.unmarshal(getSnsMessage(ALTER_PARTITION_EVENT));
     AlterPartitionEvent alterPartitionEvent = (AlterPartitionEvent) processedEvent;
 
     assertThat(alterPartitionEvent.getDbName()).isEqualTo(TEST_DB);
@@ -114,7 +97,7 @@ public class SerDeWithJsonInputTest {
 
   @Test
   public void dropPartitionEvent() throws Exception {
-    ListenerEvent processedEvent = serDe.unmarshal(getSnsMessage(DROP_PARTITION_EVENT));
+    ListenerEvent processedEvent = sqsDeserializer.unmarshal(getSnsMessage(DROP_PARTITION_EVENT));
     DropPartitionEvent dropPartitionEvent = (DropPartitionEvent) processedEvent;
 
     assertThat(dropPartitionEvent.getDbName()).isEqualTo(TEST_DB);
@@ -127,7 +110,7 @@ public class SerDeWithJsonInputTest {
 
   @Test
   public void createTableEvent() throws Exception {
-    ListenerEvent processedEvent = serDe.unmarshal(getSnsMessage(CREATE_TABLE_EVENT));
+    ListenerEvent processedEvent = sqsDeserializer.unmarshal(getSnsMessage(CREATE_TABLE_EVENT));
     CreateTableEvent createTableEvent = (CreateTableEvent) processedEvent;
 
     assertThat(createTableEvent.getDbName()).isEqualTo(TEST_DB);
@@ -142,7 +125,7 @@ public class SerDeWithJsonInputTest {
     List<String> expectedFileChecksums = ImmutableList.of("123", "456");
     Map<String, String> PARTITION_KEY_VALUE_MAP = ImmutableMap.of("col_1", "val_1", "col_2", "val_2", "col_3", "val_3");
 
-    ListenerEvent processedEvent = serDe.unmarshal(getSnsMessage(INSERT_EVENT));
+    ListenerEvent processedEvent = sqsDeserializer.unmarshal(getSnsMessage(INSERT_EVENT));
     InsertTableEvent insertTableEvent = (InsertTableEvent) processedEvent;
 
     assertThat(insertTableEvent.getDbName()).isEqualTo(TEST_DB);
@@ -157,7 +140,7 @@ public class SerDeWithJsonInputTest {
 
   @Test
   public void dropTableEvent() throws Exception {
-    ListenerEvent processedEvent = serDe.unmarshal(getSnsMessage(DROP_TABLE_EVENT));
+    ListenerEvent processedEvent = sqsDeserializer.unmarshal(getSnsMessage(DROP_TABLE_EVENT));
     DropTableEvent dropTableEvent = (DropTableEvent) processedEvent;
 
     assertThat(dropTableEvent.getDbName()).isEqualTo(TEST_DB);

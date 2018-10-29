@@ -17,11 +17,8 @@ package com.hotels.shunting.yard.common.io.jackson;
 
 import java.io.Serializable;
 
-import javax.annotation.concurrent.NotThreadSafe;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@NotThreadSafe
 public class SqsMessage implements Serializable {
   private static final long serialVersionUID = 1L;
 
