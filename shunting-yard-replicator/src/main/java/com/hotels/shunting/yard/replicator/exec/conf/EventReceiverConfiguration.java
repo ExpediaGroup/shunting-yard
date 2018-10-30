@@ -15,11 +15,7 @@
  */
 package com.hotels.shunting.yard.replicator.exec.conf;
 
-import static com.hotels.shunting.yard.replicator.exec.conf.SerDeType.JSON;
-
 import java.util.Map;
-
-import javax.validation.constraints.NotNull;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -31,8 +27,7 @@ import com.hotels.shunting.yard.receiver.sqs.messaging.SqsMessageReaderFactory;
 public class EventReceiverConfiguration {
 
   private Map<String, String> configurationProperties;
-  private @NotNull String messageReaderFactoryClass = SqsMessageReaderFactory.class.getName();
-  private @NotNull SerDeType serDeType = JSON;
+  private String messageReaderFactoryClass = SqsMessageReaderFactory.class.getName();
 
   public Map<String, String> getConfigurationProperties() {
     return configurationProperties;
@@ -48,14 +43,6 @@ public class EventReceiverConfiguration {
 
   public void setMessageReaderClass(String messageReaderFactoryClass) {
     this.messageReaderFactoryClass = messageReaderFactoryClass;
-  }
-
-  public SerDeType getSerDeType() {
-    return serDeType;
-  }
-
-  public void setSerDeType(SerDeType serDeType) {
-    this.serDeType = serDeType;
   }
 
 }

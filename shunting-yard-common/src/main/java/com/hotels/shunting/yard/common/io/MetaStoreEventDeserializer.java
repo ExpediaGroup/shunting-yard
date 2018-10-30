@@ -19,16 +19,6 @@ import com.hotels.shunting.yard.common.ShuntingYardException;
 import com.hotels.shunting.yard.common.event.ListenerEvent;
 
 public interface MetaStoreEventDeserializer {
-
-  static <T extends MetaStoreEventDeserializer> T serDeForClassName(String className) {
-    try {
-      Class<T> clazz = (Class<T>) Class.forName(className);
-      return clazz.newInstance();
-    } catch (Exception e) {
-      throw new ShuntingYardException("Unable to instantiate MetaStoreEventSerDe of class " + className, e);
-    }
-  }
-
   <T extends ListenerEvent> T unmarshal(String payload) throws ShuntingYardException;
 
 }

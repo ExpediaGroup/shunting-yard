@@ -43,6 +43,7 @@ import com.hotels.hcommon.hive.metastore.client.closeable.CloseableMetaStoreClie
 import com.hotels.hcommon.hive.metastore.conf.HiveConfFactory;
 import com.hotels.shunting.yard.common.io.MetaStoreEventDeserializer;
 import com.hotels.shunting.yard.common.io.jackson.ApiarySqsMessageDeserializer;
+import com.hotels.shunting.yard.common.io.jackson.JsonMetaStoreEventDeserializer;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
 import com.hotels.shunting.yard.common.messaging.MessageReaderFactory;
 import com.hotels.shunting.yard.replicator.exec.conf.EventReceiverConfiguration;
@@ -123,8 +124,8 @@ public class CommonBeans {
   }
 
   @Bean
-  MetaStoreEventDeserializer metaStoreEventSerDe(EventReceiverConfiguration messageReaderConfig) {
-    return messageReaderConfig.getSerDeType().instantiate();
+  MetaStoreEventDeserializer metaStoreEventSerDe() {
+    return new JsonMetaStoreEventDeserializer();
   }
 
   @Bean

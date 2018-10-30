@@ -29,7 +29,7 @@ import com.hotels.shunting.yard.common.io.MetaStoreEventDeserializer;
 public class ApiarySqsMessageDeserializer {
   private static final Logger log = LoggerFactory.getLogger(ApiarySqsMessageDeserializer.class);
 
-  private final ObjectMapper mapper = new ObjectMapper();;
+  private final ObjectMapper mapper = new ObjectMapper();
   private final MetaStoreEventDeserializer delegateSerDe;
 
   public ApiarySqsMessageDeserializer(MetaStoreEventDeserializer delegateSerDe) {

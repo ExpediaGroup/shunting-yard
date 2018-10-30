@@ -44,13 +44,13 @@ public class DeserializerWithJsonInputTest {
 
   private final static String BASE_EVENT_FROM_SNS = "{"
       + "  \"Type\" : \"Notification\","
-      + "  \"MessageId\" : \"9b0f34bc-ae00-57c4-97a0-60f5b002b3d0\","
-      + "  \"TopicArn\" : \"arn:aws:sns:us-west-2:440407435941:abhimanyu-sns-test\","
+      + "  \"MessageId\" : \"message-id\","
+      + "  \"TopicArn\" : \"arn:aws:sns:us-west-2:sns-topic\","
       + "  \"Timestamp\" : \"2018-10-23T13:01:54.507Z\","
       + "  \"SignatureVersion\" : \"1\","
-      + "  \"Signature\" : \"P9vAm5YsTRZkQOcgJ5YEkyTAwppGE8G8Y018RMUMLFiRpsSTJ+DGErNiMwz+qUv4RyBg3yEnwK0Nc+OTAcgkc9RARLN0OpoWG7cYt+N/m6orrDqe33EA7krocYiO+a6+lVu3/oNVUZVvBZ+mahizSRRnCzVaJszFhvpPS3rYCfssI/1zpx9s6gMpUehpU7ZK7DCTvG7zsfYIUO1Df/mMdESrO19pVOfYjVavk6K3nU+y+1TmDduEcBaUFzOLmTRAxprgmoq1JrTJMl0V5TOkMdWFn3+hzx/5q82RDQdmAVVKZWy/nfiuwB/S5YZOJywP6EaudaX1wgwpdhE0RTqVXQ==\","
-      + "  \"SigningCertURL\" : \"https://sns.us-west-2.amazonaws.com/SimpleNotificationService-ac565b8b1a6c5d002d285f9598aa1d9b.pem\","
-      + "  \"UnsubscribeURL\" : \"https://sns.us-west-2.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:us-west-2:440407435941:abhimanyu-sns-test:fc4bd684-c38b-4eaf-a718-fac879c6a996\",";
+      + "  \"Signature\" : \"signature\","
+      + "  \"SigningCertURL\" : \"https://sns.us-west-2.amazonaws.com/SimpleNotificationService-xxxx\","
+      + "  \"UnsubscribeURL\" : \"https://sns.us-west-2.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:us-west-2:440407435941:sns-topic\",";
 
   private final static String ADD_PARTITION_EVENT = "\"Message\" : \"{\\\"protocolVersion\\\":\\\"1.0\\\",\\\"eventType\\\":\\\"ADD_PARTITION\\\",\\\"dbName\\\":\\\"some_db\\\",\\\"tableName\\\":\\\"some_table\\\",\\\"partitionKeys\\\":{\\\"col_1\\\": \\\"string\\\", \\\"col_2\\\": \\\"integer\\\",\\\"col_3\\\": \\\"string\\\"},\\\"partitionValues\\\":[\\\"val_1\\\", \\\"val_2\\\", \\\"val_3\\\"]}\"";
   private final static String ALTER_PARTITION_EVENT = "\"Message\" : \"{\\\"protocolVersion\\\":\\\"1.0\\\",\\\"eventType\\\":\\\"ALTER_PARTITION\\\",\\\"dbName\\\":\\\"some_db\\\",\\\"tableName\\\":\\\"some_table\\\",\\\"partitionKeys\\\": {\\\"col_1\\\": \\\"string\\\", \\\"col_2\\\": \\\"integer\\\",\\\"col_3\\\": \\\"string\\\"}, \\\"partitionValues\\\":[\\\"val_1\\\", \\\"val_2\\\", \\\"val_3\\\"],\\\"oldPartitionValues\\\": [\\\"val_4\\\", \\\"val_5\\\", \\\"val_6\\\"]}\"";
