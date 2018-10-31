@@ -15,6 +15,7 @@
  */
 package com.hotels.shunting.yard.replicator.exec.context;
 
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import static com.hotels.shunting.yard.replicator.exec.app.ConfigurationVariables.WORKSPACE;
@@ -35,17 +36,21 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Supplier;
 
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 import com.hotels.hcommon.hive.metastore.client.api.MetaStoreClientFactory;
 import com.hotels.hcommon.hive.metastore.client.closeable.CloseableMetaStoreClientFactory;
 import com.hotels.hcommon.hive.metastore.conf.HiveConfFactory;
-import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
+import com.hotels.shunting.yard.common.io.MetaStoreEventDeserializer;
+import com.hotels.shunting.yard.common.io.jackson.ApiarySqsMessageDeserializer;
+import com.hotels.shunting.yard.common.io.jackson.JsonMetaStoreEventDeserializer;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
 import com.hotels.shunting.yard.common.messaging.MessageReaderFactory;
 import com.hotels.shunting.yard.replicator.exec.conf.EventReceiverConfiguration;
 import com.hotels.shunting.yard.replicator.exec.conf.ReplicaCatalog;
+import com.hotels.shunting.yard.replicator.exec.conf.SourceCatalog;
 import com.hotels.shunting.yard.replicator.exec.event.aggregation.DefaultMetaStoreEventAggregator;
 import com.hotels.shunting.yard.replicator.exec.event.aggregation.MetaStoreEventAggregator;
 import com.hotels.shunting.yard.replicator.exec.external.Marshaller;
@@ -53,8 +58,8 @@ import com.hotels.shunting.yard.replicator.exec.launcher.CircusTrainRunner;
 import com.hotels.shunting.yard.replicator.exec.messaging.AggregatingMetaStoreEventReader;
 import com.hotels.shunting.yard.replicator.exec.messaging.MessageReaderAdapter;
 import com.hotels.shunting.yard.replicator.exec.messaging.MetaStoreEventReader;
-import com.hotels.shunting.yard.replicator.exec.receiver.ContextFactory;
 import com.hotels.shunting.yard.replicator.exec.receiver.CircusTrainReplicationMetaStoreEventListener;
+import com.hotels.shunting.yard.replicator.exec.receiver.ContextFactory;
 import com.hotels.shunting.yard.replicator.exec.receiver.ReplicationMetaStoreEventListener;
 import com.hotels.shunting.yard.replicator.metastore.DefaultMetaStoreClientSupplier;
 
@@ -121,8 +126,22 @@ public class CommonBeans {
   }
 
   @Bean
-  MetaStoreEventSerDe metaStoreEventSerDe(EventReceiverConfiguration messageReaderConfig) {
-    return messageReaderConfig.getSerDeType().instantiate();
+  ObjectMapper objectMapper() {
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
+    return mapper;
+  }
+
+  @Bean
+  MetaStoreEventDeserializer metaStoreEventSerDe(ObjectMapper objectMapper) {
+    return new JsonMetaStoreEventDeserializer(objectMapper);
+  }
+
+  @Bean
+  ApiarySqsMessageDeserializer sqsMessageSerDe(
+      MetaStoreEventDeserializer metaStoreEventDeserializer,
+      ObjectMapper objectMapper) {
+    return new ApiarySqsMessageDeserializer(metaStoreEventDeserializer, objectMapper);
   }
 
   @Bean
@@ -133,12 +152,13 @@ public class CommonBeans {
   @Bean
   MessageReaderAdapter messageReaderAdapter(
       HiveConf replicaHiveConf,
-      MetaStoreEventSerDe metaStoreEventSerDe,
-      EventReceiverConfiguration messageReaderConfig) {
+      ApiarySqsMessageDeserializer sqsMessageSerDe,
+      EventReceiverConfiguration messageReaderConfig,
+      SourceCatalog sourceCatalog) {
     MessageReaderFactory messaReaderFactory = MessageReaderFactory
         .newInstance(messageReaderConfig.getMessageReaderFactoryClass());
-    MessageReader messageReader = messaReaderFactory.newInstance(replicaHiveConf, metaStoreEventSerDe);
-    return new MessageReaderAdapter(messageReader);
+    MessageReader messageReader = messaReaderFactory.newInstance(replicaHiveConf, sqsMessageSerDe);
+    return new MessageReaderAdapter(messageReader, sourceCatalog.getHiveMetastoreUris());
   }
 
   @Bean

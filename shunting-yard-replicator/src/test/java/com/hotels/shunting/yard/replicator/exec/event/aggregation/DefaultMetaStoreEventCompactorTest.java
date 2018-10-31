@@ -21,10 +21,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
 
-import static com.hotels.shunting.yard.common.event.EventType.ON_ADD_PARTITION;
-import static com.hotels.shunting.yard.common.event.EventType.ON_CREATE_TABLE;
-import static com.hotels.shunting.yard.common.event.EventType.ON_DROP_PARTITION;
-import static com.hotels.shunting.yard.common.event.EventType.ON_DROP_TABLE;
+import static com.hotels.shunting.yard.common.event.EventType.ADD_PARTITION;
+import static com.hotels.shunting.yard.common.event.EventType.CREATE_TABLE;
+import static com.hotels.shunting.yard.common.event.EventType.DROP_PARTITION;
+import static com.hotels.shunting.yard.common.event.EventType.DROP_TABLE;
 
 import java.util.List;
 
@@ -51,25 +51,25 @@ public class DefaultMetaStoreEventCompactorTest {
 
   @Test
   public void shouldReturnSameEventsIfEventsCannotBeMerged() {
-    List<MetaStoreEvent> events = asList(mockEvent(EventType.ON_DROP_PARTITION), mockEvent(ON_DROP_TABLE),
-        mockEvent(ON_CREATE_TABLE));
+    List<MetaStoreEvent> events = asList(mockEvent(EventType.DROP_PARTITION), mockEvent(DROP_TABLE),
+        mockEvent(CREATE_TABLE));
     List<MetaStoreEvent> compactEvents = compactor.compact(events);
     assertThat(compactEvents).isEqualTo(events);
   }
 
   @Test
   public void mergeEventsIfEventsCanBeMerged() {
-    MetaStoreEvent eventA = mockEvent(ON_DROP_PARTITION);
-    MetaStoreEvent eventB = mockEvent(ON_DROP_TABLE);
-    MetaStoreEvent eventC = mockEvent(ON_CREATE_TABLE);
-    MetaStoreEvent eventD = mockEvent(ON_ADD_PARTITION);
-    MetaStoreEvent eventE = mockEvent(ON_ADD_PARTITION);
+    MetaStoreEvent eventA = mockEvent(DROP_PARTITION);
+    MetaStoreEvent eventB = mockEvent(DROP_TABLE);
+    MetaStoreEvent eventC = mockEvent(CREATE_TABLE);
+    MetaStoreEvent eventD = mockEvent(ADD_PARTITION);
+    MetaStoreEvent eventE = mockEvent(ADD_PARTITION);
 
     when(merger.canMerge(eventC, eventD)).thenReturn(true);
-    MetaStoreEvent eventCD = mockEvent(ON_CREATE_TABLE);
+    MetaStoreEvent eventCD = mockEvent(CREATE_TABLE);
     when(merger.merge(eventC, eventD)).thenReturn(eventCD);
     when(merger.canMerge(eventCD, eventE)).thenReturn(true);
-    MetaStoreEvent eventCDE = mockEvent(ON_CREATE_TABLE);
+    MetaStoreEvent eventCDE = mockEvent(CREATE_TABLE);
     when(merger.merge(eventCD, eventE)).thenReturn(eventCDE);
 
     List<MetaStoreEvent> compactEvents = compactor.compact(asList(eventA, eventB, eventC, eventD, eventE));
@@ -79,18 +79,18 @@ public class DefaultMetaStoreEventCompactorTest {
 
   @Test
   public void mergeDiscardPreviousEventsIfADropTableIsFoundInBetween() {
-    MetaStoreEvent eventA = mockEvent(ON_CREATE_TABLE);
-    MetaStoreEvent eventB = mockEvent(ON_ADD_PARTITION);
-    MetaStoreEvent eventC = mockEvent(ON_DROP_TABLE);
-    MetaStoreEvent eventD = mockEvent(ON_CREATE_TABLE);
-    MetaStoreEvent eventE = mockEvent(ON_ADD_PARTITION);
+    MetaStoreEvent eventA = mockEvent(CREATE_TABLE);
+    MetaStoreEvent eventB = mockEvent(ADD_PARTITION);
+    MetaStoreEvent eventC = mockEvent(DROP_TABLE);
+    MetaStoreEvent eventD = mockEvent(CREATE_TABLE);
+    MetaStoreEvent eventE = mockEvent(ADD_PARTITION);
 
     when(merger.canMerge(eventA, eventB)).thenReturn(true);
-    MetaStoreEvent eventAB = mockEvent(ON_CREATE_TABLE);
+    MetaStoreEvent eventAB = mockEvent(CREATE_TABLE);
     when(merger.merge(eventA, eventB)).thenReturn(eventAB);
 
     when(merger.canMerge(eventD, eventE)).thenReturn(true);
-    MetaStoreEvent eventDE = mockEvent(ON_CREATE_TABLE);
+    MetaStoreEvent eventDE = mockEvent(CREATE_TABLE);
     when(merger.merge(eventD, eventE)).thenReturn(eventDE);
 
     List<MetaStoreEvent> compactEvents = compactor.compact(asList(eventA, eventB, eventC, eventD, eventE));
@@ -101,7 +101,7 @@ public class DefaultMetaStoreEventCompactorTest {
   private static MetaStoreEvent mockEvent(EventType eventType) {
     MetaStoreEvent event = mock(MetaStoreEvent.class);
     when(event.getEventType()).thenReturn(eventType);
-    if (eventType == ON_DROP_PARTITION || eventType == ON_DROP_TABLE) {
+    if (eventType == DROP_PARTITION || eventType == DROP_TABLE) {
       when(event.isDropEvent()).thenReturn(true);
     }
     return event;

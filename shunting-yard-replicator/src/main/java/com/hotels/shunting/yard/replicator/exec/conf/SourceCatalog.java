@@ -15,34 +15,30 @@
  */
 package com.hotels.shunting.yard.replicator.exec.conf;
 
-import java.util.Map;
-
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-import com.hotels.shunting.yard.receiver.sqs.messaging.SqsMessageReaderFactory;
-
 @Configuration
-@ConfigurationProperties(prefix = "event-receiver")
-public class EventReceiverConfiguration {
+@ConfigurationProperties(prefix = "source-catalog")
+public class SourceCatalog {
+  private @NotBlank String name;
+  private @NotBlank String hiveMetastoreUris;
 
-  private Map<String, String> configurationProperties;
-  private String messageReaderFactoryClass = SqsMessageReaderFactory.class.getName();
-
-  public Map<String, String> getConfigurationProperties() {
-    return configurationProperties;
+  public String getName() {
+    return name;
   }
 
-  public void setConfigurationProperties(Map<String, String> configurationProperties) {
-    this.configurationProperties = configurationProperties;
+  public void setName(String name) {
+    this.name = name;
   }
 
-  public String getMessageReaderFactoryClass() {
-    return messageReaderFactoryClass;
+  public String getHiveMetastoreUris() {
+    return hiveMetastoreUris;
   }
 
-  public void setMessageReaderClass(String messageReaderFactoryClass) {
-    this.messageReaderFactoryClass = messageReaderFactoryClass;
+  public void setHiveMetastoreUris(String hiveMetastoreUris) {
+    this.hiveMetastoreUris = hiveMetastoreUris;
   }
 
 }

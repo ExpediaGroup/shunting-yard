@@ -1,8 +1,18 @@
-## TBD - not ready for production
+# Changelog
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+
+## TBD
 ### Changed
 * Enforce exception handling [#2](https://github.com/HotelsDotCom/shunting-yard/issues/2)
+
 ### Added
-* Event aggregation based on time windows [#4](https://github.com/HotelsDotCom/shunting-yard/issues/4). This is a breaking change since the event model has been changed to a more suitable structure for [Circus Train](https://github.com/HotelsDotCom/circus-train). 
+* Event aggregation based on time windows [#4](https://github.com/HotelsDotCom/shunting-yard/issues/4). This is a breaking change since the event model has been changed to a more suitable structure for [Circus Train](https://github.com/HotelsDotCom/circus-train).
+* Support for handling Hive Metastore Events from Apiary
+
+### Removed
+* Receivers & emitters for Kinesis and Kafka.
 
 ## [0.0.2] 2018-06-06 - not ready for production
 ### Changed

@@ -17,7 +17,7 @@ package com.hotels.shunting.yard.replicator.exec.event;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import static com.hotels.shunting.yard.common.event.EventType.ON_CREATE_TABLE;
+import static com.hotels.shunting.yard.common.event.EventType.CREATE_TABLE;
 
 import java.util.Arrays;
 
@@ -38,52 +38,58 @@ public class MetaStoreEventTest {
 
   @Test(expected = NullPointerException.class)
   public void missingDatabaseName() {
-    MetaStoreEvent.builder(ON_CREATE_TABLE, null, TABLE);
+    MetaStoreEvent.builder(CREATE_TABLE, null, TABLE);
   }
 
   @Test(expected = NullPointerException.class)
   public void missingTableName() {
-    MetaStoreEvent.builder(ON_CREATE_TABLE, DATABASE, null);
+    MetaStoreEvent.builder(CREATE_TABLE, DATABASE, null);
   }
 
   @Test(expected = IllegalStateException.class)
   public void callPartitionColumnsMoreThanOnce() {
-    MetaStoreEvent.builder(ON_CREATE_TABLE, DATABASE, TABLE).partitionColumns(Arrays.asList("p")).partitionColumns(
-        Arrays.asList("p"));
+    MetaStoreEvent
+        .builder(CREATE_TABLE, DATABASE, TABLE)
+        .partitionColumns(Arrays.asList("p"))
+        .partitionColumns(Arrays.asList("p"));
   }
 
   @Test(expected = NullPointerException.class)
   public void callPartitionColumnsWithNullValue() {
-    MetaStoreEvent.builder(ON_CREATE_TABLE, DATABASE, TABLE).partitionColumns(null);
+    MetaStoreEvent.builder(CREATE_TABLE, DATABASE, TABLE).partitionColumns(null);
   }
 
   @Test(expected = IllegalStateException.class)
   public void callPartitionValuesWithOutSetting() {
-    MetaStoreEvent.builder(ON_CREATE_TABLE, DATABASE, TABLE).partitionValues(Arrays.asList("p1"));
+    MetaStoreEvent.builder(CREATE_TABLE, DATABASE, TABLE).partitionValues(Arrays.asList("p1"));
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void callPartitionValuesWithFewerValuesThanPartitionColums() {
-    MetaStoreEvent.builder(ON_CREATE_TABLE, DATABASE, TABLE).partitionColumns(Arrays.asList("p", "q")).partitionValues(
-        Arrays.asList("p1"));
+    MetaStoreEvent
+        .builder(CREATE_TABLE, DATABASE, TABLE)
+        .partitionColumns(Arrays.asList("p", "q"))
+        .partitionValues(Arrays.asList("p1"));
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void callPartitionValuesWithMoreValuesThanPartitionColums() {
-    MetaStoreEvent.builder(ON_CREATE_TABLE, DATABASE, TABLE).partitionColumns(Arrays.asList("p")).partitionValues(
-        Arrays.asList("p1", "q1"));
+    MetaStoreEvent
+        .builder(CREATE_TABLE, DATABASE, TABLE)
+        .partitionColumns(Arrays.asList("p"))
+        .partitionValues(Arrays.asList("p1", "q1"));
   }
 
   @Test(expected = NullPointerException.class)
   public void callPartitionValuesWithNull() {
-    MetaStoreEvent.builder(ON_CREATE_TABLE, DATABASE, TABLE).partitionColumns(Arrays.asList("p")).partitionValues(null);
+    MetaStoreEvent.builder(CREATE_TABLE, DATABASE, TABLE).partitionColumns(Arrays.asList("p")).partitionValues(null);
   }
 
   @Test
   public void basicUnpartitionedTableEvent() {
-    MetaStoreEvent event = MetaStoreEvent.builder(ON_CREATE_TABLE, DATABASE, TABLE).build();
+    MetaStoreEvent event = MetaStoreEvent.builder(CREATE_TABLE, DATABASE, TABLE).build();
     assertThat(event)
-        .hasFieldOrPropertyWithValue("eventType", ON_CREATE_TABLE)
+        .hasFieldOrPropertyWithValue("eventType", CREATE_TABLE)
         .hasFieldOrPropertyWithValue("databaseName", DATABASE)
         .hasFieldOrPropertyWithValue("tableName", TABLE)
         .hasFieldOrPropertyWithValue("partitionColumns", null)
@@ -95,13 +101,13 @@ public class MetaStoreEventTest {
   @Test
   public void fullUnpartitionedTableEvent() {
     MetaStoreEvent event = MetaStoreEvent
-        .builder(ON_CREATE_TABLE, DATABASE, TABLE)
+        .builder(CREATE_TABLE, DATABASE, TABLE)
         .parameter("key", "value")
         .parameters(ImmutableMap.of("moreKeys", "moreValues"))
         .environmentContext(ImmutableMap.of("envKeys", "envValues"))
         .build();
     assertThat(event)
-        .hasFieldOrPropertyWithValue("eventType", ON_CREATE_TABLE)
+        .hasFieldOrPropertyWithValue("eventType", CREATE_TABLE)
         .hasFieldOrPropertyWithValue("databaseName", DATABASE)
         .hasFieldOrPropertyWithValue("tableName", TABLE)
         .hasFieldOrPropertyWithValue("partitionColumns", null)
@@ -113,13 +119,13 @@ public class MetaStoreEventTest {
   @Test
   public void basicPartitionedTableEvent() {
     MetaStoreEvent event = MetaStoreEvent
-        .builder(ON_CREATE_TABLE, DATABASE, TABLE)
+        .builder(CREATE_TABLE, DATABASE, TABLE)
         .partitionColumns(Arrays.asList("a", "b"))
         .partitionValues(Arrays.asList("a1", "b1"))
         .partitionValues(Arrays.asList("a2", "b2"))
         .build();
     assertThat(event)
-        .hasFieldOrPropertyWithValue("eventType", ON_CREATE_TABLE)
+        .hasFieldOrPropertyWithValue("eventType", CREATE_TABLE)
         .hasFieldOrPropertyWithValue("databaseName", DATABASE)
         .hasFieldOrPropertyWithValue("tableName", TABLE)
         .hasFieldOrPropertyWithValue("partitionColumns", Arrays.asList("a", "b"))
@@ -132,7 +138,7 @@ public class MetaStoreEventTest {
   @Test
   public void fullPartitionedTableEvent() {
     MetaStoreEvent event = MetaStoreEvent
-        .builder(ON_CREATE_TABLE, DATABASE, TABLE)
+        .builder(CREATE_TABLE, DATABASE, TABLE)
         .partitionColumns(Arrays.asList("p"))
         .partitionValues(Arrays.asList("p1"))
         .parameter("key", "value")
@@ -140,7 +146,7 @@ public class MetaStoreEventTest {
         .environmentContext(ImmutableMap.of("envKeys", "envValues"))
         .build();
     assertThat(event)
-        .hasFieldOrPropertyWithValue("eventType", ON_CREATE_TABLE)
+        .hasFieldOrPropertyWithValue("eventType", CREATE_TABLE)
         .hasFieldOrPropertyWithValue("databaseName", DATABASE)
         .hasFieldOrPropertyWithValue("tableName", TABLE)
         .hasFieldOrPropertyWithValue("partitionColumns", Arrays.asList("p"))
@@ -152,18 +158,19 @@ public class MetaStoreEventTest {
   @Test
   public void callEnviromentPropertiesMoreThanOnce() {
     MetaStoreEvent event = MetaStoreEvent
-        .builder(ON_CREATE_TABLE, DATABASE, TABLE)
+        .builder(CREATE_TABLE, DATABASE, TABLE)
         .environmentContext(ImmutableMap.of("envKey1", "envValue1"))
         .environmentContext(ImmutableMap.of("envKey2", "envValue2"))
         .build();
-    assertThat(event).hasFieldOrPropertyWithValue("environmentContext",
-        ImmutableMap.of("envKey1", "envValue1", "envKey2", "envValue2"));
+    assertThat(event)
+        .hasFieldOrPropertyWithValue("environmentContext",
+            ImmutableMap.of("envKey1", "envValue1", "envKey2", "envValue2"));
   }
 
   @Test
   public void isCascade() {
     MetaStoreEvent event = MetaStoreEvent
-        .builder(ON_CREATE_TABLE, DATABASE, TABLE)
+        .builder(CREATE_TABLE, DATABASE, TABLE)
         .environmentContext(ImmutableMap.of(StatsSetupConst.CASCADE, "true"))
         .build();
     assertThat(event.isCascade()).isTrue();
@@ -172,7 +179,7 @@ public class MetaStoreEventTest {
   @Test
   public void isNotCascade() {
     MetaStoreEvent event = MetaStoreEvent
-        .builder(ON_CREATE_TABLE, DATABASE, TABLE)
+        .builder(CREATE_TABLE, DATABASE, TABLE)
         .environmentContext(ImmutableMap.of("p", "v"))
         .build();
     assertThat(event.isCascade()).isFalse();
@@ -180,7 +187,7 @@ public class MetaStoreEventTest {
 
   @Test
   public void isNotCascadeIfEnvironmentContextIsNotSet() {
-    MetaStoreEvent event = MetaStoreEvent.builder(ON_CREATE_TABLE, DATABASE, TABLE).build();
+    MetaStoreEvent event = MetaStoreEvent.builder(CREATE_TABLE, DATABASE, TABLE).build();
     assertThat(event.isCascade()).isFalse();
   }
 

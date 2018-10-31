@@ -32,13 +32,13 @@ import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 import static com.hotels.bdp.circustrain.api.CircusTrainTableParameter.REPLICATION_EVENT;
-import static com.hotels.shunting.yard.common.event.EventType.ON_ADD_PARTITION;
-import static com.hotels.shunting.yard.common.event.EventType.ON_ALTER_PARTITION;
-import static com.hotels.shunting.yard.common.event.EventType.ON_ALTER_TABLE;
-import static com.hotels.shunting.yard.common.event.EventType.ON_CREATE_TABLE;
-import static com.hotels.shunting.yard.common.event.EventType.ON_DROP_PARTITION;
-import static com.hotels.shunting.yard.common.event.EventType.ON_DROP_TABLE;
-import static com.hotels.shunting.yard.common.event.EventType.ON_INSERT;
+import static com.hotels.shunting.yard.common.event.EventType.ADD_PARTITION;
+import static com.hotels.shunting.yard.common.event.EventType.ALTER_PARTITION;
+import static com.hotels.shunting.yard.common.event.EventType.ALTER_TABLE;
+import static com.hotels.shunting.yard.common.event.EventType.CREATE_TABLE;
+import static com.hotels.shunting.yard.common.event.EventType.DROP_PARTITION;
+import static com.hotels.shunting.yard.common.event.EventType.DROP_TABLE;
+import static com.hotels.shunting.yard.common.event.EventType.INSERT;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -131,7 +131,7 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
 
   @Test
   public void onCreateTableReplicates() {
-    MetaStoreEvent event = mockEvent(ON_CREATE_TABLE);
+    MetaStoreEvent event = mockEvent(CREATE_TABLE);
     when(contextFactory.createContext(event)).thenReturn(context);
     listener.onEvent(event);
     verify(circusTrainRunner).run(context);
@@ -140,7 +140,7 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
   @Test
   public void onCreateTableDoesNotReplicate() {
     tableParameters.clear();
-    MetaStoreEvent event = mockEvent(ON_CREATE_TABLE);
+    MetaStoreEvent event = mockEvent(CREATE_TABLE);
     listener.onEvent(event);
     verifyZeroInteractions(contextFactory);
     verifyZeroInteractions(circusTrainRunner);
@@ -148,14 +148,14 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
 
   @Test
   public void onDropTableDeletesTable() throws Exception {
-    MetaStoreEvent event = mockEvent(ON_DROP_TABLE);
+    MetaStoreEvent event = mockEvent(DROP_TABLE);
     listener.onEvent(event);
     verify(metaStoreClient).dropTable(DATABASE, TABLE, false, true);
   }
 
   @Test
   public void onDropTableDeletesTableAndData() throws Exception {
-    MetaStoreEvent event = mockEvent(ON_DROP_TABLE);
+    MetaStoreEvent event = mockEvent(DROP_TABLE);
     when(event.isDeleteData()).thenReturn(true);
     listener.onEvent(event);
     verify(metaStoreClient).dropTable(DATABASE, TABLE, true, true);
@@ -164,7 +164,7 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
   @Test
   public void onDropTableDoesNotDeleteTable() throws Exception {
     tableParameters.clear();
-    MetaStoreEvent event = mockEvent(ON_DROP_TABLE);
+    MetaStoreEvent event = mockEvent(DROP_TABLE);
     listener.onEvent(event);
     verify(metaStoreClient, never()).dropTable(anyString(), anyString(), anyBoolean(), anyBoolean());
   }
@@ -180,7 +180,7 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
     Map<String, String> envContextProperties = ImmutableMap.of("key", "value", CASCADE, "true");
     EnvironmentContext environment = mock(EnvironmentContext.class);
     when(environment.getProperties()).thenReturn(envContextProperties);
-    MetaStoreEvent event = mockEvent(ON_ALTER_TABLE);
+    MetaStoreEvent event = mockEvent(ALTER_TABLE);
     when(event.getDatabaseName()).thenReturn(DATABASE);
     when(event.getTableName()).thenReturn(newTableName);
     when(event.getEnvironmentContext()).thenReturn(envContextProperties);
@@ -204,7 +204,7 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
     Map<String, String> envContextProperties = ImmutableMap.of("key", "value", CASCADE, "true");
     EnvironmentContext environment = mock(EnvironmentContext.class);
     when(environment.getProperties()).thenReturn(envContextProperties);
-    MetaStoreEvent event = mockEvent(ON_ALTER_TABLE);
+    MetaStoreEvent event = mockEvent(ALTER_TABLE);
     when(event.getDatabaseName()).thenReturn(DATABASE);
     when(event.getTableName()).thenReturn(newTableName);
     when(event.getEnvironmentContext()).thenReturn(envContextProperties);
@@ -222,7 +222,7 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
   @Test
   public void onAlterTableDoesNotReplicate() throws Exception {
     tableParameters.clear();
-    MetaStoreEvent event = mockEvent(ON_ALTER_TABLE);
+    MetaStoreEvent event = mockEvent(ALTER_TABLE);
     listener.onEvent(event);
     verifyZeroInteractions(contextFactory);
     verifyZeroInteractions(circusTrainRunner);
@@ -232,7 +232,7 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
 
   @Test
   public void onAddPartitionReplicates() {
-    MetaStoreEvent event = mockEvent(ON_ADD_PARTITION);
+    MetaStoreEvent event = mockEvent(ADD_PARTITION);
     when(contextFactory.createContext(event)).thenReturn(context);
     listener.onEvent(event);
     verify(circusTrainRunner).run(context);
@@ -241,7 +241,7 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
   @Test
   public void onAddPartitionDoesNotReplicate() {
     tableParameters.clear();
-    MetaStoreEvent event = mockEvent(ON_ADD_PARTITION);
+    MetaStoreEvent event = mockEvent(ADD_PARTITION);
     when(contextFactory.createContext(same(event))).thenReturn(context);
     listener.onEvent(event);
     verifyZeroInteractions(contextFactory);
@@ -251,7 +251,7 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
   @Test
   public void onDropPartitionDeletesPartition() throws Exception {
     List<String> partitions = Arrays.asList("a", "b");
-    MetaStoreEvent event = mockEvent(ON_DROP_PARTITION);
+    MetaStoreEvent event = mockEvent(DROP_PARTITION);
     when(event.getPartitionValues()).thenReturn(Arrays.asList(partitions));
     listener.onEvent(event);
     verify(metaStoreClient).dropPartition(DATABASE, TABLE, partitions, false);
@@ -260,7 +260,7 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
   @Test
   public void onDropPartitionDeletesPartitionAndData() throws Exception {
     List<String> partitions = Arrays.asList("a", "b");
-    MetaStoreEvent event = mockEvent(ON_DROP_PARTITION);
+    MetaStoreEvent event = mockEvent(DROP_PARTITION);
     when(event.getPartitionValues()).thenReturn(Arrays.asList(partitions));
     when(event.isDeleteData()).thenReturn(true);
     listener.onEvent(event);
@@ -270,7 +270,7 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
   @Test
   public void onDropPartitionDoesNotDeletePartition() throws Exception {
     tableParameters.clear();
-    MetaStoreEvent event = mockEvent(ON_DROP_PARTITION);
+    MetaStoreEvent event = mockEvent(DROP_PARTITION);
     listener.onEvent(event);
     verify(metaStoreClient, never()).dropPartitions(anyString(), anyString(), any(List.class), anyBoolean(),
         anyBoolean(), anyBoolean());
@@ -278,7 +278,7 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
 
   @Test
   public void onAlterPartitionReplicates() {
-    MetaStoreEvent event = mockEvent(ON_ALTER_PARTITION);
+    MetaStoreEvent event = mockEvent(ALTER_PARTITION);
     when(contextFactory.createContext(same(event))).thenReturn(context);
     listener.onEvent(event);
     verify(circusTrainRunner).run(context);
@@ -287,7 +287,7 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
   @Test
   public void onAlterPartitionDoesNotReplicate() {
     tableParameters.clear();
-    MetaStoreEvent event = mockEvent(ON_ALTER_PARTITION);
+    MetaStoreEvent event = mockEvent(ALTER_PARTITION);
     listener.onEvent(event);
     verifyZeroInteractions(contextFactory);
     verifyZeroInteractions(circusTrainRunner);
@@ -295,7 +295,7 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
 
   @Test
   public void onInsertReplicates() {
-    MetaStoreEvent event = mockEvent(ON_INSERT);
+    MetaStoreEvent event = mockEvent(INSERT);
     when(contextFactory.createContext(same(event))).thenReturn(context);
     listener.onEvent(event);
     verify(circusTrainRunner).run(context);
@@ -304,7 +304,7 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
   @Test
   public void onInsertDoesNotReplicate() {
     tableParameters.clear();
-    MetaStoreEvent event = mockEvent(ON_INSERT);
+    MetaStoreEvent event = mockEvent(INSERT);
     listener.onEvent(event);
     verifyZeroInteractions(contextFactory);
     verifyZeroInteractions(circusTrainRunner);

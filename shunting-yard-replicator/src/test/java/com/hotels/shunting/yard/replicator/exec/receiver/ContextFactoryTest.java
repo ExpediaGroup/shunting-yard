@@ -84,12 +84,12 @@ public class ContextFactoryTest {
   @Before
   public void init() throws Exception {
     workspaceDir = tmp.newFolder("workspace");
-    actualWorkspacePattern = workspaceDir.getAbsolutePath() + "/ON_CREATE_TABLE_\\d{8}T\\d{9}";
+    actualWorkspacePattern = workspaceDir.getAbsolutePath() + "/CREATE_TABLE_\\d{8}T\\d{9}";
     conf.set(WORKSPACE.key(), workspaceDir.getAbsolutePath());
     conf.set(METASTOREURIS.varname, REPLICA_METASTORE_URIS);
 
     when(event.getParameters()).thenReturn(eventParameters);
-    when(event.getEventType()).thenReturn(EventType.ON_CREATE_TABLE);
+    when(event.getEventType()).thenReturn(EventType.CREATE_TABLE);
     when(event.getDatabaseName()).thenReturn(DATABASE);
     when(event.getTableName()).thenReturn(TABLE);
     when(eventParameters.get(METASTOREURIS.varname)).thenReturn(SOURCE_METASTORE_URIS);

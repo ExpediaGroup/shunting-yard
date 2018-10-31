@@ -62,18 +62,17 @@ class DefaultMetaStoreEventCompactor {
     LinkedList<MetaStoreEvent> finalEvents = new LinkedList<>();
     for (MetaStoreEvent e : tableEvents) {
       switch (e.getEventType()) {
-      case ON_DROP_TABLE:
+      case DROP_TABLE:
         // Keep only previous drop events
         processDropTable(finalEvents, e);
         break;
-      case ON_DROP_PARTITION:
+      case DROP_PARTITION:
         mergeOrAdd(finalEvents, e, evt -> evt.isDropEvent());
         break;
-      case ON_CREATE_TABLE:
-      case ON_ALTER_TABLE:
-      case ON_ADD_PARTITION:
-      case ON_ALTER_PARTITION:
-      case ON_INSERT:
+      case CREATE_TABLE:
+      case ADD_PARTITION:
+      case ALTER_PARTITION:
+      case INSERT:
         mergeOrAdd(finalEvents, e, evt -> !evt.isDropEvent());
         break;
       default:

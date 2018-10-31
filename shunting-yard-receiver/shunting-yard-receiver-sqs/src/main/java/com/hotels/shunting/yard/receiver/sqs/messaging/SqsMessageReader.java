@@ -32,36 +32,29 @@ import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import com.google.common.annotations.VisibleForTesting;
 
-import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
-import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
+import com.hotels.shunting.yard.common.event.ListenerEvent;
 import com.hotels.shunting.yard.common.io.SerDeException;
+import com.hotels.shunting.yard.common.io.jackson.ApiarySqsMessageDeserializer;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
 
 public class SqsMessageReader implements MessageReader {
   private final String queueUrl;
-  private final MetaStoreEventSerDe eventSerDe;
+  private final ApiarySqsMessageDeserializer sqsDeserializer;
   private final int waitTimeSeconds;
   private final AmazonSQS consumer;
-  private final MessageDecoder messageDecoder;
   private Iterator<Message> records;
 
-  public SqsMessageReader(Configuration conf, MetaStoreEventSerDe eventSerDe) {
-    this(conf, eventSerDe,
-        AmazonSQSClientBuilder.standard().withRegion(region(conf)).withCredentials(credentials(conf)).build(),
-        MessageDecoder.DEFAULT);
+  public SqsMessageReader(Configuration conf, ApiarySqsMessageDeserializer sqsDeserializer) {
+    this(conf, sqsDeserializer,
+        AmazonSQSClientBuilder.standard().withRegion(region(conf)).withCredentials(credentials(conf)).build());
   }
 
   @VisibleForTesting
-  SqsMessageReader(
-      Configuration conf,
-      MetaStoreEventSerDe eventSerDe,
-      AmazonSQS consumer,
-      MessageDecoder messageDecoder) {
+  SqsMessageReader(Configuration conf, ApiarySqsMessageDeserializer sqsSerDe, AmazonSQS consumer) {
     queueUrl = queue(conf);
     waitTimeSeconds = waitTimeSeconds(conf);
-    this.eventSerDe = eventSerDe;
+    this.sqsDeserializer = sqsSerDe;
     this.consumer = consumer;
-    this.messageDecoder = messageDecoder;
   }
 
   @Override
@@ -80,7 +73,7 @@ public class SqsMessageReader implements MessageReader {
   }
 
   @Override
-  public SerializableListenerEvent next() {
+  public ListenerEvent next() {
     readRecordsIfNeeded();
     Message message = records.next();
     delete(message);
@@ -89,21 +82,23 @@ public class SqsMessageReader implements MessageReader {
 
   private void readRecordsIfNeeded() {
     while (records == null || !records.hasNext()) {
-      ReceiveMessageRequest request = new ReceiveMessageRequest().withQueueUrl(queueUrl).withWaitTimeSeconds(
-          waitTimeSeconds);
+      ReceiveMessageRequest request = new ReceiveMessageRequest()
+          .withQueueUrl(queueUrl)
+          .withWaitTimeSeconds(waitTimeSeconds);
       records = consumer.receiveMessage(request).getMessages().iterator();
     }
   }
 
   private void delete(Message message) {
-    DeleteMessageRequest request = new DeleteMessageRequest().withQueueUrl(queueUrl).withReceiptHandle(
-        message.getReceiptHandle());
+    DeleteMessageRequest request = new DeleteMessageRequest()
+        .withQueueUrl(queueUrl)
+        .withReceiptHandle(message.getReceiptHandle());
     consumer.deleteMessage(request);
   }
 
-  private SerializableListenerEvent eventPayLoad(Message message) {
+  private ListenerEvent eventPayLoad(Message message) {
     try {
-      return eventSerDe.unmarshal(messageDecoder.decode(message));
+      return sqsDeserializer.unmarshal(message.getBody());
     } catch (Exception e) {
       throw new SerDeException("Unable to unmarshall event", e);
     }

@@ -66,23 +66,24 @@ public class CircusTrainReplicationMetaStoreEventListener implements Replication
   @Override
   public void onEvent(MetaStoreEvent event) {
     if (!canReplicate(event.getDatabaseName(), event.getTableName())) {
-      log.info("Skipping event {} on table {}: table does not seem to be a replica", event.getEventType(),
-          event.getQualifiedTableName());
+      log
+          .info("Skipping event {} on table {}: table does not seem to be a replica", event.getEventType(),
+              event.getQualifiedTableName());
       return;
     }
 
     switch (event.getEventType()) {
-    case ON_DROP_TABLE:
+    case DROP_TABLE:
       onDropTable(event);
       break;
-    case ON_DROP_PARTITION:
+    case DROP_PARTITION:
       onDropPartition(event);
       break;
-    case ON_CREATE_TABLE:
-    case ON_ALTER_TABLE:
-    case ON_ADD_PARTITION:
-    case ON_ALTER_PARTITION:
-    case ON_INSERT:
+    case ADD_PARTITION:
+    case ALTER_PARTITION:
+    case ALTER_TABLE:
+    case CREATE_TABLE:
+    case INSERT:
       replicate(event);
       break;
     default:
@@ -101,8 +102,9 @@ public class CircusTrainReplicationMetaStoreEventListener implements Replication
       try {
         Table newReplicaTable = metaStoreClient.getTable(event.getDatabaseName(), event.getTableName());
         // This will make sure the partitions are updated if the cascade option was set
-        metaStoreClient.alter_table_with_environmentContext(event.getDatabaseName(), event.getTableName(),
-            newReplicaTable, new EnvironmentContext(event.getEnvironmentContext()));
+        metaStoreClient
+            .alter_table_with_environmentContext(event.getDatabaseName(), event.getTableName(), newReplicaTable,
+                new EnvironmentContext(event.getEnvironmentContext()));
       } catch (Exception e) {
         log.warn("ShuntingYard Replication could not propagate the CASCADE operation", e);
       }
@@ -120,8 +122,8 @@ public class CircusTrainReplicationMetaStoreEventListener implements Replication
   private void onDropPartition(MetaStoreEvent event) {
     try {
       for (List<String> partitionValues : event.getPartitionValues()) {
-        metaStoreClient.dropPartition(event.getDatabaseName(), event.getTableName(), partitionValues,
-            event.isDeleteData());
+        metaStoreClient
+            .dropPartition(event.getDatabaseName(), event.getTableName(), partitionValues, event.isDeleteData());
       }
     } catch (Exception e) {
       throw new ShuntingYardException("Cannot drop partitions", e);

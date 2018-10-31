@@ -26,7 +26,7 @@ public class EventTypeTest {
 
   @Test
   public void eventClassesAreUnique() {
-    Map<Class<? extends SerializableListenerEvent>, EventType> cache = new HashMap<>();
+    Map<Class<? extends ListenerEvent>, EventType> cache = new HashMap<>();
     for (EventType et : EventType.values()) {
       assertThat(cache).doesNotContainKey(et.eventClass());
       cache.put(et.eventClass(), et);

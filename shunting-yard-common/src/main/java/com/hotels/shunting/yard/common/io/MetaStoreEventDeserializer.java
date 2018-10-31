@@ -13,19 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.shunting.yard.receiver.sqs.messaging;
+package com.hotels.shunting.yard.common.io;
 
-import org.apache.hadoop.conf.Configuration;
+import com.hotels.shunting.yard.common.ShuntingYardException;
+import com.hotels.shunting.yard.common.event.ListenerEvent;
 
-import com.hotels.shunting.yard.common.io.jackson.ApiarySqsMessageDeserializer;
-import com.hotels.shunting.yard.common.messaging.MessageReader;
-import com.hotels.shunting.yard.common.messaging.MessageReaderFactory;
-
-public class SqsMessageReaderFactory implements MessageReaderFactory {
-
-  @Override
-  public MessageReader newInstance(Configuration conf, ApiarySqsMessageDeserializer sqsMessageSerde) {
-    return new SqsMessageReader(conf, sqsMessageSerde);
-  }
+public interface MetaStoreEventDeserializer {
+  <T extends ListenerEvent> T unmarshal(String payload) throws ShuntingYardException;
 
 }

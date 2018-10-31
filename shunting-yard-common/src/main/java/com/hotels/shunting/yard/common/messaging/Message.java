@@ -21,7 +21,7 @@ public class Message {
     private String database;
     private String table;
     private long timestamp = System.currentTimeMillis();
-    private byte[] payload;
+    private String payload;
 
     private Builder() {}
 
@@ -54,7 +54,7 @@ public class Message {
       return this;
     }
 
-    public Builder payload(byte[] payload) {
+    public Builder payload(String payload) {
       this.payload = payload;
       return this;
     }
@@ -73,9 +73,9 @@ public class Message {
   private final String database;
   private final String table;
   private final long timestamp;
-  private final byte[] payload;
+  private final String payload;
 
-  private Message(String database, String table, long timestamp, byte[] payload) {
+  private Message(String database, String table, long timestamp, String payload) {
     this.database = database;
     this.table = table;
     this.timestamp = timestamp;
@@ -98,7 +98,7 @@ public class Message {
     return timestamp;
   }
 
-  public byte[] getPayload() {
+  public String getPayload() {
     return payload;
   }
 

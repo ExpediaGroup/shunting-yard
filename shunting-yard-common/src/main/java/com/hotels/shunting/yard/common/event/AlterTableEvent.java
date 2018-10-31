@@ -13,19 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.shunting.yard.receiver.sqs.messaging;
+package com.hotels.shunting.yard.common.event;
 
-import org.apache.hadoop.conf.Configuration;
+public class AlterTableEvent extends ListenerEvent {
+  private static final long serialVersionUID = 1L;
 
-import com.hotels.shunting.yard.common.io.jackson.ApiarySqsMessageDeserializer;
-import com.hotels.shunting.yard.common.messaging.MessageReader;
-import com.hotels.shunting.yard.common.messaging.MessageReaderFactory;
+  private String protocolVersion;
+  private String dbName;
+  private String tableName;
+  private String oldTableName;
 
-public class SqsMessageReaderFactory implements MessageReaderFactory {
+  AlterTableEvent() {}
+
+  public String getProtocolVersion() {
+    return protocolVersion;
+  }
 
   @Override
-  public MessageReader newInstance(Configuration conf, ApiarySqsMessageDeserializer sqsMessageSerde) {
-    return new SqsMessageReader(conf, sqsMessageSerde);
+  public String getDbName() {
+    return dbName;
+  }
+
+  @Override
+  public String getTableName() {
+    return tableName;
+  }
+
+  public String getOldTableName() {
+    return oldTableName;
   }
 
 }
