@@ -44,8 +44,8 @@ public class SqsMessageReader implements MessageReader {
   private final AmazonSQS consumer;
   private Iterator<Message> records;
 
-  public SqsMessageReader(Configuration conf, ApiarySqsMessageDeserializer eventSerDe) {
-    this(conf, eventSerDe,
+  public SqsMessageReader(Configuration conf, ApiarySqsMessageDeserializer sqsDeserializer) {
+    this(conf, sqsDeserializer,
         AmazonSQSClientBuilder.standard().withRegion(region(conf)).withCredentials(credentials(conf)).build());
   }
 

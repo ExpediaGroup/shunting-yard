@@ -15,8 +15,6 @@
  */
 package com.hotels.shunting.yard.common.io.jackson;
 
-import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,10 +28,10 @@ import com.hotels.shunting.yard.common.io.MetaStoreEventDeserializer;
 public class JsonMetaStoreEventDeserializer implements MetaStoreEventDeserializer {
   private static final Logger log = LoggerFactory.getLogger(JsonMetaStoreEventDeserializer.class);
 
-  private final ObjectMapper mapper = new ObjectMapper();
+  private final ObjectMapper mapper;
 
-  public JsonMetaStoreEventDeserializer() {
-    mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
+  public JsonMetaStoreEventDeserializer(ObjectMapper mapper) {
+    this.mapper = mapper;
   }
 
   @Override

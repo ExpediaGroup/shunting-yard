@@ -15,6 +15,7 @@
  */
 package com.hotels.shunting.yard.replicator.exec.context;
 
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import static com.hotels.shunting.yard.replicator.exec.app.ConfigurationVariables.WORKSPACE;
@@ -35,6 +36,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Supplier;
 
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
@@ -124,13 +126,22 @@ public class CommonBeans {
   }
 
   @Bean
-  MetaStoreEventDeserializer metaStoreEventSerDe() {
-    return new JsonMetaStoreEventDeserializer();
+  ObjectMapper objectMapper() {
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
+    return mapper;
   }
 
   @Bean
-  ApiarySqsMessageDeserializer sqsMessageSerDe(MetaStoreEventDeserializer metaStoreEventDeserializer) {
-    return new ApiarySqsMessageDeserializer(metaStoreEventDeserializer);
+  MetaStoreEventDeserializer metaStoreEventSerDe(ObjectMapper objectMapper) {
+    return new JsonMetaStoreEventDeserializer(objectMapper);
+  }
+
+  @Bean
+  ApiarySqsMessageDeserializer sqsMessageSerDe(
+      MetaStoreEventDeserializer metaStoreEventDeserializer,
+      ObjectMapper objectMapper) {
+    return new ApiarySqsMessageDeserializer(metaStoreEventDeserializer, objectMapper);
   }
 
   @Bean

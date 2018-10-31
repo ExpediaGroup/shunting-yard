@@ -15,8 +15,6 @@
  */
 package com.hotels.shunting.yard.common.io.jackson;
 
-import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,12 +27,12 @@ import com.hotels.shunting.yard.common.io.MetaStoreEventDeserializer;
 public class ApiarySqsMessageDeserializer {
   private static final Logger log = LoggerFactory.getLogger(ApiarySqsMessageDeserializer.class);
 
-  private final ObjectMapper mapper = new ObjectMapper();
+  private final ObjectMapper mapper;
   private final MetaStoreEventDeserializer delegateSerDe;
 
-  public ApiarySqsMessageDeserializer(MetaStoreEventDeserializer delegateSerDe) {
+  public ApiarySqsMessageDeserializer(MetaStoreEventDeserializer delegateSerDe, ObjectMapper objectMapper) {
     this.delegateSerDe = delegateSerDe;
-    mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
+    this.mapper = objectMapper;
   }
 
   public <T extends ListenerEvent> T unmarshal(String payload) throws ShuntingYardException {

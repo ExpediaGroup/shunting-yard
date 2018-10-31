@@ -17,6 +17,8 @@ package com.hotels.shunting.yard.common.io.jackson;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
+
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
@@ -38,9 +41,15 @@ import com.hotels.shunting.yard.common.event.ListenerEvent;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeserializerWithJsonInputTest {
-  private final JsonMetaStoreEventDeserializer metaStoreEventDeserializer = new JsonMetaStoreEventDeserializer();
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  static {
+    OBJECT_MAPPER.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
+  }
+
+  private final JsonMetaStoreEventDeserializer metaStoreEventDeserializer = new JsonMetaStoreEventDeserializer(
+      OBJECT_MAPPER);
   private final ApiarySqsMessageDeserializer sqsDeserializer = new ApiarySqsMessageDeserializer(
-      metaStoreEventDeserializer);
+      metaStoreEventDeserializer, OBJECT_MAPPER);
 
   private final static String BASE_EVENT_FROM_SNS = "{"
       + "  \"Type\" : \"Notification\","
