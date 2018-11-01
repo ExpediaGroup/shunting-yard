@@ -12,15 +12,6 @@ You can obtain Shunting Yard from Maven Central:
 
 On the source cluster, copy the file respective emitter JAR to _/usr/lib/hive/lib/_ and configure _/etc/hive/conf/hive-site.xml_ with the properties required by the listener to talk to the messaging infrastructure:
 
-#### Kafka
-    hive.metastore.event.listeners = com.hotels.shunting.yard.event.emitter.kafka.listener.KafkaMetaStoreEventListener
-    com.hotels.shunting.yard.event.emitter.kafka.topic = <topic-name>
-    com.hotels.shunting.yard.event.emitter.kafka.bootstrap.servers = <kafka-connection-string>
-
-#### Kinesis
-    hive.metastore.event.listeners = com.hotels.shunting.yard.event.emitter.kinesis.listener.KinesisMetaStoreEventListener
-    com.hotels.shunting.yard.event.emitter.kinesis.stream = <stream-name>
-
 #### SQS
     hive.metastore.event.listeners = com.hotels.shunting.yard.event.emitter.sqs.listener.SqsMetaStoreEventListener
     com.hotels.shunting.yard.event.emitter.sqs.queue = https://sqs.<region>.amazonaws.com/<account-id>/<topic-name>-queue.fifo
