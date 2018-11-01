@@ -8,7 +8,7 @@
   </parent>
 
   <artifactId>shunting-yard</artifactId>
-  <version>0.0.3-SNAPSHOT</version>
+  <version>0.0.3</version>
   <packaging>pom</packaging>
   <name>Shunting Yard Parent</name>
   <url>https://github.com/HotelsDotCom/shunting-yard</url>
