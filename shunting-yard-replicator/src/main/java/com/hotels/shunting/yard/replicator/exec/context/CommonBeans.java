@@ -51,6 +51,7 @@ import com.hotels.shunting.yard.common.messaging.MessageReaderFactory;
 import com.hotels.shunting.yard.replicator.exec.conf.EventReceiverConfiguration;
 import com.hotels.shunting.yard.replicator.exec.conf.ReplicaCatalog;
 import com.hotels.shunting.yard.replicator.exec.conf.SourceCatalog;
+import com.hotels.shunting.yard.replicator.exec.conf.TargetReplication;
 import com.hotels.shunting.yard.replicator.exec.event.aggregation.DefaultMetaStoreEventAggregator;
 import com.hotels.shunting.yard.replicator.exec.event.aggregation.MetaStoreEventAggregator;
 import com.hotels.shunting.yard.replicator.exec.external.Marshaller;
@@ -61,6 +62,7 @@ import com.hotels.shunting.yard.replicator.exec.messaging.MetaStoreEventReader;
 import com.hotels.shunting.yard.replicator.exec.receiver.CircusTrainReplicationMetaStoreEventListener;
 import com.hotels.shunting.yard.replicator.exec.receiver.ContextFactory;
 import com.hotels.shunting.yard.replicator.exec.receiver.ReplicationMetaStoreEventListener;
+import com.hotels.shunting.yard.replicator.exec.receiver.TableSelector;
 import com.hotels.shunting.yard.replicator.metastore.DefaultMetaStoreClientSupplier;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -150,15 +152,21 @@ public class CommonBeans {
   }
 
   @Bean
+  TableSelector tableSelector(TargetReplication targetReplication) {
+    return new TableSelector(targetReplication);
+  }
+
+  @Bean
   MessageReaderAdapter messageReaderAdapter(
       HiveConf replicaHiveConf,
       ApiarySqsMessageDeserializer sqsMessageSerDe,
       EventReceiverConfiguration messageReaderConfig,
-      SourceCatalog sourceCatalog) {
+      SourceCatalog sourceCatalog,
+      TableSelector tableSelector) {
     MessageReaderFactory messaReaderFactory = MessageReaderFactory
         .newInstance(messageReaderConfig.getMessageReaderFactoryClass());
     MessageReader messageReader = messaReaderFactory.newInstance(replicaHiveConf, sqsMessageSerDe);
-    return new MessageReaderAdapter(messageReader, sourceCatalog.getHiveMetastoreUris());
+    return new MessageReaderAdapter(messageReader, sourceCatalog.getHiveMetastoreUris(), tableSelector);
   }
 
   @Bean

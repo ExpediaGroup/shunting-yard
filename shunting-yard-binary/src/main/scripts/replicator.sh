@@ -33,8 +33,8 @@ fi
 LIBFB303_JAR=`ls $HIVE_LIB/libfb303-*.jar | tr '\n' ':'`
 
 SHUNTING_YARD_LIBS=$SHUNTING_YARD_HOME/lib/*\
-:$HIVE_LIB/hive-exec.jar\
-:$HIVE_LIB/hive-metastore.jar\
+:$HIVE_LIB/hive-exec*.jar\
+:$HIVE_LIB/hive-metastore*.jar\
 :$LIBFB303_JAR\
 :$HIVE_CONF_PATH/
 

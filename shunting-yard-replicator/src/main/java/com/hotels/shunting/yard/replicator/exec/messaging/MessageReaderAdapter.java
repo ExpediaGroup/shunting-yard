@@ -20,23 +20,29 @@ import static org.apache.hadoop.hive.conf.HiveConf.ConfVars.METASTOREURIS;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.hotels.shunting.yard.common.event.EventType;
 import com.hotels.shunting.yard.common.event.AddPartitionEvent;
 import com.hotels.shunting.yard.common.event.AlterPartitionEvent;
 import com.hotels.shunting.yard.common.event.DropPartitionEvent;
+import com.hotels.shunting.yard.common.event.EventType;
 import com.hotels.shunting.yard.common.event.InsertTableEvent;
 import com.hotels.shunting.yard.common.event.ListenerEvent;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
+import com.hotels.shunting.yard.replicator.exec.receiver.TableSelector;
 
 public class MessageReaderAdapter implements MetaStoreEventReader {
 
   private final MessageReader messageReader;
   private final String sourceHiveMetastoreUris;
+  private final TableSelector tableSelector;
 
-  public MessageReaderAdapter(MessageReader messageReader, String sourceHiveMetastoreUris) {
+  public MessageReaderAdapter(
+      MessageReader messageReader,
+      String sourceHiveMetastoreUris,
+      TableSelector tableSelector) {
     this.messageReader = messageReader;
     this.sourceHiveMetastoreUris = sourceHiveMetastoreUris;
+    this.tableSelector = tableSelector;
   }
 
   @Override
@@ -64,6 +70,10 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
                 : null);
 
     EventType eventType = listenerEvent.getEventType();
+
+    if (!tableSelector.canProcess(listenerEvent)) {
+      return builder.build();
+    }
 
     switch (eventType) {
     case ADD_PARTITION: {
