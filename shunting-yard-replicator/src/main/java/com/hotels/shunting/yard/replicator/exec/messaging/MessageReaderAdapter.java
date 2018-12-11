@@ -20,10 +20,10 @@ import static org.apache.hadoop.hive.conf.HiveConf.ConfVars.METASTOREURIS;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.hotels.shunting.yard.common.event.EventType;
 import com.hotels.shunting.yard.common.event.AddPartitionEvent;
 import com.hotels.shunting.yard.common.event.AlterPartitionEvent;
 import com.hotels.shunting.yard.common.event.DropPartitionEvent;
+import com.hotels.shunting.yard.common.event.EventType;
 import com.hotels.shunting.yard.common.event.InsertTableEvent;
 import com.hotels.shunting.yard.common.event.ListenerEvent;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
@@ -66,35 +66,30 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
     EventType eventType = listenerEvent.getEventType();
 
     switch (eventType) {
-    case ADD_PARTITION: {
+    case ADD_PARTITION:
       AddPartitionEvent addPartition = (AddPartitionEvent) listenerEvent;
       builder.partitionColumns(new ArrayList<>(addPartition.getPartitionKeys().keySet()));
       builder.partitionValues(addPartition.getPartitionValues());
       break;
-    }
-    case ALTER_PARTITION: {
+    case ALTER_PARTITION:
       AlterPartitionEvent alterPartition = (AlterPartitionEvent) listenerEvent;
       builder.partitionColumns(new ArrayList<>(alterPartition.getPartitionKeys().keySet()));
       builder.partitionValues(alterPartition.getPartitionValues());
       break;
-    }
-    case DROP_PARTITION: {
+    case DROP_PARTITION:
       DropPartitionEvent dropPartition = (DropPartitionEvent) listenerEvent;
       builder.partitionColumns(new ArrayList<>(dropPartition.getPartitionKeys().keySet()));
       builder.partitionValues(dropPartition.getPartitionValues());
       builder.deleteData(true);
       break;
-    }
-    case INSERT: {
+    case INSERT:
       InsertTableEvent insertTable = (InsertTableEvent) listenerEvent;
       builder.partitionColumns(new ArrayList<>(insertTable.getPartitionKeyValues().keySet()));
       builder.partitionValues(new ArrayList<>(insertTable.getPartitionKeyValues().values()));
       break;
-    }
-    case DROP_TABLE: {
+    case DROP_TABLE:
       builder.deleteData(true);
       break;
-    }
 
     default:
       // Ignore non-partition events
