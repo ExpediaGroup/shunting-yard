@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,21 +28,15 @@ import com.hotels.shunting.yard.common.event.InsertTableEvent;
 import com.hotels.shunting.yard.common.event.ListenerEvent;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
-import com.hotels.shunting.yard.replicator.exec.receiver.TableSelector;
 
 public class MessageReaderAdapter implements MetaStoreEventReader {
 
   private final MessageReader messageReader;
   private final String sourceHiveMetastoreUris;
-  private final TableSelector tableSelector;
 
-  public MessageReaderAdapter(
-      MessageReader messageReader,
-      String sourceHiveMetastoreUris,
-      TableSelector tableSelector) {
+  public MessageReaderAdapter(MessageReader messageReader, String sourceHiveMetastoreUris) {
     this.messageReader = messageReader;
     this.sourceHiveMetastoreUris = sourceHiveMetastoreUris;
-    this.tableSelector = tableSelector;
   }
 
   @Override
@@ -70,10 +64,6 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
                 : null);
 
     EventType eventType = listenerEvent.getEventType();
-
-    if (!tableSelector.canProcess(listenerEvent)) {
-      return builder.build();
-    }
 
     switch (eventType) {
     case ADD_PARTITION: {
@@ -107,7 +97,7 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
     }
 
     default:
-      // Ignore non-partition events
+      // Handle Non-Partition events
       break;
     }
     return builder.build();

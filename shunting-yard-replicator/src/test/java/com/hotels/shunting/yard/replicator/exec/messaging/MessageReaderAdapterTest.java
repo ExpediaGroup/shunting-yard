@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,9 +47,7 @@ import com.hotels.shunting.yard.common.event.EventType;
 import com.hotels.shunting.yard.common.event.InsertTableEvent;
 import com.hotels.shunting.yard.common.event.ListenerEvent;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
-import com.hotels.shunting.yard.replicator.exec.conf.TargetReplication;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
-import com.hotels.shunting.yard.replicator.exec.receiver.TableSelector;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MessageReaderAdapterTest {
@@ -64,7 +61,6 @@ public class MessageReaderAdapterTest {
   private static final String SOURCE_METASTORE_URIS = "thrift://remote_host:9883";
   private static final Map<String, String> PARAMETERS = ImmutableMap.of(METASTOREURIS.varname, SOURCE_METASTORE_URIS);
 
-  private TableSelector tableSelector;
   private MessageReaderAdapter messageReaderAdapter;
 
   private @Mock AddPartitionEvent addApiaryPartitionEvent;
@@ -82,45 +78,18 @@ public class MessageReaderAdapterTest {
 
   @Before
   public void init() {
-    TargetReplication targetReplication = new TargetReplication();
-    targetReplication.setTableNames(Arrays.asList(TEST_DB + "." + TEST_TABLE, "db1.table1"));
-
-    tableSelector = new TableSelector(targetReplication);
-
     FieldSchema partitionColumn1 = new FieldSchema("column_1", "string", "");
     FieldSchema partitionColumn2 = new FieldSchema("column_2", "integer", "");
     FieldSchema partitionColumn3 = new FieldSchema("column_3", "string", "");
 
     partitionKeys = ImmutableList.of(partitionColumn1, partitionColumn2, partitionColumn3);
     partitionValues = ImmutableList.of(partition);
-    messageReaderAdapter = new MessageReaderAdapter(messageReader, SOURCE_METASTORE_URIS, tableSelector);
+    messageReaderAdapter = new MessageReaderAdapter(messageReader, SOURCE_METASTORE_URIS);
     when(partition.getValues()).thenReturn(PARTITION_VALUES);
   }
 
   @Test
-  public void ignoresTableNotConfigured() {
-    TargetReplication targetReplication = new TargetReplication();
-    targetReplication.setTableNames(Arrays.asList(TEST_DB + "." + TEST_TABLE + "1", "db1.table1"));
-
-    tableSelector = new TableSelector(targetReplication);
-
-    when(messageReader.next()).thenReturn(createApiaryTableEvent);
-    configureMockedEvent(createApiaryTableEvent);
-    when(createApiaryTableEvent.getEventType()).thenReturn(EventType.CREATE_TABLE);
-
-    MetaStoreEvent expected = MetaStoreEvent
-        .builder(EventType.CREATE_TABLE, TEST_DB, TEST_TABLE)
-        .environmentContext(EMPTY_MAP)
-        .parameters(PARAMETERS)
-        .build();
-
-    MetaStoreEvent actual = messageReaderAdapter.next();
-
-    assertMetaStoreEvent(expected, actual);
-  }
-
-  @Test
-  public void ignoresCreateTableEvent() {
+  public void handlesCreateTableEvent() {
     when(messageReader.next()).thenReturn(createApiaryTableEvent);
     configureMockedEvent(createApiaryTableEvent);
     when(createApiaryTableEvent.getEventType()).thenReturn(EventType.CREATE_TABLE);
