@@ -32,7 +32,6 @@ public class TableSelector {
     List<String> tableNames = targetReplication.getTableNames();
     String tableNameToBeProcessed = listenerEvent.getDbName() + "." + listenerEvent.getTableName();
 
-    System.out.println("Table: " + tableNameToBeProcessed + " is: " + tableNames.contains(tableNameToBeProcessed));
     return tableNames.contains(tableNameToBeProcessed);
   }
 
