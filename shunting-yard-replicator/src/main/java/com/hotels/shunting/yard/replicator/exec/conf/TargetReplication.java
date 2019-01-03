@@ -22,7 +22,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConfigurationProperties(prefix = "target-replication")
+@ConfigurationProperties(prefix = "source-table-filter")
 public class TargetReplication {
   private List<String> tableNames = new ArrayList<>();
 

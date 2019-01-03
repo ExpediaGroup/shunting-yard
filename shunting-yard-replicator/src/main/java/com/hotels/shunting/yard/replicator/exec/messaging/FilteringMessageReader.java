@@ -40,6 +40,7 @@ public class FilteringMessageReader implements MessageReader {
         return true;
       }
     }
+    current = null;
     return false;
   }
 
