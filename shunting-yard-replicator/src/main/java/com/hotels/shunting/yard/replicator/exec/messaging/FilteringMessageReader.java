@@ -19,6 +19,7 @@ import java.io.IOException;
 
 import com.hotels.shunting.yard.common.event.ListenerEvent;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
+import com.hotels.shunting.yard.receiver.sqs.messaging.SqsMessageReader;
 import com.hotels.shunting.yard.replicator.exec.receiver.TableSelector;
 
 public class FilteringMessageReader implements MessageReader {
@@ -32,6 +33,12 @@ public class FilteringMessageReader implements MessageReader {
     this.tableSelector = tableSelector;
   }
 
+  /**
+   * This hasNext() method is doing more than what a usual hasNext() of an iterator is supposed to do. This is because
+   * the next() function in the {@link SqsMessageReader#next()} is a polling function which waits indefinitely for
+   * message to arrive in the SQS Queue. This will be re-visited to see if the hasNext() method can be removed
+   * altogether from the {@link MessageReader} interface as it always returns true in the implementation.
+   */
   @Override
   public boolean hasNext() {
     while (delegate.hasNext()) {

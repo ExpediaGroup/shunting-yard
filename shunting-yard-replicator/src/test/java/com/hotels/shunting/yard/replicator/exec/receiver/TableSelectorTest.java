@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.hotels.shunting.yard.common.event.ListenerEvent;
-import com.hotels.shunting.yard.replicator.exec.conf.TargetReplication;
+import com.hotels.shunting.yard.replicator.exec.conf.SourceTableFilter;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TableSelectorTest {
@@ -43,7 +43,7 @@ public class TableSelectorTest {
     when(listenerEvent.getDbName()).thenReturn(DB_NAME);
     when(listenerEvent.getTableName()).thenReturn(TABLE_NAME);
 
-    TargetReplication targetReplication = new TargetReplication();
+    SourceTableFilter targetReplication = new SourceTableFilter();
     targetReplication.setTableNames(Arrays.asList(DB_NAME + "." + TABLE_NAME, "db1.table1"));
 
     tableSelector = new TableSelector(targetReplication);

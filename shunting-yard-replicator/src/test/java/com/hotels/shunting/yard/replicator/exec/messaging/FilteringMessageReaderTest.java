@@ -107,6 +107,7 @@ public class FilteringMessageReaderTest {
     filteringMessageReader = new FilteringMessageReader(delegate, tableSelector);
 
     assertThat(filteringMessageReader.hasNext(), is(false));
+    assertThat(filteringMessageReader.next()).isNull();
   }
 
 }

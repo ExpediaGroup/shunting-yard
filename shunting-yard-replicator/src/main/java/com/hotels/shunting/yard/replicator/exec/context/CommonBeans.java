@@ -51,7 +51,7 @@ import com.hotels.shunting.yard.common.messaging.MessageReaderFactory;
 import com.hotels.shunting.yard.replicator.exec.conf.EventReceiverConfiguration;
 import com.hotels.shunting.yard.replicator.exec.conf.ReplicaCatalog;
 import com.hotels.shunting.yard.replicator.exec.conf.SourceCatalog;
-import com.hotels.shunting.yard.replicator.exec.conf.TargetReplication;
+import com.hotels.shunting.yard.replicator.exec.conf.SourceTableFilter;
 import com.hotels.shunting.yard.replicator.exec.event.aggregation.DefaultMetaStoreEventAggregator;
 import com.hotels.shunting.yard.replicator.exec.event.aggregation.MetaStoreEventAggregator;
 import com.hotels.shunting.yard.replicator.exec.external.Marshaller;
@@ -153,7 +153,7 @@ public class CommonBeans {
   }
 
   @Bean
-  TableSelector tableSelector(TargetReplication targetReplication) {
+  TableSelector tableSelector(SourceTableFilter targetReplication) {
     return new TableSelector(targetReplication);
   }
 

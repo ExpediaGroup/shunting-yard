@@ -18,20 +18,18 @@ package com.hotels.shunting.yard.replicator.exec.receiver;
 import java.util.List;
 
 import com.hotels.shunting.yard.common.event.ListenerEvent;
-import com.hotels.shunting.yard.replicator.exec.conf.TargetReplication;
+import com.hotels.shunting.yard.replicator.exec.conf.SourceTableFilter;
 
 public class TableSelector {
 
-  private final TargetReplication targetReplication;
+  private final List<String> tableNames;
 
-  public TableSelector(TargetReplication targetReplication) {
-    this.targetReplication = targetReplication;
+  public TableSelector(SourceTableFilter targetReplication) {
+    this.tableNames = targetReplication.getTableNames();
   }
 
   public boolean canProcess(ListenerEvent listenerEvent) {
-    List<String> tableNames = targetReplication.getTableNames();
     String tableNameToBeProcessed = listenerEvent.getDbName() + "." + listenerEvent.getTableName();
-
     return tableNames.contains(tableNameToBeProcessed);
   }
 

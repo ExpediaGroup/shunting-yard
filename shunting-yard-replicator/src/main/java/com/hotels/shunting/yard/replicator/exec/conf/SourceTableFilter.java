@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConfigurationProperties(prefix = "source-table-filter")
-public class TargetReplication {
+public class SourceTableFilter {
   private List<String> tableNames = new ArrayList<>();
 
   public List<String> getTableNames() {
