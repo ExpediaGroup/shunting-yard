@@ -15,6 +15,8 @@
  */
 package com.hotels.shunting.yard.replicator.exec.app;
 
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,19 +51,20 @@ class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator {
 
   @Override
   public void run(ApplicationArguments args) {
-    while (eventReader.hasNext()) {
+    while (true) {
       try {
-        MetaStoreEvent event = eventReader.next();
-        log.info("New event received: {}", event);
-        listener.onEvent(event);
-        SUCCESS_COUNTER.increment();
+        Optional<MetaStoreEvent> event = eventReader.next();
+        if (event.isPresent()) {
+          log.info("New event received: {}", event);
+          listener.onEvent(event.get());
+          SUCCESS_COUNTER.increment();
+        }
       } catch (Exception e) {
         // ERROR, ShuntingYard and Receiver are keywords
         log.error("Error in ShuntingYard Receiver", e);
         FAILURE_COUNTER.increment();
       }
     }
-    log.info("Finishing event loop");
   }
 
   @Override

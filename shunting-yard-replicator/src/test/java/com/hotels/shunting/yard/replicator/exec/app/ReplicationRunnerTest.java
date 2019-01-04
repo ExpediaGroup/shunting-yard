@@ -20,6 +20,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,8 +45,7 @@ public class ReplicationRunnerTest {
 
   @Before
   public void init() {
-    when(eventReader.hasNext()).thenReturn(true, false);
-    when(eventReader.next()).thenReturn(event);
+    when(eventReader.next()).thenReturn(Optional.of(event));
     runner = new ReplicationRunner(eventReader, listener);
   }
 

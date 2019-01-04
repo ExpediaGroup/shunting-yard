@@ -18,6 +18,7 @@ package com.hotels.shunting.yard.replicator.exec.messaging;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -46,8 +47,12 @@ public class AggregatingMetaStoreEventReader implements MetaStoreEventReader {
       List<MetaStoreEvent> events = new ArrayList<>();
       long maxExecTime = windowUnits.toMillis(window);
       long startTime = System.currentTimeMillis();
-      while (startTime + maxExecTime > System.currentTimeMillis() && delegate.hasNext()) {
-        events.add(delegate.next());
+      while (startTime + maxExecTime > System.currentTimeMillis()) {
+        //TODO: since delegate.next() effectively blocks until some messages arrive, the below means we could exceed the above aggregate window time
+        Optional<MetaStoreEvent> next = delegate.next();
+        if (next.isPresent()) {
+          events.add(next.get());
+        }
       }
       return aggregator.aggregate(events);
     }
@@ -95,12 +100,7 @@ public class AggregatingMetaStoreEventReader implements MetaStoreEventReader {
   }
 
   @Override
-  public boolean hasNext() {
-    return !buffer.isEmpty() || delegate.hasNext();
-  }
-
-  @Override
-  public MetaStoreEvent next() {
+  public Optional<MetaStoreEvent> next() {
     requestMoreMessagesIfNeeded();
     while (buffer.isEmpty()) {
       try {
@@ -124,7 +124,7 @@ public class AggregatingMetaStoreEventReader implements MetaStoreEventReader {
         throw new ShuntingYardException("Delegate MessageReader has failed to read messages", cause);
       }
     }
-    return buffer.poll();
+    return Optional.of(buffer.poll());
   }
 
   private void requestMoreMessagesIfNeeded() {

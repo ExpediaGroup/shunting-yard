@@ -17,19 +17,12 @@ package com.hotels.shunting.yard.replicator.exec.messaging;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.Iterator;
+import java.util.Optional;
 
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 
-public interface MetaStoreEventReader extends Iterator<MetaStoreEvent>, Closeable {
+public interface MetaStoreEventReader extends Closeable {
 
-  @Override
-  void close() throws IOException;
-
-  @Override
-  boolean hasNext();
-
-  @Override
-  MetaStoreEvent next();
+  Optional<MetaStoreEvent> next();
 
 }

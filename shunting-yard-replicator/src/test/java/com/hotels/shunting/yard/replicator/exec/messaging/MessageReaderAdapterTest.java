@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 import org.apache.hadoop.hive.metastore.api.FieldSchema;
@@ -90,7 +91,7 @@ public class MessageReaderAdapterTest {
 
   @Test
   public void handlesCreateTableEvent() {
-    when(messageReader.next()).thenReturn(createApiaryTableEvent);
+    when(messageReader.next()).thenReturn(Optional.of(createApiaryTableEvent));
     configureMockedEvent(createApiaryTableEvent);
     when(createApiaryTableEvent.getEventType()).thenReturn(EventType.CREATE_TABLE);
 
@@ -100,14 +101,14 @@ public class MessageReaderAdapterTest {
         .parameters(PARAMETERS)
         .build();
 
-    MetaStoreEvent actual = messageReaderAdapter.next();
+    MetaStoreEvent actual = messageReaderAdapter.next().get();
 
     assertMetaStoreEvent(expected, actual);
   }
 
   @Test
   public void apiaryAddPartitionEvent() {
-    when(messageReader.next()).thenReturn(addApiaryPartitionEvent);
+    when(messageReader.next()).thenReturn(Optional.of(addApiaryPartitionEvent));
     configureMockedEvent(addApiaryPartitionEvent);
 
     when(addApiaryPartitionEvent.getPartitionKeys()).thenReturn(PARTITION_KEYS_MAP);
@@ -122,14 +123,14 @@ public class MessageReaderAdapterTest {
         .parameters(PARAMETERS)
         .build();
 
-    MetaStoreEvent actual = messageReaderAdapter.next();
+    MetaStoreEvent actual = messageReaderAdapter.next().get();
 
     assertMetaStoreEvent(expected, actual);
   }
 
   @Test
   public void apiaryAlterPartitionEvent() {
-    when(messageReader.next()).thenReturn(alterApiaryPartitionEvent);
+    when(messageReader.next()).thenReturn(Optional.of(alterApiaryPartitionEvent));
     configureMockedEvent(alterApiaryPartitionEvent);
 
     when(alterApiaryPartitionEvent.getPartitionKeys()).thenReturn(PARTITION_KEYS_MAP);
@@ -144,14 +145,14 @@ public class MessageReaderAdapterTest {
         .parameters(PARAMETERS)
         .build();
 
-    MetaStoreEvent actual = messageReaderAdapter.next();
+    MetaStoreEvent actual = messageReaderAdapter.next().get();
 
     assertMetaStoreEvent(expected, actual);
   }
 
   @Test
   public void apiaryDropPartitionEvent() {
-    when(messageReader.next()).thenReturn(dropApiaryPartitionEvent);
+    when(messageReader.next()).thenReturn(Optional.of(dropApiaryPartitionEvent));
     configureMockedEvent(dropApiaryPartitionEvent);
 
     when(dropApiaryPartitionEvent.getPartitionKeys()).thenReturn(PARTITION_KEYS_MAP);
@@ -167,7 +168,7 @@ public class MessageReaderAdapterTest {
         .environmentContext(EMPTY_MAP)
         .build();
 
-    MetaStoreEvent actual = messageReaderAdapter.next();
+    MetaStoreEvent actual = messageReaderAdapter.next().get();
 
     assertMetaStoreEvent(expected, actual);
   }
@@ -179,7 +180,7 @@ public class MessageReaderAdapterTest {
         .collect(LinkedHashMap::new,
             (m, i) -> m.put(partitionKeys.get(i).getName(), partitionValues.get(0).getValues().get(i)), Map::putAll);
 
-    when(messageReader.next()).thenReturn(insertApiaryTableEvent);
+    when(messageReader.next()).thenReturn(Optional.of(insertApiaryTableEvent));
     configureMockedEvent(insertApiaryTableEvent);
 
     when(insertApiaryTableEvent.getPartitionKeyValues()).thenReturn(partitionKeyValues);
@@ -193,14 +194,14 @@ public class MessageReaderAdapterTest {
         .parameters(PARAMETERS)
         .build();
 
-    MetaStoreEvent actual = messageReaderAdapter.next();
+    MetaStoreEvent actual = messageReaderAdapter.next().get();
 
     assertMetaStoreEvent(expected, actual);
   }
 
   @Test
   public void apiaryDropTableEvent() {
-    when(messageReader.next()).thenReturn(dropApiaryTableEvent);
+    when(messageReader.next()).thenReturn(Optional.of(dropApiaryTableEvent));
     configureMockedEvent(dropApiaryTableEvent);
     when(dropApiaryTableEvent.getEventType()).thenReturn(EventType.DROP_TABLE);
 
@@ -211,15 +212,9 @@ public class MessageReaderAdapterTest {
         .parameters(PARAMETERS)
         .build();
 
-    MetaStoreEvent actual = messageReaderAdapter.next();
+    MetaStoreEvent actual = messageReaderAdapter.next().get();
 
     assertMetaStoreEvent(expected, actual);
-  }
-
-  @Test
-  public void testHasNext() {
-    messageReaderAdapter.hasNext();
-    verify(messageReader).hasNext();
   }
 
   @Test

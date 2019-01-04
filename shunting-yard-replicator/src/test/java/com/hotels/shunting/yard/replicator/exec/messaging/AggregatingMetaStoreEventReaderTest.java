@@ -61,7 +61,6 @@ public class AggregatingMetaStoreEventReaderTest {
 
   @Before
   public void init() {
-    when(delegate.hasNext()).thenReturn(true);
     when(buffer.isEmpty()).thenReturn(true);
     when(buffer.addAll(any())).thenAnswer(new Answer<Boolean>() {
       @Override
