@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator {
 
   private final ReplicationMetaStoreEventListener listener;
   private final MetaStoreEventReader eventReader;
+  private boolean running = false;
 
   @Autowired
   ReplicationRunner(MetaStoreEventReader eventReader, ReplicationMetaStoreEventListener listener) {
@@ -51,7 +52,8 @@ class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator {
 
   @Override
   public void run(ApplicationArguments args) {
-    while (true) {
+    running = true;
+    while (running) {
       try {
         Optional<MetaStoreEvent> event = eventReader.next();
         if (event.isPresent()) {
@@ -70,6 +72,10 @@ class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator {
   @Override
   public int getExitCode() {
     return 0;
+  }
+  
+  public void stop() {
+    running = false;
   }
 
 }

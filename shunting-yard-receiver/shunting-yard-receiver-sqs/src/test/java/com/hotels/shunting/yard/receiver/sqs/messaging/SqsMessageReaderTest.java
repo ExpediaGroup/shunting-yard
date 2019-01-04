@@ -93,7 +93,7 @@ public class SqsMessageReaderTest {
 
   @Test
   public void nextReadsRecordsFromQueue() throws Exception {
-    assertThat(reader.next()).isSameAs(event);
+    assertThat(reader.next().get()).isSameAs(event);
     verify(consumer).receiveMessage(receiveMessageRequestCaptor.capture());
     assertThat(receiveMessageRequestCaptor.getValue().getQueueUrl()).isEqualTo(QUEUE_NAME);
     assertThat(receiveMessageRequestCaptor.getValue().getWaitTimeSeconds()).isEqualTo(WAIT_TIME);

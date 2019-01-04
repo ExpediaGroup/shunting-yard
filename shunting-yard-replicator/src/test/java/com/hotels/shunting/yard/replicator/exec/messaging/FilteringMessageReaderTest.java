@@ -96,7 +96,7 @@ public class FilteringMessageReaderTest {
   @Test
   public void emptyDelegateReader() {
     filteringMessageReader = new FilteringMessageReader(delegate, tableSelector);
-    assertThat(filteringMessageReader.next()).isNull();
+    assertThat(filteringMessageReader.next()).isEqualTo(Optional.empty());
   }
 
 }
