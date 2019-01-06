@@ -16,8 +16,6 @@
 package com.hotels.shunting.yard.replicator.exec.messaging;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
@@ -56,7 +54,10 @@ public class FilteringMessageReaderTest {
     when(listenerEvent3.getDbName()).thenReturn(DB_NAME);
     when(listenerEvent3.getTableName()).thenReturn(TABLE_NAME3);
 
-    when(delegate.next()).thenReturn(Optional.of(listenerEvent1)).thenReturn(Optional.of(listenerEvent2)).thenReturn(Optional.of(listenerEvent3));
+    when(delegate.next())
+        .thenReturn(Optional.of(listenerEvent1))
+        .thenReturn(Optional.of(listenerEvent2))
+        .thenReturn(Optional.of(listenerEvent3));
   }
 
   @Test
@@ -71,6 +72,9 @@ public class FilteringMessageReaderTest {
     assertThat(event.getDbName()).isEqualTo(DB_NAME);
     assertThat(event.getTableName()).isEqualTo(TABLE_NAME1);
 
+    Optional<ListenerEvent> filtered = filteringMessageReader.next();
+    assertThat(filtered).isEqualTo(Optional.empty());
+
     event = filteringMessageReader.next().get();
     assertThat(event.getDbName()).isEqualTo(DB_NAME);
     assertThat(event.getTableName()).isEqualTo(TABLE_NAME3);
@@ -83,6 +87,9 @@ public class FilteringMessageReaderTest {
     when(tableSelector.canProcess(listenerEvent3)).thenReturn(true);
 
     filteringMessageReader = new FilteringMessageReader(delegate, tableSelector);
+
+    Optional<ListenerEvent> filtered = filteringMessageReader.next();
+    assertThat(filtered).isEqualTo(Optional.empty());
 
     ListenerEvent event = filteringMessageReader.next().get();
     assertThat(event.getDbName()).isEqualTo(DB_NAME);

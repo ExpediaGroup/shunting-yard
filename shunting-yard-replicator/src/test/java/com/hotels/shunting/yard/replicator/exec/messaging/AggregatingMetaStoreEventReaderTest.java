@@ -25,6 +25,7 @@ import static org.powermock.api.mockito.PowerMockito.mock;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
@@ -81,11 +82,11 @@ public class AggregatingMetaStoreEventReaderTest {
   @Test
   public void readExceedsTheWindow() {
     List<MetaStoreEvent> events = Arrays.asList(mock(MetaStoreEvent.class));
-    when(delegate.next()).thenAnswer(new Answer<MetaStoreEvent>() {
+    when(delegate.next()).thenAnswer(new Answer<Optional<MetaStoreEvent>>() {
       @Override
-      public MetaStoreEvent answer(InvocationOnMock invocation) throws Throwable {
+      public Optional<MetaStoreEvent> answer(InvocationOnMock invocation) throws Throwable {
         WINDOW_UNITS.sleep(WINDOW + 1);
-        return events.get(0);
+        return Optional.of(events.get(0));
       }
     });
     aggregatingMessageReader.next();
@@ -104,11 +105,11 @@ public class AggregatingMetaStoreEventReaderTest {
         mock(MetaStoreEvent.class),
         mock(MetaStoreEvent.class) };
     final int counter[] = new int[] { 0 };
-    when(delegate.next()).thenAnswer(new Answer<MetaStoreEvent>() {
+    when(delegate.next()).thenAnswer(new Answer<Optional<MetaStoreEvent>>() {
       @Override
-      public MetaStoreEvent answer(InvocationOnMock invocation) throws Throwable {
+      public Optional<MetaStoreEvent> answer(InvocationOnMock invocation) throws Throwable {
         WINDOW_UNITS.sleep(counter[0] < events.length - 1 ? 1 : WINDOW);
-        return events[counter[0]++];
+        return Optional.of(events[counter[0]++]);
       }
     });
     aggregatingMessageReader.next();

@@ -16,6 +16,7 @@
 package com.hotels.shunting.yard.replicator.exec.app;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -23,12 +24,12 @@ import static org.mockito.Mockito.when;
 import java.util.Optional;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.ApplicationArguments;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 import com.hotels.shunting.yard.replicator.exec.messaging.MetaStoreEventReader;
@@ -42,12 +43,24 @@ public class ReplicationRunnerTest {
   private @Mock ReplicationMetaStoreEventListener listener;
   private @Mock MetaStoreEvent event;
 
+  private final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
   private ReplicationRunner runner;
 
   @Before
   public void init() {
-    when(eventReader.next()).thenReturn(Optional.of(event));
-    runner = new ReplicationRunner(eventReader, listener);
+    executor.initialize();
+    runner = new ReplicationRunner(eventReader, listener, executor);
+  }
+
+  private void runRunner() throws InterruptedException {
+    runner.run(args);
+    int attempts = 0;
+    int maxAttempts = 1;
+    while (executor.getThreadPoolExecutor().getActiveCount() < 1 || attempts < maxAttempts) {
+      Thread.sleep(100);
+      attempts++;
+    }
+    runner.stop();
   }
 
   @Test
@@ -55,22 +68,24 @@ public class ReplicationRunnerTest {
     assertThat(runner.getExitCode()).isEqualTo(0);
   }
 
-  @Ignore("TODO: kick runner of in its own thread, then wait for counter for a certain amount of time and either timeout or assert results")
   @Test
-  public void onEvent() {
-    //TODO: need to kick runner off in its own thread
-    runner.run(args);
-    runner.stop();
-    verify(listener).onEvent(event);
+  public void onEvent() throws InterruptedException {
+    when(eventReader.next()).thenReturn(Optional.of(event));
+    runRunner();
+    verify(listener, atLeastOnce()).onEvent(event);
+  }
+
+  @Test
+  public void onEmptyEvent() throws InterruptedException {
+    when(eventReader.next()).thenReturn(Optional.empty());
+    runRunner();
     verifyNoMoreInteractions(listener);
   }
 
-  @Ignore("TODO: kick runner of in its own thread, then wait for counter for a certain amount of time and either timeout or assert results")
   @Test
-  public void onEventProcessingFailure() {
+  public void onEventProcessingFailure() throws InterruptedException {
     when(eventReader.next()).thenThrow(RuntimeException.class);
-    runner.run(args);
-    runner.stop();
+    runRunner();
     verifyNoMoreInteractions(listener);
   }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ObjectError;
 
@@ -48,15 +50,16 @@ public class MetaStoreEventReplication {
 
     int exitCode = -1;
     try {
-      exitCode = SpringApplication.exit(new SpringApplicationBuilder(MetaStoreEventReplication.class)
-          .properties("spring.config.location:${config:null}")
-          .properties("instance.home:${user.home}")
-          .properties("instance.name:${replica-catalog.name}")
-          .properties("instance.workspace:${instance.home}/.shunting-yard")
-          .registerShutdownHook(true)
-          .listeners(new ConfigFileValidationApplicationListener())
-          .build()
-          .run(args));
+      exitCode = SpringApplication
+          .exit(new SpringApplicationBuilder(MetaStoreEventReplication.class)
+              .properties("spring.config.location:${config:null}")
+              .properties("instance.home:${user.home}")
+              .properties("instance.name:${replica-catalog.name}")
+              .properties("instance.workspace:${instance.home}/.shunting-yard")
+              .registerShutdownHook(true)
+              .listeners(new ConfigFileValidationApplicationListener())
+              .build()
+              .run(args));
     } catch (ConfigFileValidationException e) {
       LOG.error(e.getMessage(), e);
       printHelp(e.getErrors());
@@ -92,6 +95,11 @@ public class MetaStoreEventReplication {
     // ManifestAttributes manifestAttributes = new ManifestAttributes(CircusTrain.class);
     // LOG.info("{}", manifestAttributes);
     LOG.info("MetaStoreEventReplication");
+  }
+
+  @Bean
+  public TaskExecutor taskExecutor() {
+    return new SimpleAsyncTaskExecutor();
   }
 
   @Bean

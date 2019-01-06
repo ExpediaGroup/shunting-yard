@@ -48,7 +48,8 @@ public class AggregatingMetaStoreEventReader implements MetaStoreEventReader {
       long maxExecTime = windowUnits.toMillis(window);
       long startTime = System.currentTimeMillis();
       while (startTime + maxExecTime > System.currentTimeMillis()) {
-        //TODO: since delegate.next() effectively blocks until some messages arrive, the below means we could exceed the above aggregate window time
+        // TODO: since delegate.next() effectively blocks until some messages arrive, the below means we could exceed
+        // the above aggregate window time
         Optional<MetaStoreEvent> next = delegate.next();
         if (next.isPresent()) {
           events.add(next.get());
@@ -124,7 +125,7 @@ public class AggregatingMetaStoreEventReader implements MetaStoreEventReader {
         throw new ShuntingYardException("Delegate MessageReader has failed to read messages", cause);
       }
     }
-    return Optional.of(buffer.poll());
+    return Optional.ofNullable(buffer.poll());
   }
 
   private void requestMoreMessagesIfNeeded() {

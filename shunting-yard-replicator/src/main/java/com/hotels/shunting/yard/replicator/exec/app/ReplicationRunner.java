@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.ExitCodeGenerator;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import io.micrometer.core.instrument.Counter;
@@ -34,32 +35,57 @@ import com.hotels.shunting.yard.replicator.exec.messaging.MetaStoreEventReader;
 import com.hotels.shunting.yard.replicator.exec.receiver.ReplicationMetaStoreEventListener;
 
 @Component
-class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator {
+class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator, Runnable {
   private static final Logger log = LoggerFactory.getLogger(ReplicationRunner.class);
 
   private static final Counter SUCCESS_COUNTER = Metrics.counter(MetricsConstant.RECEIVER_SUCCESSES);
   private static final Counter FAILURE_COUNTER = Metrics.counter(MetricsConstant.RECEIVER_FAILURES);
+  private static final Counter EMPTY_COUNTER = Metrics.counter(MetricsConstant.RECEIVER_EMPTY);
 
   private final ReplicationMetaStoreEventListener listener;
   private final MetaStoreEventReader eventReader;
+  private final TaskExecutor executor;
   private boolean running = false;
 
   @Autowired
-  ReplicationRunner(MetaStoreEventReader eventReader, ReplicationMetaStoreEventListener listener) {
+  ReplicationRunner(
+      MetaStoreEventReader eventReader,
+      ReplicationMetaStoreEventListener listener,
+      TaskExecutor executor) {
     this.listener = listener;
     this.eventReader = eventReader;
+    this.executor = executor;
   }
 
   @Override
   public void run(ApplicationArguments args) {
+    executor.execute(this);
+  }
+
+  @Override
+  public int getExitCode() {
+    return 0;
+  }
+
+  public void stop() {
+    log.info("Stopping");
+    running = false;
+  }
+
+  @Override
+  public void run() {
     running = true;
+    log.info("Starting");
     while (running) {
       try {
         Optional<MetaStoreEvent> event = eventReader.next();
         if (event.isPresent()) {
-          log.info("New event received: {}", event);
-          listener.onEvent(event.get());
+          MetaStoreEvent metaStoreEvent = event.get();
+          log.info("New event received: {}", metaStoreEvent);
+          listener.onEvent(metaStoreEvent);
           SUCCESS_COUNTER.increment();
+        } else {
+          EMPTY_COUNTER.increment();
         }
       } catch (Exception e) {
         // ERROR, ShuntingYard and Receiver are keywords
@@ -68,14 +94,4 @@ class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator {
       }
     }
   }
-
-  @Override
-  public int getExitCode() {
-    return 0;
-  }
-  
-  public void stop() {
-    running = false;
-  }
-
 }
