@@ -18,10 +18,13 @@ package com.hotels.shunting.yard.replicator.exec.app;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +32,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.ApplicationArguments;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 import com.hotels.shunting.yard.replicator.exec.messaging.MetaStoreEventReader;
@@ -43,24 +45,28 @@ public class ReplicationRunnerTest {
   private @Mock ReplicationMetaStoreEventListener listener;
   private @Mock MetaStoreEvent event;
 
-  private final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+  private final ExecutorService executor = Executors.newFixedThreadPool(1);
   private ReplicationRunner runner;
 
   @Before
   public void init() {
-    executor.initialize();
-    runner = new ReplicationRunner(eventReader, listener, executor);
+    runner = new ReplicationRunner(eventReader, listener);
   }
 
-  private void runRunner() throws InterruptedException {
-    runner.run(args);
-    int attempts = 0;
-    int maxAttempts = 1;
-    while (executor.getThreadPoolExecutor().getActiveCount() < 1 || attempts < maxAttempts) {
-      Thread.sleep(100);
-      attempts++;
+  private class Runner implements Runnable {
+
+    @Override
+    public void run() {
+      runner.run(args);
     }
+    
+  }
+  
+  private void runRunner() throws InterruptedException {
+    executor.execute(new Runner());
+    Thread.sleep(1000);
     runner.stop();
+    executor.awaitTermination(1, TimeUnit.SECONDS);
   }
 
   @Test
@@ -79,14 +85,14 @@ public class ReplicationRunnerTest {
   public void onEmptyEvent() throws InterruptedException {
     when(eventReader.next()).thenReturn(Optional.empty());
     runRunner();
-    verifyNoMoreInteractions(listener);
+    verifyZeroInteractions(listener);
   }
 
   @Test
   public void onEventProcessingFailure() throws InterruptedException {
     when(eventReader.next()).thenThrow(RuntimeException.class);
     runRunner();
-    verifyNoMoreInteractions(listener);
+    verifyZeroInteractions(listener);
   }
 
 }

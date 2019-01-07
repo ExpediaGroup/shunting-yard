@@ -35,7 +35,7 @@ import com.hotels.shunting.yard.replicator.exec.messaging.MetaStoreEventReader;
 import com.hotels.shunting.yard.replicator.exec.receiver.ReplicationMetaStoreEventListener;
 
 @Component
-class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator, Runnable {
+class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator {
   private static final Logger log = LoggerFactory.getLogger(ReplicationRunner.class);
 
   private static final Counter SUCCESS_COUNTER = Metrics.counter(MetricsConstant.RECEIVER_SUCCESSES);
@@ -44,36 +44,18 @@ class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator, Runnabl
 
   private final ReplicationMetaStoreEventListener listener;
   private final MetaStoreEventReader eventReader;
-  private final TaskExecutor executor;
   private boolean running = false;
 
   @Autowired
   ReplicationRunner(
       MetaStoreEventReader eventReader,
-      ReplicationMetaStoreEventListener listener,
-      TaskExecutor executor) {
+      ReplicationMetaStoreEventListener listener) {
     this.listener = listener;
     this.eventReader = eventReader;
-    this.executor = executor;
   }
 
   @Override
   public void run(ApplicationArguments args) {
-    executor.execute(this);
-  }
-
-  @Override
-  public int getExitCode() {
-    return 0;
-  }
-
-  public void stop() {
-    log.info("Stopping");
-    running = false;
-  }
-
-  @Override
-  public void run() {
     running = true;
     log.info("Starting");
     while (running) {
@@ -94,4 +76,15 @@ class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator, Runnabl
       }
     }
   }
+
+  @Override
+  public int getExitCode() {
+    return 0;
+  }
+
+  public void stop() {
+    log.info("Stopping");
+    running = false;
+  }
+
 }

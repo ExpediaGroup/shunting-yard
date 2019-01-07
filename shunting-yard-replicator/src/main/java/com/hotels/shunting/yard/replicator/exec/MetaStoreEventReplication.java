@@ -98,11 +98,6 @@ public class MetaStoreEventReplication {
   }
 
   @Bean
-  public TaskExecutor taskExecutor() {
-    return new SimpleAsyncTaskExecutor();
-  }
-
-  @Bean
   MetricRegistry runningMetricRegistry() {
     return new MetricRegistry();
   }
