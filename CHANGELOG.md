@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## TBD
 ### Changed
+* Refactored project to remove checkstyle and findbugs warnings, which does not impact functionality.
+* Upgraded `hotels-oss-parent` to 2.3.5 (was 2.1.0).
 * Enforce exception handling [#2](https://github.com/HotelsDotCom/shunting-yard/issues/2)
 
 ### Added
