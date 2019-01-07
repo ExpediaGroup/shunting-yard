@@ -64,7 +64,7 @@ public class ReplicationRunnerTest {
   
   private void runRunner() throws InterruptedException {
     executor.execute(new Runner());
-    Thread.sleep(1000);
+    Thread.sleep(500);
     runner.stop();
     executor.awaitTermination(1, TimeUnit.SECONDS);
   }
