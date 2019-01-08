@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mock;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Queue;
@@ -55,21 +56,13 @@ public class AggregatingMetaStoreEventReaderTest {
 
   private @Mock MetaStoreEventReader delegate;
   private @Mock MetaStoreEventAggregator aggregator;
-  private @Mock Queue<MetaStoreEvent> buffer;
+  private Queue<MetaStoreEvent> buffer = new LinkedList<>();
   private @Captor ArgumentCaptor<List<MetaStoreEvent>> eventsCaptor;
 
   private AggregatingMetaStoreEventReader aggregatingMessageReader;
 
   @Before
   public void init() {
-    when(buffer.isEmpty()).thenReturn(true);
-    when(buffer.addAll(any())).thenAnswer(new Answer<Boolean>() {
-      @Override
-      public Boolean answer(InvocationOnMock invocation) throws Throwable {
-        when(buffer.isEmpty()).thenReturn(false);
-        return Boolean.TRUE;
-      }
-    });
     when(aggregator.aggregate(any())).thenAnswer(new Answer<List<MetaStoreEvent>>() {
       @Override
       public List<MetaStoreEvent> answer(InvocationOnMock invocation) throws Throwable {
@@ -90,10 +83,8 @@ public class AggregatingMetaStoreEventReaderTest {
       }
     });
     aggregatingMessageReader.next();
-    verify(buffer).poll();
     verify(delegate).next();
     verify(aggregator).aggregate(events);
-    verify(buffer).addAll(events);
   }
 
   @Test
@@ -112,13 +103,13 @@ public class AggregatingMetaStoreEventReaderTest {
         return Optional.of(events[counter[0]++]);
       }
     });
-    aggregatingMessageReader.next();
-    verify(buffer).poll();
+    Optional<MetaStoreEvent> next = aggregatingMessageReader.next();
+    assertThat(next.get()).isEqualTo(events[0]);
     verify(delegate, atLeast(2)).next();
     verify(aggregator).aggregate(any());
-    verify(buffer).addAll(eventsCaptor.capture());
-    int numOfEventsCaptured = eventsCaptor.getValue().size();
-    assertThat(eventsCaptor.getValue()).containsExactly(Arrays.copyOf(events, numOfEventsCaptured));
+    int numOfEventsCaptured = buffer.size();
+    assertThat(buffer)
+    .containsAll(Arrays.asList(Arrays.copyOfRange(events, 1, numOfEventsCaptured)));
   }
 
   @Test
@@ -127,6 +118,20 @@ public class AggregatingMetaStoreEventReaderTest {
     expectedException.expect(is(e));
     when(delegate.next()).thenThrow(e);
     aggregatingMessageReader.next();
+  }
+
+  @Test
+  public void emptyAggregate() {
+    when(delegate.next()).thenAnswer(new Answer<Optional<MetaStoreEvent>>() {
+      @Override
+      public Optional<MetaStoreEvent> answer(InvocationOnMock invocation) throws Throwable {
+        WINDOW_UNITS.sleep(WINDOW + 1);
+        return Optional.empty();
+      }
+    });
+
+    Optional<MetaStoreEvent> next = aggregatingMessageReader.next();
+    assertThat(next).isEqualTo(Optional.empty());
   }
 
 }

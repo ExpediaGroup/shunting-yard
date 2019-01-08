@@ -48,8 +48,8 @@ public class AggregatingMetaStoreEventReader implements MetaStoreEventReader {
       long maxExecTime = windowUnits.toMillis(window);
       long startTime = System.currentTimeMillis();
       while (startTime + maxExecTime > System.currentTimeMillis()) {
-        // TODO: since delegate.next() effectively blocks until some messages arrive, the below means we could exceed
-        // the above aggregate window time
+        // TODO: since delegate.next() effectively blocks until some messages arrive, the below
+        // means we could exceed the above aggregate window time
         Optional<MetaStoreEvent> next = delegate.next();
         if (next.isPresent()) {
           events.add(next.get());
@@ -68,24 +68,19 @@ public class AggregatingMetaStoreEventReader implements MetaStoreEventReader {
   private final ExecutorService executor = Executors.newSingleThreadExecutor();
   private Future<List<MetaStoreEvent>> lastSubmittedTask;
 
-  public AggregatingMetaStoreEventReader(MetaStoreEventReader delegate, MetaStoreEventAggregator aggregator) {
+  public AggregatingMetaStoreEventReader(MetaStoreEventReader delegate,
+      MetaStoreEventAggregator aggregator) {
     this(delegate, aggregator, 30, TimeUnit.SECONDS);
   }
 
-  public AggregatingMetaStoreEventReader(
-      MetaStoreEventReader delegate,
-      MetaStoreEventAggregator aggregator,
-      long window,
-      TimeUnit windowUnits) {
+  public AggregatingMetaStoreEventReader(MetaStoreEventReader delegate,
+      MetaStoreEventAggregator aggregator, long window, TimeUnit windowUnits) {
     this(delegate, aggregator, window, windowUnits, new ConcurrentLinkedQueue<>());
   }
 
   @VisibleForTesting
-  AggregatingMetaStoreEventReader(
-      MetaStoreEventReader delegate,
-      MetaStoreEventAggregator aggregator,
-      long window,
-      TimeUnit windowUnits,
+  AggregatingMetaStoreEventReader(MetaStoreEventReader delegate,
+      MetaStoreEventAggregator aggregator, long window, TimeUnit windowUnits,
       Queue<MetaStoreEvent> buffer) {
     this.delegate = delegate;
     this.aggregator = aggregator;
@@ -106,8 +101,12 @@ public class AggregatingMetaStoreEventReader implements MetaStoreEventReader {
     while (buffer.isEmpty()) {
       try {
         synchronized (monitor) {
-          buffer.addAll(lastSubmittedTask.get(window, windowUnits));
+          List<MetaStoreEvent> events = lastSubmittedTask.get(window, windowUnits);
           lastSubmittedTask = null;
+          if (events.isEmpty()) {
+            return Optional.empty();
+          }
+          buffer.addAll(events);
         }
       } catch (TimeoutException e) {
         log.debug("Timeout whilst buffering message. Retrying...", e);
@@ -122,7 +121,8 @@ public class AggregatingMetaStoreEventReader implements MetaStoreEventReader {
         if (cause != null && RuntimeException.class.isAssignableFrom(cause.getClass())) {
           throw (RuntimeException) cause;
         }
-        throw new ShuntingYardException("Delegate MessageReader has failed to read messages", cause);
+        throw new ShuntingYardException("Delegate MessageReader has failed to read messages",
+            cause);
       }
     }
     return Optional.ofNullable(buffer.poll());
