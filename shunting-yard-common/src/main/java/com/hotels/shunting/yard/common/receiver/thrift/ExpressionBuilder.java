@@ -3,8 +3,7 @@
  *
  * Copied from Hive 2.3.0:
  *
- *     https://github.com/apache/hive/blob/rel/release-2.3.0/hcatalog/webhcat/java-client/src/main/java/org/
- *     apache/hive/hcatalog/api/HCatClientHMSImpl.java#L521
+ *     https://github.com/apache/hive/blob/rel/release-2.3.0/hcatalog/webhcat/java-client/src/main/java/org/apache/hive/hcatalog/api/HCatClientHMSImpl.java#L521
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

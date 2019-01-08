@@ -65,8 +65,8 @@ public class CircusTrainRunner {
   }
 
   private OutputStream errStream(Context context) throws IOException {
-    OutputStream outputStream = new FileOutputStream(new File(context.getWorkspace(), "stderr.log"));
-    return new TeeOutputStream(outputStream, logStream());
+    OutputStream log = new FileOutputStream(new File(context.getWorkspace(), "stderr.log"));
+    return new TeeOutputStream(log, logStream());
   }
 
   private OutputStream outStream(Context context) throws IOException {
