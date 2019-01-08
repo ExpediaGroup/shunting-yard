@@ -51,8 +51,8 @@ class ExpressionBuilder {
   public ExpressionBuilder(Table table, Map<String, String> partSpecs) {
     this.partSpecs = partSpecs;
     for (FieldSchema partField : table.getPartitionKeys()) {
-      partColumnTypesMap.put(partField.getName().toLowerCase(),
-          TypeInfoFactory.getPrimitiveTypeInfo(partField.getType()));
+      partColumnTypesMap
+          .put(partField.getName().toLowerCase(), TypeInfoFactory.getPrimitiveTypeInfo(partField.getType()));
     }
   }
 
@@ -61,9 +61,9 @@ class ExpressionBuilder {
   }
 
   private Object getTypeAppropriateValueFor(PrimitiveTypeInfo type, String value) {
-    ObjectInspectorConverters.Converter converter = ObjectInspectorConverters.getConverter(
-        TypeInfoUtils.getStandardJavaObjectInspectorFromTypeInfo(TypeInfoFactory.stringTypeInfo),
-        TypeInfoUtils.getStandardJavaObjectInspectorFromTypeInfo(type));
+    ObjectInspectorConverters.Converter converter = ObjectInspectorConverters
+        .getConverter(TypeInfoUtils.getStandardJavaObjectInspectorFromTypeInfo(TypeInfoFactory.stringTypeInfo),
+            TypeInfoUtils.getStandardJavaObjectInspectorFromTypeInfo(type));
 
     return converter.convert(value);
   }

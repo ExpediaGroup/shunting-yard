@@ -69,8 +69,7 @@ public class AggregatingMetaStoreEventReaderTest {
         return (List<MetaStoreEvent>) invocation.getArgument(0);
       }
     });
-    aggregatingMessageReader =
-        new AggregatingMetaStoreEventReader(delegate, aggregator, WINDOW, WINDOW_UNITS, buffer);
+    aggregatingMessageReader = new AggregatingMetaStoreEventReader(delegate, aggregator, WINDOW, WINDOW_UNITS, buffer);
   }
 
   @Test
@@ -91,9 +90,12 @@ public class AggregatingMetaStoreEventReaderTest {
 
   @Test
   public void multipleReadsBeforeExceedingTheWindow() {
-    MetaStoreEvent[] events =
-        new MetaStoreEvent[] { mock(MetaStoreEvent.class), mock(MetaStoreEvent.class),
-            mock(MetaStoreEvent.class), mock(MetaStoreEvent.class), mock(MetaStoreEvent.class) };
+    MetaStoreEvent[] events = new MetaStoreEvent[] {
+        mock(MetaStoreEvent.class),
+        mock(MetaStoreEvent.class),
+        mock(MetaStoreEvent.class),
+        mock(MetaStoreEvent.class),
+        mock(MetaStoreEvent.class) };
     final int counter[] = new int[] { 0 };
     when(delegate.next()).thenAnswer(new Answer<Optional<MetaStoreEvent>>() {
       @Override
@@ -107,8 +109,7 @@ public class AggregatingMetaStoreEventReaderTest {
     verify(delegate, atLeast(2)).next();
     verify(aggregator).aggregate(any());
     int numOfEventsCaptured = buffer.size();
-    assertThat(buffer)
-    .containsAll(Arrays.asList(Arrays.copyOfRange(events, 1, numOfEventsCaptured)));
+    assertThat(buffer).containsAll(Arrays.asList(Arrays.copyOfRange(events, 1, numOfEventsCaptured)));
   }
 
   @Test
