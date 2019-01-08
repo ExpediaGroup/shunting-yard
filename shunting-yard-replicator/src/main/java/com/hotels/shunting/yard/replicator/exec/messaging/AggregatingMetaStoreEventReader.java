@@ -100,14 +100,15 @@ public class AggregatingMetaStoreEventReader implements MetaStoreEventReader {
     requestMoreMessagesIfNeeded();
     while (buffer.isEmpty()) {
       try {
+        List<MetaStoreEvent> events = null;
         synchronized (monitor) {
-          List<MetaStoreEvent> events = lastSubmittedTask.get(window, windowUnits);
+          events = lastSubmittedTask.get(window, windowUnits);
           lastSubmittedTask = null;
-          if (events.isEmpty()) {
-            return Optional.empty();
-          }
-          buffer.addAll(events);
         }
+        if (events.isEmpty()) {
+          return Optional.empty();
+        }
+        buffer.addAll(events);
       } catch (TimeoutException e) {
         log.debug("Timeout whilst buffering message. Retrying...", e);
       } catch (InterruptedException e) {
@@ -126,6 +127,7 @@ public class AggregatingMetaStoreEventReader implements MetaStoreEventReader {
       }
     }
     return Optional.ofNullable(buffer.poll());
+
   }
 
   private void requestMoreMessagesIfNeeded() {
