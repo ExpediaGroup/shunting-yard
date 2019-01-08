@@ -1,8 +1,0 @@
-replica-catalog:
-  name: aws-data-warehouse
-  hive-metastore-uris: thrift://localhost:9083
-event-receiver:
-  message-reader-factory-class: com.hotels.shunting.yard.receiver.kinesis.messaging.KinesisMessageReaderFactory
-  configuration-properties:
-    com.hotels.shunting.yard.event.receiver.kinesis.stream: bdp-circus-train-event-driven-poc-stream
-    com.hotels.shunting.yard.event.receiver.kinesis.application.id: bdp_CircusTrainEventDrivenReceiver

@@ -1,8 +1,0 @@
-replica-catalog:
-  name: aws-data-warehouse
-  hive-metastore-uris: thrift://localhost:9083
-event-receiver:
-  message-reader-factory-class: com.hotels.shunting.yard.receiver.sqs.messaging.SqsMessageReaderFactory
-  configuration-properties:
-    com.hotels.shunting.yard.event.receiver.sqs.queue: https://sqs.us-west-2.amazonaws.com/440407435941/circus-train-event-driven-poc-queue.fifo
-    com.hotels.shunting.yard.event.receiver.sqs.wait.time.seconds: 15

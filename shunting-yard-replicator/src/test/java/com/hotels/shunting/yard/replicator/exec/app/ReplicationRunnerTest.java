@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,15 @@
 package com.hotels.shunting.yard.replicator.exec.app;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
+
+import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -39,13 +45,28 @@ public class ReplicationRunnerTest {
   private @Mock ReplicationMetaStoreEventListener listener;
   private @Mock MetaStoreEvent event;
 
+  private final ExecutorService executor = Executors.newFixedThreadPool(1);
   private ReplicationRunner runner;
 
   @Before
   public void init() {
-    when(eventReader.hasNext()).thenReturn(true, false);
-    when(eventReader.next()).thenReturn(event);
     runner = new ReplicationRunner(eventReader, listener);
+  }
+
+  private class Runner implements Runnable {
+
+    @Override
+    public void run() {
+      runner.run(args);
+    }
+    
+  }
+  
+  private void runRunner() throws InterruptedException {
+    executor.execute(new Runner());
+    Thread.sleep(500);
+    runner.stop();
+    executor.awaitTermination(1, TimeUnit.SECONDS);
   }
 
   @Test
@@ -54,17 +75,24 @@ public class ReplicationRunnerTest {
   }
 
   @Test
-  public void onEvent() {
-    runner.run(args);
-    verify(listener).onEvent(event);
-    verifyNoMoreInteractions(listener);
+  public void onEvent() throws InterruptedException {
+    when(eventReader.next()).thenReturn(Optional.of(event));
+    runRunner();
+    verify(listener, atLeastOnce()).onEvent(event);
   }
 
   @Test
-  public void onEventProcessingFailure() {
+  public void onEmptyEvent() throws InterruptedException {
+    when(eventReader.next()).thenReturn(Optional.empty());
+    runRunner();
+    verifyZeroInteractions(listener);
+  }
+
+  @Test
+  public void onEventProcessingFailure() throws InterruptedException {
     when(eventReader.next()).thenThrow(RuntimeException.class);
-    runner.run(args);
-    verifyNoMoreInteractions(listener);
+    runRunner();
+    verifyZeroInteractions(listener);
   }
 
 }

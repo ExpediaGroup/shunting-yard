@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,16 +51,19 @@ import com.hotels.shunting.yard.common.messaging.MessageReaderFactory;
 import com.hotels.shunting.yard.replicator.exec.conf.EventReceiverConfiguration;
 import com.hotels.shunting.yard.replicator.exec.conf.ReplicaCatalog;
 import com.hotels.shunting.yard.replicator.exec.conf.SourceCatalog;
+import com.hotels.shunting.yard.replicator.exec.conf.SourceTableFilter;
 import com.hotels.shunting.yard.replicator.exec.event.aggregation.DefaultMetaStoreEventAggregator;
 import com.hotels.shunting.yard.replicator.exec.event.aggregation.MetaStoreEventAggregator;
 import com.hotels.shunting.yard.replicator.exec.external.Marshaller;
 import com.hotels.shunting.yard.replicator.exec.launcher.CircusTrainRunner;
 import com.hotels.shunting.yard.replicator.exec.messaging.AggregatingMetaStoreEventReader;
+import com.hotels.shunting.yard.replicator.exec.messaging.FilteringMessageReader;
 import com.hotels.shunting.yard.replicator.exec.messaging.MessageReaderAdapter;
 import com.hotels.shunting.yard.replicator.exec.messaging.MetaStoreEventReader;
 import com.hotels.shunting.yard.replicator.exec.receiver.CircusTrainReplicationMetaStoreEventListener;
 import com.hotels.shunting.yard.replicator.exec.receiver.ContextFactory;
 import com.hotels.shunting.yard.replicator.exec.receiver.ReplicationMetaStoreEventListener;
+import com.hotels.shunting.yard.replicator.exec.receiver.TableSelector;
 import com.hotels.shunting.yard.replicator.metastore.DefaultMetaStoreClientSupplier;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -150,15 +153,22 @@ public class CommonBeans {
   }
 
   @Bean
+  TableSelector tableSelector(SourceTableFilter targetReplication) {
+    return new TableSelector(targetReplication);
+  }
+
+  @Bean
   MessageReaderAdapter messageReaderAdapter(
       HiveConf replicaHiveConf,
       ApiarySqsMessageDeserializer sqsMessageSerDe,
       EventReceiverConfiguration messageReaderConfig,
-      SourceCatalog sourceCatalog) {
+      SourceCatalog sourceCatalog,
+      TableSelector tableSelector) {
     MessageReaderFactory messaReaderFactory = MessageReaderFactory
         .newInstance(messageReaderConfig.getMessageReaderFactoryClass());
     MessageReader messageReader = messaReaderFactory.newInstance(replicaHiveConf, sqsMessageSerDe);
-    return new MessageReaderAdapter(messageReader, sourceCatalog.getHiveMetastoreUris());
+    FilteringMessageReader filteringMessageReader = new FilteringMessageReader(messageReader, tableSelector);
+    return new MessageReaderAdapter(filteringMessageReader, sourceCatalog.getHiveMetastoreUris());
   }
 
   @Bean
