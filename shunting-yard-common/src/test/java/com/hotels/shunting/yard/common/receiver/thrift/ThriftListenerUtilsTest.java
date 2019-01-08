@@ -73,9 +73,9 @@ public class ThriftListenerUtilsTest {
 
   @Test
   public void singlePartitionCol() {
-    List<ObjectPair<Integer, byte[]>> pairs = ThriftListenerUtils.toObjectPairs(
-        createTable(new FieldSchema("part", "string", null)),
-        Arrays.asList(createPartition("a"), createPartition("b")));
+    List<ObjectPair<Integer, byte[]>> pairs = ThriftListenerUtils
+        .toObjectPairs(createTable(new FieldSchema("part", "string", null)),
+            Arrays.asList(createPartition("a"), createPartition("b")));
     assertThat(pairs.size()).isEqualTo(2);
     for (ObjectPair<Integer, byte[]> pair : pairs) {
       assertThat(pair.getFirst()).isEqualTo(1);
@@ -84,9 +84,9 @@ public class ThriftListenerUtilsTest {
 
   @Test
   public void twoPartitionCols() {
-    List<ObjectPair<Integer, byte[]>> pairs = ThriftListenerUtils.toObjectPairs(
-        createTable(new FieldSchema("part_1", "string", null), new FieldSchema("part_2", "int", null)),
-        Arrays.asList(createPartition("a", "1"), createPartition("b", "2")));
+    List<ObjectPair<Integer, byte[]>> pairs = ThriftListenerUtils
+        .toObjectPairs(createTable(new FieldSchema("part_1", "string", null), new FieldSchema("part_2", "int", null)),
+            Arrays.asList(createPartition("a", "1"), createPartition("b", "2")));
     assertThat(pairs.size()).isEqualTo(2);
     for (ObjectPair<Integer, byte[]> pair : pairs) {
       assertThat(pair.getFirst()).isEqualTo(2);
@@ -95,8 +95,8 @@ public class ThriftListenerUtilsTest {
 
   @Test(expected = RuntimeException.class)
   public void moreValuesThanPartitionCols() {
-    ThriftListenerUtils.toObjectPairs(createTable(new FieldSchema("part", "string", null)),
-        Arrays.asList(createPartition("a", "1")));
+    ThriftListenerUtils
+        .toObjectPairs(createTable(new FieldSchema("part", "string", null)), Arrays.asList(createPartition("a", "1")));
   }
 
 }

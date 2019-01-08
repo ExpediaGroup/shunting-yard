@@ -46,9 +46,7 @@ class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator {
   private boolean running = false;
 
   @Autowired
-  ReplicationRunner(
-      MetaStoreEventReader eventReader,
-      ReplicationMetaStoreEventListener listener) {
+  ReplicationRunner(MetaStoreEventReader eventReader, ReplicationMetaStoreEventListener listener) {
     this.listener = listener;
     this.eventReader = eventReader;
   }

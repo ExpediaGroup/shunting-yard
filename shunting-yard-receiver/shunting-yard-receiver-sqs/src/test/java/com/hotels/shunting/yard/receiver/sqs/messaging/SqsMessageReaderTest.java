@@ -105,7 +105,7 @@ public class SqsMessageReaderTest {
 
   @Test
   public void nextReadsNoRecordsFromQueue() throws Exception {
-    when(receiveMessageResult.getMessages()).thenReturn(ImmutableList.<Message> of()).thenReturn(messages);
+    when(receiveMessageResult.getMessages()).thenReturn(ImmutableList.<Message>of()).thenReturn(messages);
     reader.next();
     verify(consumer, times(2)).receiveMessage(any(ReceiveMessageRequest.class));
     verify(consumer).deleteMessage(any(DeleteMessageRequest.class));

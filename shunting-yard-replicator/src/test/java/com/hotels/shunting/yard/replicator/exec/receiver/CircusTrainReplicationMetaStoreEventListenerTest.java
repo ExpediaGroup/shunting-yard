@@ -188,8 +188,9 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
     when(contextFactory.createContext(event)).thenReturn(context);
     listener.onEvent(event);
     verify(circusTrainRunner).run(context);
-    verify(metaStoreClient).alter_table_with_environmentContext(eq(DATABASE), eq(newTableName), same(newTable),
-        environmentContextCaptor.capture());
+    verify(metaStoreClient)
+        .alter_table_with_environmentContext(eq(DATABASE), eq(newTableName), same(newTable),
+            environmentContextCaptor.capture());
     assertThat(environmentContextCaptor.getValue().getProperties()).isEqualTo(envContextProperties);
   }
 
@@ -210,12 +211,14 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
     when(event.getEnvironmentContext()).thenReturn(envContextProperties);
     when(event.isCascade()).thenReturn(true);
     when(contextFactory.createContext(event)).thenReturn(context);
-    doThrow(RuntimeException.class).when(metaStoreClient).alter_table_with_environmentContext(eq(DATABASE),
-        eq(newTableName), same(newTable), any());
+    doThrow(RuntimeException.class)
+        .when(metaStoreClient)
+        .alter_table_with_environmentContext(eq(DATABASE), eq(newTableName), same(newTable), any());
     listener.onEvent(event);
     verify(circusTrainRunner).run(context);
-    verify(metaStoreClient).alter_table_with_environmentContext(eq(DATABASE), eq(newTableName), same(newTable),
-        environmentContextCaptor.capture());
+    verify(metaStoreClient)
+        .alter_table_with_environmentContext(eq(DATABASE), eq(newTableName), same(newTable),
+            environmentContextCaptor.capture());
     assertThat(environmentContextCaptor.getValue().getProperties()).isEqualTo(envContextProperties);
   }
 
@@ -226,8 +229,8 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
     listener.onEvent(event);
     verifyZeroInteractions(contextFactory);
     verifyZeroInteractions(circusTrainRunner);
-    verify(metaStoreClient, never()).alter_table_with_environmentContext(anyString(), anyString(), any(Table.class),
-        any(EnvironmentContext.class));
+    verify(metaStoreClient, never())
+        .alter_table_with_environmentContext(anyString(), anyString(), any(Table.class), any(EnvironmentContext.class));
   }
 
   @Test
@@ -272,8 +275,8 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
     tableParameters.clear();
     MetaStoreEvent event = mockEvent(DROP_PARTITION);
     listener.onEvent(event);
-    verify(metaStoreClient, never()).dropPartitions(anyString(), anyString(), any(List.class), anyBoolean(),
-        anyBoolean(), anyBoolean());
+    verify(metaStoreClient, never())
+        .dropPartitions(anyString(), anyString(), any(List.class), anyBoolean(), anyBoolean(), anyBoolean());
   }
 
   @Test

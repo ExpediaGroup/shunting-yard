@@ -219,8 +219,9 @@ public class CircusTrainConfigTest {
 
   @Test(expected = NullPointerException.class)
   public void nullTableName() {
-    CircusTrainConfig.builder().replication(ReplicationMode.METADATA_MIRROR, "databaseName", null,
-        "replicaTableLocation");
+    CircusTrainConfig
+        .builder()
+        .replication(ReplicationMode.METADATA_MIRROR, "databaseName", null, "replicaTableLocation");
   }
 
   @Test(expected = NullPointerException.class)
