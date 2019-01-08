@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import static com.hotels.shunting.yard.receiver.sqs.SqsReceiverUtils.waitTimeSec
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Optional;
 
 import org.apache.hadoop.conf.Configuration;
 
@@ -63,21 +64,11 @@ public class SqsMessageReader implements MessageReader {
   }
 
   @Override
-  public void remove() {
-    throw new UnsupportedOperationException("Cannot remove message from SQS topic");
-  }
-
-  @Override
-  public boolean hasNext() {
-    return true;
-  }
-
-  @Override
-  public ListenerEvent next() {
+  public Optional<ListenerEvent> next() {
     readRecordsIfNeeded();
     Message message = records.next();
     delete(message);
-    return eventPayLoad(message);
+    return Optional.of(eventPayLoad(message));
   }
 
   private void readRecordsIfNeeded() {

@@ -13,16 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.shunting.yard.replicator.exec.messaging;
+package com.hotels.shunting.yard.replicator.exec.conf;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
-public interface MetaStoreEventReader extends Closeable {
+@Configuration
+@ConfigurationProperties(prefix = "source-table-filter")
+public class SourceTableFilter {
+  private List<String> tableNames = new ArrayList<>();
 
-  Optional<MetaStoreEvent> next();
+  public List<String> getTableNames() {
+    return tableNames;
+  }
+
+  public void setTableNames(List<String> tableNames) {
+    this.tableNames = tableNames;
+  }
 
 }

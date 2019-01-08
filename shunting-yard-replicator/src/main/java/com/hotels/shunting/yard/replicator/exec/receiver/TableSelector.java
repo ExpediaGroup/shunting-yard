@@ -13,18 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.shunting.yard.common.messaging;
+package com.hotels.shunting.yard.replicator.exec.receiver;
 
-import java.io.Closeable;
-import java.util.Iterator;
-import java.util.Optional;
+import java.util.List;
 
 import com.hotels.shunting.yard.common.event.ListenerEvent;
+import com.hotels.shunting.yard.replicator.exec.conf.SourceTableFilter;
 
-/**
- * A {@code MessageReader} is in charge of retrieving events from the messaging infrastructure.
- */
-public interface MessageReader extends Closeable {
+public class TableSelector {
 
-  Optional<ListenerEvent> next();
+  private final List<String> tableNames;
+
+  public TableSelector(SourceTableFilter targetReplication) {
+    this.tableNames = targetReplication.getTableNames();
+  }
+
+  public boolean canProcess(ListenerEvent listenerEvent) {
+    String tableNameToBeProcessed = listenerEvent.getDbName() + "." + listenerEvent.getTableName();
+    return tableNames.contains(tableNameToBeProcessed);
+  }
+
 }
