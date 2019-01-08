@@ -67,35 +67,30 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
     EventType eventType = listenerEvent.getEventType();
 
     switch (eventType) {
-    case ADD_PARTITION: {
+    case ADD_PARTITION:
       AddPartitionEvent addPartition = (AddPartitionEvent) listenerEvent;
       builder.partitionColumns(new ArrayList<>(addPartition.getPartitionKeys().keySet()));
       builder.partitionValues(addPartition.getPartitionValues());
       break;
-    }
-    case ALTER_PARTITION: {
+    case ALTER_PARTITION:
       AlterPartitionEvent alterPartition = (AlterPartitionEvent) listenerEvent;
       builder.partitionColumns(new ArrayList<>(alterPartition.getPartitionKeys().keySet()));
       builder.partitionValues(alterPartition.getPartitionValues());
       break;
-    }
-    case DROP_PARTITION: {
+    case DROP_PARTITION:
       DropPartitionEvent dropPartition = (DropPartitionEvent) listenerEvent;
       builder.partitionColumns(new ArrayList<>(dropPartition.getPartitionKeys().keySet()));
       builder.partitionValues(dropPartition.getPartitionValues());
       builder.deleteData(true);
       break;
-    }
-    case INSERT: {
+    case INSERT:
       InsertTableEvent insertTable = (InsertTableEvent) listenerEvent;
       builder.partitionColumns(new ArrayList<>(insertTable.getPartitionKeyValues().keySet()));
       builder.partitionValues(new ArrayList<>(insertTable.getPartitionKeyValues().values()));
       break;
-    }
-    case DROP_TABLE: {
+    case DROP_TABLE:
       builder.deleteData(true);
       break;
-    }
 
     default:
       // Handle Non-Partition events
