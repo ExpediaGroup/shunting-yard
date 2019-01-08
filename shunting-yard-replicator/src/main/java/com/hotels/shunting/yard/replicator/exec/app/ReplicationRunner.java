@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.ExitCodeGenerator;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import io.micrometer.core.instrument.Counter;
@@ -75,6 +74,7 @@ class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator {
         FAILURE_COUNTER.increment();
       }
     }
+    log.info("Exiting run loop");
   }
 
   @Override
