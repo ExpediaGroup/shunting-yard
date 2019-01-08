@@ -25,8 +25,6 @@ import org.slf4j.LoggerFactory;
 public class HiveMetricsHelper {
   private static final Logger log = LoggerFactory.getLogger(HiveMetricsHelper.class);
 
-  private HiveMetricsHelper() {}
-
   public static Optional<Long> incrementCounter(String name) {
     try {
       Metrics metrics = MetricsFactory.getInstance();
