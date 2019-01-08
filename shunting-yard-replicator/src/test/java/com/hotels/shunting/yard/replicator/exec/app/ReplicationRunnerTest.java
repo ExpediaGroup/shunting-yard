@@ -59,9 +59,9 @@ public class ReplicationRunnerTest {
     public void run() {
       runner.run(args);
     }
-    
+
   }
-  
+
   private void runRunner() throws InterruptedException {
     executor.execute(new Runner());
     Thread.sleep(500);

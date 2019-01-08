@@ -68,19 +68,24 @@ public class AggregatingMetaStoreEventReader implements MetaStoreEventReader {
   private final ExecutorService executor = Executors.newSingleThreadExecutor();
   private Future<List<MetaStoreEvent>> lastSubmittedTask;
 
-  public AggregatingMetaStoreEventReader(MetaStoreEventReader delegate,
-      MetaStoreEventAggregator aggregator) {
+  public AggregatingMetaStoreEventReader(MetaStoreEventReader delegate, MetaStoreEventAggregator aggregator) {
     this(delegate, aggregator, 30, TimeUnit.SECONDS);
   }
 
-  public AggregatingMetaStoreEventReader(MetaStoreEventReader delegate,
-      MetaStoreEventAggregator aggregator, long window, TimeUnit windowUnits) {
+  public AggregatingMetaStoreEventReader(
+      MetaStoreEventReader delegate,
+      MetaStoreEventAggregator aggregator,
+      long window,
+      TimeUnit windowUnits) {
     this(delegate, aggregator, window, windowUnits, new ConcurrentLinkedQueue<>());
   }
 
   @VisibleForTesting
-  AggregatingMetaStoreEventReader(MetaStoreEventReader delegate,
-      MetaStoreEventAggregator aggregator, long window, TimeUnit windowUnits,
+  AggregatingMetaStoreEventReader(
+      MetaStoreEventReader delegate,
+      MetaStoreEventAggregator aggregator,
+      long window,
+      TimeUnit windowUnits,
       Queue<MetaStoreEvent> buffer) {
     this.delegate = delegate;
     this.aggregator = aggregator;
@@ -122,8 +127,7 @@ public class AggregatingMetaStoreEventReader implements MetaStoreEventReader {
         if (cause != null && RuntimeException.class.isAssignableFrom(cause.getClass())) {
           throw (RuntimeException) cause;
         }
-        throw new ShuntingYardException("Delegate MessageReader has failed to read messages",
-            cause);
+        throw new ShuntingYardException("Delegate MessageReader has failed to read messages", cause);
       }
     }
     return Optional.ofNullable(buffer.poll());
