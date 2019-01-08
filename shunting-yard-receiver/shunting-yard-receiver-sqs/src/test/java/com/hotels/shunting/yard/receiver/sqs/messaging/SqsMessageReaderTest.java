@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,19 +91,9 @@ public class SqsMessageReaderTest {
     verify(consumer).shutdown();
   }
 
-  @Test(expected = UnsupportedOperationException.class)
-  public void remove() {
-    reader.remove();
-  }
-
-  @Test
-  public void hasNext() {
-    assertThat(reader.hasNext()).isTrue();
-  }
-
   @Test
   public void nextReadsRecordsFromQueue() throws Exception {
-    assertThat(reader.next()).isSameAs(event);
+    assertThat(reader.next().get()).isSameAs(event);
     verify(consumer).receiveMessage(receiveMessageRequestCaptor.capture());
     assertThat(receiveMessageRequestCaptor.getValue().getQueueUrl()).isEqualTo(QUEUE_NAME);
     assertThat(receiveMessageRequestCaptor.getValue().getWaitTimeSeconds()).isEqualTo(WAIT_TIME);

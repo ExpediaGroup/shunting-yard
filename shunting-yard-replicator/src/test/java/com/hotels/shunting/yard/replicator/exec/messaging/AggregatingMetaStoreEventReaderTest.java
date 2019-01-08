@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,9 @@ import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mock;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
@@ -54,71 +56,59 @@ public class AggregatingMetaStoreEventReaderTest {
 
   private @Mock MetaStoreEventReader delegate;
   private @Mock MetaStoreEventAggregator aggregator;
-  private @Mock Queue<MetaStoreEvent> buffer;
+  private Queue<MetaStoreEvent> buffer = new LinkedList<>();
   private @Captor ArgumentCaptor<List<MetaStoreEvent>> eventsCaptor;
 
   private AggregatingMetaStoreEventReader aggregatingMessageReader;
 
   @Before
   public void init() {
-    when(delegate.hasNext()).thenReturn(true);
-    when(buffer.isEmpty()).thenReturn(true);
-    when(buffer.addAll(any())).thenAnswer(new Answer<Boolean>() {
-      @Override
-      public Boolean answer(InvocationOnMock invocation) throws Throwable {
-        when(buffer.isEmpty()).thenReturn(false);
-        return Boolean.TRUE;
-      }
-    });
     when(aggregator.aggregate(any())).thenAnswer(new Answer<List<MetaStoreEvent>>() {
       @Override
       public List<MetaStoreEvent> answer(InvocationOnMock invocation) throws Throwable {
         return (List<MetaStoreEvent>) invocation.getArgument(0);
       }
     });
-    aggregatingMessageReader = new AggregatingMetaStoreEventReader(delegate, aggregator, WINDOW, WINDOW_UNITS, buffer);
+    aggregatingMessageReader =
+        new AggregatingMetaStoreEventReader(delegate, aggregator, WINDOW, WINDOW_UNITS, buffer);
   }
 
   @Test
   public void readExceedsTheWindow() {
     List<MetaStoreEvent> events = Arrays.asList(mock(MetaStoreEvent.class));
-    when(delegate.next()).thenAnswer(new Answer<MetaStoreEvent>() {
+    when(delegate.next()).thenAnswer(new Answer<Optional<MetaStoreEvent>>() {
       @Override
-      public MetaStoreEvent answer(InvocationOnMock invocation) throws Throwable {
+      public Optional<MetaStoreEvent> answer(InvocationOnMock invocation) throws Throwable {
         WINDOW_UNITS.sleep(WINDOW + 1);
-        return events.get(0);
+        return Optional.of(events.get(0));
       }
     });
-    aggregatingMessageReader.next();
-    verify(buffer).poll();
+    Optional<MetaStoreEvent> next = aggregatingMessageReader.next();
+    assertThat(next.get()).isEqualTo(events.get(0));
     verify(delegate).next();
     verify(aggregator).aggregate(events);
-    verify(buffer).addAll(events);
   }
 
   @Test
   public void multipleReadsBeforeExceedingTheWindow() {
-    MetaStoreEvent[] events = new MetaStoreEvent[] {
-        mock(MetaStoreEvent.class),
-        mock(MetaStoreEvent.class),
-        mock(MetaStoreEvent.class),
-        mock(MetaStoreEvent.class),
-        mock(MetaStoreEvent.class) };
+    MetaStoreEvent[] events =
+        new MetaStoreEvent[] { mock(MetaStoreEvent.class), mock(MetaStoreEvent.class),
+            mock(MetaStoreEvent.class), mock(MetaStoreEvent.class), mock(MetaStoreEvent.class) };
     final int counter[] = new int[] { 0 };
-    when(delegate.next()).thenAnswer(new Answer<MetaStoreEvent>() {
+    when(delegate.next()).thenAnswer(new Answer<Optional<MetaStoreEvent>>() {
       @Override
-      public MetaStoreEvent answer(InvocationOnMock invocation) throws Throwable {
+      public Optional<MetaStoreEvent> answer(InvocationOnMock invocation) throws Throwable {
         WINDOW_UNITS.sleep(counter[0] < events.length - 1 ? 1 : WINDOW);
-        return events[counter[0]++];
+        return Optional.of(events[counter[0]++]);
       }
     });
-    aggregatingMessageReader.next();
-    verify(buffer).poll();
+    Optional<MetaStoreEvent> next = aggregatingMessageReader.next();
+    assertThat(next.get()).isEqualTo(events[0]);
     verify(delegate, atLeast(2)).next();
     verify(aggregator).aggregate(any());
-    verify(buffer).addAll(eventsCaptor.capture());
-    int numOfEventsCaptured = eventsCaptor.getValue().size();
-    assertThat(eventsCaptor.getValue()).containsExactly(Arrays.copyOf(events, numOfEventsCaptured));
+    int numOfEventsCaptured = buffer.size();
+    assertThat(buffer)
+    .containsAll(Arrays.asList(Arrays.copyOfRange(events, 1, numOfEventsCaptured)));
   }
 
   @Test
@@ -127,6 +117,20 @@ public class AggregatingMetaStoreEventReaderTest {
     expectedException.expect(is(e));
     when(delegate.next()).thenThrow(e);
     aggregatingMessageReader.next();
+  }
+
+  @Test
+  public void emptyAggregate() {
+    when(delegate.next()).thenAnswer(new Answer<Optional<MetaStoreEvent>>() {
+      @Override
+      public Optional<MetaStoreEvent> answer(InvocationOnMock invocation) throws Throwable {
+        WINDOW_UNITS.sleep(WINDOW + 1);
+        return Optional.empty();
+      }
+    });
+
+    Optional<MetaStoreEvent> next = aggregatingMessageReader.next();
+    assertThat(next).isEqualTo(Optional.empty());
   }
 
 }

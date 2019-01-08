@@ -19,6 +19,7 @@ import static org.apache.hadoop.hive.conf.HiveConf.ConfVars.METASTOREURIS;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import com.hotels.shunting.yard.common.event.AddPartitionEvent;
 import com.hotels.shunting.yard.common.event.AlterPartitionEvent;
@@ -45,13 +46,13 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
   }
 
   @Override
-  public boolean hasNext() {
-    return messageReader.hasNext();
-  }
-
-  @Override
-  public MetaStoreEvent next() {
-    return map(messageReader.next());
+  public Optional<MetaStoreEvent> next() {
+    Optional<ListenerEvent> next = messageReader.next();
+    if (next.isPresent()) {
+      return Optional.of(map(next.get()));
+    } else {
+      return Optional.empty();
+    }
   }
 
   private MetaStoreEvent map(ListenerEvent listenerEvent) {

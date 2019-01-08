@@ -51,3 +51,7 @@ Create a `.yml` file under `$SHUNTING_YARD_HOME/conf/` with the correct settings
 
     $SHUNTING_YARD_HOME/bin/replicator.sh --config=$SHUNTING_YARD_HOME/conf/<my-config>.yml
 
+# Legal
+This project is available under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0.html).
+
+Copyright 2016-2019 Expedia Inc.

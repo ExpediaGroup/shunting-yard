@@ -16,44 +16,30 @@
 package com.hotels.shunting.yard.replicator.exec.messaging;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import com.hotels.shunting.yard.common.event.ListenerEvent;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
-import com.hotels.shunting.yard.receiver.sqs.messaging.SqsMessageReader;
 import com.hotels.shunting.yard.replicator.exec.receiver.TableSelector;
 
 public class FilteringMessageReader implements MessageReader {
 
   private final MessageReader delegate;
   private final TableSelector tableSelector;
-  private ListenerEvent current;
 
   public FilteringMessageReader(MessageReader delegate, TableSelector tableSelector) {
     this.delegate = delegate;
     this.tableSelector = tableSelector;
   }
 
-  /**
-   * This hasNext() method is doing more than what a usual hasNext() of an iterator is supposed to do. This is because
-   * the next() function in the {@link SqsMessageReader#next()} is a polling function which waits indefinitely for
-   * message to arrive in the SQS Queue. This will be re-visited to see if the hasNext() method can be removed
-   * altogether from the {@link MessageReader} interface as it always returns true in the implementation.
-   */
   @Override
-  public boolean hasNext() {
-    while (delegate.hasNext()) {
-      current = delegate.next();
-      if (tableSelector.canProcess(current)) {
-        return true;
-      }
+  public Optional<ListenerEvent> next() {
+    Optional<ListenerEvent> next = delegate.next();
+    if (next.isPresent() && tableSelector.canProcess(next.get())) {
+      return next;
+    } else {
+      return Optional.empty();
     }
-    current = null;
-    return false;
-  }
-
-  @Override
-  public ListenerEvent next() {
-    return current;
   }
 
   @Override

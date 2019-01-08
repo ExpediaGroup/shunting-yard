@@ -16,9 +16,9 @@
 package com.hotels.shunting.yard.replicator.exec.messaging;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
+
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -54,60 +54,56 @@ public class FilteringMessageReaderTest {
     when(listenerEvent3.getDbName()).thenReturn(DB_NAME);
     when(listenerEvent3.getTableName()).thenReturn(TABLE_NAME3);
 
-    when(delegate.next()).thenReturn(listenerEvent1).thenReturn(listenerEvent2).thenReturn(listenerEvent3);
+    when(delegate.next())
+        .thenReturn(Optional.of(listenerEvent1))
+        .thenReturn(Optional.of(listenerEvent2))
+        .thenReturn(Optional.of(listenerEvent3));
   }
 
   @Test
   public void selectFirstAndThirdEventButSkipSecond() {
-    when(delegate.hasNext()).thenReturn(true).thenReturn(true).thenReturn(true).thenReturn(false);
     when(tableSelector.canProcess(listenerEvent1)).thenReturn(true);
     when(tableSelector.canProcess(listenerEvent2)).thenReturn(false);
     when(tableSelector.canProcess(listenerEvent3)).thenReturn(true);
 
     filteringMessageReader = new FilteringMessageReader(delegate, tableSelector);
 
-    assertThat(filteringMessageReader.hasNext(), is(true));
-    ListenerEvent event = filteringMessageReader.next();
+    ListenerEvent event = filteringMessageReader.next().get();
     assertThat(event.getDbName()).isEqualTo(DB_NAME);
     assertThat(event.getTableName()).isEqualTo(TABLE_NAME1);
 
-    assertThat(filteringMessageReader.hasNext(), is(true));
-    event = filteringMessageReader.next();
+    Optional<ListenerEvent> filtered = filteringMessageReader.next();
+    assertThat(filtered).isEqualTo(Optional.empty());
+
+    event = filteringMessageReader.next().get();
     assertThat(event.getDbName()).isEqualTo(DB_NAME);
     assertThat(event.getTableName()).isEqualTo(TABLE_NAME3);
-
-    assertThat(filteringMessageReader.hasNext(), is(false));
   }
 
   @Test
   public void skipFirstEventButSelectSecondAndThird() {
-    when(delegate.hasNext()).thenReturn(true).thenReturn(true).thenReturn(true).thenReturn(false);
     when(tableSelector.canProcess(listenerEvent1)).thenReturn(false);
     when(tableSelector.canProcess(listenerEvent2)).thenReturn(true);
     when(tableSelector.canProcess(listenerEvent3)).thenReturn(true);
 
     filteringMessageReader = new FilteringMessageReader(delegate, tableSelector);
 
-    assertThat(filteringMessageReader.hasNext(), is(true));
-    ListenerEvent event = filteringMessageReader.next();
+    Optional<ListenerEvent> filtered = filteringMessageReader.next();
+    assertThat(filtered).isEqualTo(Optional.empty());
+
+    ListenerEvent event = filteringMessageReader.next().get();
     assertThat(event.getDbName()).isEqualTo(DB_NAME);
     assertThat(event.getTableName()).isEqualTo(TABLE_NAME2);
 
-    assertThat(filteringMessageReader.hasNext(), is(true));
-    event = filteringMessageReader.next();
+    event = filteringMessageReader.next().get();
     assertThat(event.getDbName()).isEqualTo(DB_NAME);
     assertThat(event.getTableName()).isEqualTo(TABLE_NAME3);
-
-    assertThat(filteringMessageReader.hasNext(), is(false));
   }
 
   @Test
   public void emptyDelegateReader() {
-    when(delegate.hasNext()).thenReturn(false);
     filteringMessageReader = new FilteringMessageReader(delegate, tableSelector);
-
-    assertThat(filteringMessageReader.hasNext(), is(false));
-    assertThat(filteringMessageReader.next()).isNull();
+    assertThat(filteringMessageReader.next()).isEqualTo(Optional.empty());
   }
 
 }
