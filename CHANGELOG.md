@@ -4,13 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## TBD
+### Changed
+* Refactored project to remove checkstyle and findbugs warnings, which does not impact functionality.
+* Upgraded `hotels-oss-parent` to 2.3.5 (was 2.1.0).
 ### Added
 * Support for selecting the tables to be replicated [#6](https://github.com/HotelsDotCom/shunting-yard/issues/6)
 
 ## [0.0.3] 2018-11-01
 ### Changed
-* Refactored project to remove checkstyle and findbugs warnings, which does not impact functionality.
-* Upgraded `hotels-oss-parent` to 2.3.5 (was 2.1.0).
 * Enforce exception handling [#2](https://github.com/HotelsDotCom/shunting-yard/issues/2)
 
 ### Added
