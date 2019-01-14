@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.apache.hadoop.conf.Configuration;
 
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSCredentialsProviderChain;
+import com.amazonaws.auth.ContainerCredentialsProvider;
 import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 
@@ -49,7 +50,8 @@ public final class SqsReceiverUtils {
 
   public static AWSCredentialsProvider credentials(final Configuration conf) {
     return new AWSCredentialsProviderChain(new EnvironmentVariableCredentialsProvider(),
-        new InstanceProfileCredentialsProvider(false), new ConfigurationAwsCredentialsProvider(conf));
+        new InstanceProfileCredentialsProvider(false), new ContainerCredentialsProvider(),
+        new ConfigurationAwsCredentialsProvider(conf));
   }
 
 }
