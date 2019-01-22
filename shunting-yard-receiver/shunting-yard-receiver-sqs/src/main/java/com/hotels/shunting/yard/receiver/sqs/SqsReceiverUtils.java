@@ -26,7 +26,7 @@ import org.apache.hadoop.conf.Configuration;
 
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSCredentialsProviderChain;
-import com.amazonaws.auth.ContainerCredentialsProvider;
+import com.amazonaws.auth.EC2ContainerCredentialsProviderWrapper;
 import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 
@@ -50,7 +50,7 @@ public final class SqsReceiverUtils {
 
   public static AWSCredentialsProvider credentials(final Configuration conf) {
     return new AWSCredentialsProviderChain(new EnvironmentVariableCredentialsProvider(),
-        new InstanceProfileCredentialsProvider(false), new ContainerCredentialsProvider(),
+        new InstanceProfileCredentialsProvider(false), new EC2ContainerCredentialsProviderWrapper(),
         new ConfigurationAwsCredentialsProvider(conf));
   }
 
