@@ -49,6 +49,7 @@ import com.hotels.shunting.yard.common.io.jackson.JsonMetaStoreEventDeserializer
 import com.hotels.shunting.yard.common.messaging.MessageReader;
 import com.hotels.shunting.yard.common.messaging.MessageReaderFactory;
 import com.hotels.shunting.yard.replicator.exec.conf.EventReceiverConfiguration;
+import com.hotels.shunting.yard.replicator.exec.conf.Graphite;
 import com.hotels.shunting.yard.replicator.exec.conf.ReplicaCatalog;
 import com.hotels.shunting.yard.replicator.exec.conf.SourceCatalog;
 import com.hotels.shunting.yard.replicator.exec.conf.SourceTableFilter;
@@ -122,9 +123,11 @@ public class CommonBeans {
   @Bean
   ReplicationMetaStoreEventListener replicationMetaStoreEventListener(
       HiveConf replicaHiveConf,
-      Supplier<CloseableMetaStoreClient> replicaMetaStoreClientSupplier) {
+      Supplier<CloseableMetaStoreClient> replicaMetaStoreClientSupplier,
+      Graphite graphiteConfig) {
     CloseableMetaStoreClient metaStoreClient = replicaMetaStoreClientSupplier.get();
-    ContextFactory contextFactory = new ContextFactory(replicaHiveConf, metaStoreClient, new Marshaller());
+    ContextFactory contextFactory = new ContextFactory(replicaHiveConf, metaStoreClient, graphiteConfig,
+        new Marshaller());
     return new CircusTrainReplicationMetaStoreEventListener(metaStoreClient, contextFactory, new CircusTrainRunner());
   }
 

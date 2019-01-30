@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -28,12 +29,23 @@ import org.junit.rules.TemporaryFolder;
 import com.google.common.io.Files;
 
 import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
+import com.hotels.shunting.yard.replicator.exec.conf.Graphite;
 
 public class MarshallerTest {
 
   public @Rule TemporaryFolder tmp = new TemporaryFolder();
 
   private final Marshaller marshaller = new Marshaller();
+
+  Graphite graphiteConfig = new Graphite();
+
+  @Before
+  public void init() {
+    graphiteConfig.setHost("localhost");
+    graphiteConfig.setNamespace("com.hotels.bdp.shuntingyard");
+    graphiteConfig.setPrefix("unit-test");
+
+  }
 
   @Test
   public void typical() throws Exception {
@@ -73,6 +85,54 @@ public class MarshallerTest {
         .contains("    database-name: databaseName")
         .contains("    table-name: tableName")
         .contains("    table-location: replicaTableLocation");
+
+  }
+
+  @Test
+  public void typicalWithGraphite() throws Exception {
+    CircusTrainConfig config = CircusTrainConfig
+        .builder()
+        .sourceName("sourceName")
+        .sourceMetaStoreUri("sourceMetaStoreUri")
+        .replicaName("replicaName")
+        .replicaMetaStoreUri("replicaMetaStoreUri")
+        .copierOption("p1", "val1")
+        .copierOption("p2", "val2")
+        .replication(ReplicationMode.FULL, "databaseName", "tableName", "replicaTableLocation", Arrays.asList("part"),
+            Arrays.asList(Arrays.asList("partval")))
+        .graphite(graphiteConfig)
+        .build();
+
+    File file = tmp.newFile("conif.yml");
+    marshaller.marshall(file.getAbsolutePath(), config);
+    assertThat(Files.readLines(file, StandardCharsets.UTF_8))
+        .contains("source-catalog:")
+        .contains("  disable-snapshots: false")
+        .contains("  name: sourceName")
+        .contains("  hive-metastore-uris: sourceMetaStoreUri")
+        .contains("replica-catalog:")
+        .contains("  name: replicaName")
+        .contains("  hive-metastore-uris: replicaMetaStoreUri")
+        .contains("copier-options:")
+        .contains("  p1: val1")
+        .contains("  p2: val2")
+        .contains("table-replications:")
+        .contains("  replication-mode: FULL")
+        .contains("  source-table:")
+        .contains("    database-name: databaseName")
+        .contains("    table-name: tableName")
+        .contains("    partition-filter: (part='partval')")
+        .contains("    partition-limit: 32767")
+        .contains("  replica-table:")
+        .contains("    database-name: databaseName")
+        .contains("    table-name: tableName")
+        .contains("    table-location: replicaTableLocation")
+        .contains("graphite-config:")
+        .contains("  enabled: false")
+        .contains("  host: localhost")
+        .contains("  namespace: com.hotels.bdp.shuntingyard")
+        .contains("  prefix: unit-test");
+
   }
 
   @Test
@@ -86,6 +146,7 @@ public class MarshallerTest {
         .copierOption("p1", "val1")
         .copierOption("p2", "val2")
         .replication(ReplicationMode.FULL, "databaseName", "tableName", "replicaTableLocation")
+        .graphite(graphiteConfig)
         .build();
 
     File file = tmp.newFile("conif.yml");
@@ -111,7 +172,13 @@ public class MarshallerTest {
         .contains("  replica-table:")
         .contains("    database-name: databaseName")
         .contains("    table-name: tableName")
-        .contains("    table-location: replicaTableLocation");
+        .contains("    table-location: replicaTableLocation")
+        .contains("graphite-config:")
+        .contains("  enabled: false")
+        .contains("  host: localhost")
+        .contains("  namespace: com.hotels.bdp.shuntingyard")
+        .contains("  prefix: unit-test");
+
   }
 
 }

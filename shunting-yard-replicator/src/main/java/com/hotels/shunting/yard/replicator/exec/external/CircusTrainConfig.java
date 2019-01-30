@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
 import com.hotels.bdp.circustrain.api.conf.SourceCatalog;
 import com.hotels.bdp.circustrain.api.conf.SourceTable;
 import com.hotels.bdp.circustrain.api.conf.TableReplication;
+import com.hotels.shunting.yard.replicator.exec.conf.Graphite;
 import com.hotels.shunting.yard.replicator.exec.conf.ReplicaCatalog;
 
 public class CircusTrainConfig {
@@ -58,6 +59,7 @@ public class CircusTrainConfig {
     private final ReplicaCatalog replicaCatalog = new ReplicaCatalog();
     private final Map<String, String> copierOptions = new LinkedHashMap<>();
     private final List<TableReplication> tableReplications = new ArrayList<>();
+    private Graphite graphiteConfig;
 
     private Builder() {
       sourceCatalog.setName("source");
@@ -86,6 +88,11 @@ public class CircusTrainConfig {
 
     public Builder copierOption(String key, String value) {
       copierOptions.put(checkNotNull(key, "key is required"), checkNotNull(value, "value is required"));
+      return this;
+    }
+
+    public Builder graphite(Graphite graphiteConfig) {
+      this.graphiteConfig = graphiteConfig;
       return this;
     }
 
@@ -146,12 +153,14 @@ public class CircusTrainConfig {
   private final ReplicaCatalog replicaCatalog;
   private final Map<String, String> copierOptions;
   private final List<TableReplication> tableReplications;
+  private final Graphite graphiteConfig;
 
   private CircusTrainConfig(Builder builder) {
     sourceCatalog = builder.sourceCatalog;
     replicaCatalog = builder.replicaCatalog;
     copierOptions = builder.copierOptions;
     tableReplications = builder.tableReplications;
+    graphiteConfig = builder.graphiteConfig;
   }
 
   public SourceCatalog getSourceCatalog() {
@@ -168,6 +177,10 @@ public class CircusTrainConfig {
 
   public List<TableReplication> getTableReplications() {
     return tableReplications;
+  }
+
+  public Graphite getGraphiteConfig() {
+    return graphiteConfig;
   }
 
 }

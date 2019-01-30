@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,6 +50,7 @@ import com.hotels.bdp.circustrain.api.conf.TableReplication;
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 import com.hotels.shunting.yard.common.ShuntingYardException;
 import com.hotels.shunting.yard.common.event.EventType;
+import com.hotels.shunting.yard.replicator.exec.conf.Graphite;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 import com.hotels.shunting.yard.replicator.exec.external.CircusTrainConfig;
 import com.hotels.shunting.yard.replicator.exec.external.Marshaller;
@@ -63,10 +64,14 @@ public class ContextFactoryTest {
   private static final String REPLICA_DATABASE_LOCATION = "replicaDatabaseLocation";
   private static final String DATABASE = "db";
   private static final String TABLE = "tbl";
+  private static final String GRAPHITE_HOST = "localhost";
+  private static final String GRAPHITE_NAMESPACE = "com.hotels.bdp.shuntingyard";
+  private static final String GRAPHITE_PREFIX = "unit-test";
 
   public @Rule TemporaryFolder tmp = new TemporaryFolder();
 
   private @Mock CloseableMetaStoreClient replicaMetaStoreClient;
+  private @Mock Graphite graphiteConfig;
   private @Mock Marshaller marshaller;
   private @Mock MetaStoreEvent event;
   private @Mock Table replicaTable;
@@ -101,7 +106,11 @@ public class ContextFactoryTest {
 
     when(replicaMetaStoreClient.getTable(DATABASE, TABLE)).thenReturn(replicaTable);
 
-    factory = new ContextFactory(conf, replicaMetaStoreClient, marshaller);
+    when(graphiteConfig.getHost()).thenReturn(GRAPHITE_HOST);
+    when(graphiteConfig.getNamespace()).thenReturn(GRAPHITE_PREFIX);
+    when(graphiteConfig.getPrefix()).thenReturn(GRAPHITE_NAMESPACE);
+
+    factory = new ContextFactory(conf, replicaMetaStoreClient, graphiteConfig, marshaller);
   }
 
   @Test
@@ -123,6 +132,10 @@ public class ContextFactoryTest {
     assertThat(replication.getReplicaTable().getTableName()).isEqualTo(TABLE);
     assertThat(replication.getReplicaTable().getTableLocation())
         .isEqualTo(replicaTableLocation.getParentFile().getAbsolutePath());
+
+    assertThat(circusTrainConfig.getGraphiteConfig().getHost()).isEqualTo(GRAPHITE_HOST);
+    assertThat(circusTrainConfig.getGraphiteConfig().getNamespace()).isEqualTo(GRAPHITE_PREFIX);
+    assertThat(circusTrainConfig.getGraphiteConfig().getPrefix()).isEqualTo(GRAPHITE_NAMESPACE);
   }
 
   @Test
@@ -146,6 +159,10 @@ public class ContextFactoryTest {
     assertThat(replication.getReplicaTable().getTableName()).isEqualTo(TABLE);
     assertThat(replication.getReplicaTable().getTableLocation())
         .isEqualTo(replicaTableLocation.getParentFile().getAbsolutePath());
+
+    assertThat(circusTrainConfig.getGraphiteConfig().getHost()).isEqualTo(GRAPHITE_HOST);
+    assertThat(circusTrainConfig.getGraphiteConfig().getNamespace()).isEqualTo(GRAPHITE_PREFIX);
+    assertThat(circusTrainConfig.getGraphiteConfig().getPrefix()).isEqualTo(GRAPHITE_NAMESPACE);
   }
 
   @Test
@@ -164,6 +181,10 @@ public class ContextFactoryTest {
     assertThat(replication.getReplicaTable().getDatabaseName()).isEqualTo(DATABASE);
     assertThat(replication.getReplicaTable().getTableName()).isEqualTo(TABLE);
     assertThat(replication.getReplicaTable().getTableLocation()).isEqualTo(REPLICA_DATABASE_LOCATION + "/" + TABLE);
+
+    assertThat(circusTrainConfig.getGraphiteConfig().getHost()).isEqualTo(GRAPHITE_HOST);
+    assertThat(circusTrainConfig.getGraphiteConfig().getNamespace()).isEqualTo(GRAPHITE_PREFIX);
+    assertThat(circusTrainConfig.getGraphiteConfig().getPrefix()).isEqualTo(GRAPHITE_NAMESPACE);
   }
 
   @Test(expected = ShuntingYardException.class)

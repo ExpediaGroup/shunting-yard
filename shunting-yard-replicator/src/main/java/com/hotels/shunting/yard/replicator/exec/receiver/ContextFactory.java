@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 import com.hotels.shunting.yard.common.PropertyUtils;
 import com.hotels.shunting.yard.common.ShuntingYardException;
+import com.hotels.shunting.yard.replicator.exec.conf.Graphite;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 import com.hotels.shunting.yard.replicator.exec.external.CircusTrainConfig;
 import com.hotels.shunting.yard.replicator.exec.external.Marshaller;
@@ -51,12 +52,18 @@ public class ContextFactory {
 
   private final Configuration conf;
   private final CloseableMetaStoreClient metaStoreClient;
+  private final Graphite graphiteConfig;
   private final Marshaller marshaller;
 
-  public ContextFactory(Configuration conf, CloseableMetaStoreClient metaStoreClient, Marshaller marshaller) {
+  public ContextFactory(
+      Configuration conf,
+      CloseableMetaStoreClient metaStoreClient,
+      Graphite graphiteConfig,
+      Marshaller marshaller) {
     this.conf = conf;
     this.metaStoreClient = metaStoreClient;
     this.marshaller = marshaller;
+    this.graphiteConfig = graphiteConfig;
   }
 
   private String dir(MetaStoreEvent event) {
@@ -113,6 +120,7 @@ public class ContextFactory {
         .replicaMetaStoreUri(conf.get(METASTOREURIS.varname))
         .replication(ReplicationMode.FULL, event.getDatabaseName(), event.getTableName(), replicaTableLocation,
             event.getPartitionColumns(), event.getPartitionValues())
+        .graphite(graphiteConfig)
         .build();
     return config;
   }
