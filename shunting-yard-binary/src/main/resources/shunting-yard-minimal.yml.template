@@ -13,3 +13,8 @@ source-table-filter:
   table-names:
     - db1.table_1
     - db2.table_2
+graphite-config:
+  enabled: true
+  host: localhost
+  namespace: com.hotels.bdp
+  prefix: dev
