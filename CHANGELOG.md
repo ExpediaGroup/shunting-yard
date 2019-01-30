@@ -3,14 +3,28 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## TBD
+## [0.0.8] TBD
+### Added
+* Support to pass Graphite configuration to Shunting-Yard.
+
+## [0.0.7] 2019-01-28
+### Added
+* log4j.xml to be packaged with Shunting-Yard Binary.
+
+## [0.0.6] 2019-01-22
 ### Changed
 * Upgraded `hive` to 2.3.4 (was 2.3.0).
+* ContainerCredentialsProvider to a more robust EC2ContainerCredentialsProvider.
+
+## [0.0.5] 2019-01-14
+### Added
+* Support to read AWS Credentials from within the Elastic Container Service Task using ContainerCredentialsProvider.
 
 ## [0.0.4] 2019-01-08
 ### Changed
 * Refactored project to remove checkstyle and findbugs warnings, which does not impact functionality.
 * Upgraded `hotels-oss-parent` to 2.3.5 (was 2.1.0).
+
 ### Added
 * Support for selecting the tables to be replicated [#6](https://github.com/HotelsDotCom/shunting-yard/issues/6).
 
