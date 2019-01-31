@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package com.hotels.shunting.yard.replicator.exec.app;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import static com.hotels.shunting.yard.replicator.exec.app.ConfigurationVariables.CT_CONFIG;
 import static com.hotels.shunting.yard.replicator.exec.app.ConfigurationVariables.WORKSPACE;
 
 import org.junit.Test;
@@ -29,7 +30,7 @@ public class ConfigurationVariablesTest {
 
   @Test
   public void numberOfProperties() {
-    assertThat(ConfigurationVariables.values().length).isEqualTo(1);
+    assertThat(ConfigurationVariables.values().length).isEqualTo(2);
   }
 
   @Test
@@ -37,6 +38,13 @@ public class ConfigurationVariablesTest {
     assertThat(WORKSPACE.unPrefixedKey()).isEqualTo("workspace");
     assertThat(WORKSPACE.key()).isEqualTo(prefixedKey("workspace"));
     assertThat(WORKSPACE.defaultValue()).isNull();
+  }
+
+  @Test
+  public void circusTrainConfig() {
+    assertThat(CT_CONFIG.unPrefixedKey()).isEqualTo("ct-config");
+    assertThat(CT_CONFIG.key()).isEqualTo(prefixedKey("ct-config"));
+    assertThat(CT_CONFIG.defaultValue()).isNull();
   }
 
 }

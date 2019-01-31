@@ -30,8 +30,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.task.SimpleAsyncTaskExecutor;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ObjectError;
 
@@ -52,7 +50,7 @@ public class MetaStoreEventReplication {
     try {
       exitCode = SpringApplication
           .exit(new SpringApplicationBuilder(MetaStoreEventReplication.class)
-              .properties("spring.config.location:${config:null}")
+              .properties("spring.config.location:${config:null},${ct-config:null}")
               .properties("instance.home:${user.home}")
               .properties("instance.name:${replica-catalog.name}")
               .properties("instance.workspace:${instance.home}/.shunting-yard")

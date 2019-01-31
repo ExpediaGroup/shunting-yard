@@ -47,7 +47,11 @@ public class CircusTrainRunner {
       CommandLine cli = CommandLine
           .parse(String.format("%s/%s", getProcEnvironment().get(CIRCUS_TRAIN_HOME_ENV_VAR), CIRCUS_TRAIN_HOME_SCRIPT));
       cli.addArgument("--config=${CONFIG_LOCATION}");
-      cli.setSubstitutionMap(ImmutableMap.of("CONFIG_LOCATION", context.getConfigLocation()));
+      cli.addArgument("--config=${CT_CONFIG_LOCATION}");
+      cli
+          .setSubstitutionMap(ImmutableMap
+              .of("CONFIG_LOCATION", context.getConfigLocation(), "CT_CONFIG_LOCATION",
+                  context.getCircusTrainConfigLocation()));
 
       Executor executor = new DefaultExecutor();
       executor.setWorkingDirectory(new File(context.getWorkspace()));

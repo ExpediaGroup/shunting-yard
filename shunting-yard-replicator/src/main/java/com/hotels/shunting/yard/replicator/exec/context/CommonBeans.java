@@ -18,6 +18,7 @@ package com.hotels.shunting.yard.replicator.exec.context;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import static com.hotels.shunting.yard.replicator.exec.app.ConfigurationVariables.CT_CONFIG;
 import static com.hotels.shunting.yard.replicator.exec.app.ConfigurationVariables.WORKSPACE;
 
 import java.util.HashMap;
@@ -72,10 +73,14 @@ public class CommonBeans {
   private static final Logger LOG = LoggerFactory.getLogger(CommonBeans.class);
 
   @Bean
-  Configuration baseConfiguration(@Value("${instance.workspace}") String workspace) {
+  Configuration baseConfiguration(
+      @Value("${instance.workspace}") String workspace,
+      @Value("${ct-config}") String circusTrainConfigLocation) {
     checkNotNull(workspace, "instance.workspace is required");
+    checkNotNull(workspace, "ct-config is required");
     Configuration baseConf = new Configuration();
     baseConf.set(WORKSPACE.key(), workspace);
+    baseConf.set(CT_CONFIG.key(), circusTrainConfigLocation);
     return baseConf;
   }
 
