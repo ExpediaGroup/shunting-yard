@@ -77,7 +77,7 @@ public class CommonBeans {
       @Value("${instance.workspace}") String workspace,
       @Value("${ct-config}") String circusTrainConfigLocation) {
     checkNotNull(workspace, "instance.workspace is required");
-    checkNotNull(workspace, "ct-config is required");
+    checkNotNull(circusTrainConfigLocation, "ct-config is required");
     Configuration baseConf = new Configuration();
     baseConf.set(WORKSPACE.key(), workspace);
     baseConf.set(CT_CONFIG.key(), circusTrainConfigLocation);
