@@ -48,7 +48,7 @@ Graphite configurations can be passed to Shunting Yard using an optional `--ct-c
 
     graphite:
       enabled: true
-      host: localhost:2003
+      host: graphite-host:2003
       namespace: com.company.shuntingyard
       prefix: dev
 
