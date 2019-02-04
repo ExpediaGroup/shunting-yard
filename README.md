@@ -44,7 +44,7 @@ Create a `.yml` file under `$SHUNTING_YARD_HOME/conf/` with the correct settings
 
 Graphite configurations can be passed to Shunting Yard using an optional `--ct-config` argument which takes a YAML file and passes it directly to internal Circus Train instance. Refer to the Circus-Train README [here](https://github.com/HotelsDotCom/circus-train#graphite) for more details.
 
-####Sample ct-config.yml:
+#### Sample ct-config.yml:
 
     graphite:
       enabled: true
