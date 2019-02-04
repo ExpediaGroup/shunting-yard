@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mock;
 
+import static com.hotels.shunting.yard.replicator.exec.app.ConfigurationVariables.CT_CONFIG;
 import static com.hotels.shunting.yard.replicator.exec.app.ConfigurationVariables.WORKSPACE;
 
 import java.io.File;
@@ -123,6 +124,7 @@ public class ContextFactoryTest {
     assertThat(replication.getReplicaTable().getTableName()).isEqualTo(TABLE);
     assertThat(replication.getReplicaTable().getTableLocation())
         .isEqualTo(replicaTableLocation.getParentFile().getAbsolutePath());
+    assertThat(context.getCircusTrainConfigLocation()).isNull();
   }
 
   @Test
@@ -146,6 +148,7 @@ public class ContextFactoryTest {
     assertThat(replication.getReplicaTable().getTableName()).isEqualTo(TABLE);
     assertThat(replication.getReplicaTable().getTableLocation())
         .isEqualTo(replicaTableLocation.getParentFile().getAbsolutePath());
+    assertThat(context.getCircusTrainConfigLocation()).isNull();
   }
 
   @Test
@@ -164,6 +167,32 @@ public class ContextFactoryTest {
     assertThat(replication.getReplicaTable().getDatabaseName()).isEqualTo(DATABASE);
     assertThat(replication.getReplicaTable().getTableName()).isEqualTo(TABLE);
     assertThat(replication.getReplicaTable().getTableLocation()).isEqualTo(REPLICA_DATABASE_LOCATION + "/" + TABLE);
+    assertThat(context.getCircusTrainConfigLocation()).isNull();
+  }
+
+  @Test
+  public void ctConfigLocationGetsAddedToTheContextWhenProvided() {
+    conf.set(CT_CONFIG.key(), "ct-config.yml");
+    when(event.getPartitionColumns()).thenReturn(Arrays.asList("s", "i"));
+    when(event.getPartitionValues()).thenReturn(Arrays.asList(Arrays.asList("a", "1"), Arrays.asList("b", "2")));
+    Context context = factory.createContext(event);
+    assertThat(context.getWorkspace()).matches(actualWorkspacePattern);
+    assertThat(context.getConfigLocation()).matches(actualWorkspacePattern + "/replication.yml");
+    verify(marshaller).marshall(eq(context.getConfigLocation()), circusTrainConfigCaptor.capture());
+    CircusTrainConfig circusTrainConfig = circusTrainConfigCaptor.getValue();
+    assertThat(circusTrainConfig.getSourceCatalog().getHiveMetastoreUris()).isEqualTo(SOURCE_METASTORE_URIS);
+    assertThat(circusTrainConfig.getReplicaCatalog().getHiveMetastoreUris()).isEqualTo(REPLICA_METASTORE_URIS);
+    assertThat(circusTrainConfig.getTableReplications()).hasSize(1);
+    TableReplication replication = circusTrainConfig.getTableReplications().get(0);
+    assertThat(replication.getReplicationMode()).isSameAs(ReplicationMode.FULL);
+    assertThat(replication.getSourceTable().getTableName()).isEqualTo(TABLE);
+    assertThat(replication.getSourceTable().getTableName()).isEqualTo(TABLE);
+    assertThat(replication.getSourceTable().getPartitionFilter()).isEqualTo("(s='a' AND i='1') OR (s='b' AND i='2')");
+    assertThat(replication.getReplicaTable().getDatabaseName()).isEqualTo(DATABASE);
+    assertThat(replication.getReplicaTable().getTableName()).isEqualTo(TABLE);
+    assertThat(replication.getReplicaTable().getTableLocation())
+        .isEqualTo(replicaTableLocation.getParentFile().getAbsolutePath());
+    assertThat(context.getCircusTrainConfigLocation()).isEqualTo("ct-config.yml");
   }
 
   @Test(expected = ShuntingYardException.class)

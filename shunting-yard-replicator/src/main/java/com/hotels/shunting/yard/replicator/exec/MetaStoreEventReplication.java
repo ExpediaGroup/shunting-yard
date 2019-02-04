@@ -50,7 +50,7 @@ public class MetaStoreEventReplication {
     try {
       exitCode = SpringApplication
           .exit(new SpringApplicationBuilder(MetaStoreEventReplication.class)
-              .properties("spring.config.location:${config:null},${ct-config:null}")
+              .properties("spring.config.location:${config:null}")
               .properties("instance.home:${user.home}")
               .properties("instance.name:${replica-catalog.name}")
               .properties("instance.workspace:${instance.home}/.shunting-yard")

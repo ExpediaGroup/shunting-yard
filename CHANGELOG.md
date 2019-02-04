@@ -3,9 +3,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## TBD
+## [0.0.8] TBD
+### Added
+* Support for passing certain configurations like Graphite directly to internal CT instance using `--ct-config` argument.
+
+## [0.0.7] 2019-01-28
+### Added
+* log4j.xml to be packaged with Shunting-Yard Binary.
+
+## [0.0.6] 2019-01-22
 ### Changed
 * Upgraded `hive` to 2.3.4 (was 2.3.0).
+* ContainerCredentialsProvider to a more robust EC2ContainerCredentialsProvider.
+
+## [0.0.5] 2019-01-14
+### Added
+* Support to read AWS Credentials from within the Elastic Container Service Task using ContainerCredentialsProvider.
 
 ## [0.0.4] 2019-01-08
 ### Changed
