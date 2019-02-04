@@ -39,6 +39,18 @@ Copy the file _shunting-yard-binary/target/shunting-yard-binary-\<version\>-bin.
 Create a `.yml` file under `$SHUNTING_YARD_HOME/conf/` with the correct settings to talk to the messaging infrastructure. You can find guidelines in the file _shunting-yard-minimal.yml.template_. Once this is done you are all set up to run the service:
 
     $SHUNTING_YARD_HOME/bin/replicator.sh --config=$SHUNTING_YARD_HOME/conf/<my-config>.yml
+    
+### Graphite Metrics
+
+Graphite configurations can be passed to Shunting Yard using an optional `--ct-config` argument which takes a YAML file and passes it directly to internal Circus Train instance. Refer to the Circus-Train README [here](https://github.com/HotelsDotCom/circus-train#graphite) for more details.
+
+Sample ct-config.yml:
+
+    graphite:
+      enabled: true
+      host: localhost:2003
+      namespace: com.company.shuntingyard
+      prefix: dev
 
 # Legal
 This project is available under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0.html).
