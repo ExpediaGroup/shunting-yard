@@ -47,7 +47,6 @@ Graphite configurations can be passed to Shunting Yard using an optional `--ct-c
 #### Sample ct-config.yml:
 
     graphite:
-      enabled: true
       host: graphite-host:2003
       namespace: com.company.shuntingyard
       prefix: dev
