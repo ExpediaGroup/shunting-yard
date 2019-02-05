@@ -49,6 +49,7 @@ import com.hotels.shunting.yard.common.io.jackson.ApiarySqsMessageDeserializer;
 import com.hotels.shunting.yard.common.io.jackson.JsonMetaStoreEventDeserializer;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
 import com.hotels.shunting.yard.common.messaging.MessageReaderFactory;
+import com.hotels.shunting.yard.replicator.exec.ConfigFileValidator;
 import com.hotels.shunting.yard.replicator.exec.conf.EventReceiverConfiguration;
 import com.hotels.shunting.yard.replicator.exec.conf.ReplicaCatalog;
 import com.hotels.shunting.yard.replicator.exec.conf.SourceCatalog;
@@ -81,6 +82,7 @@ public class CommonBeans {
     baseConf.set(WORKSPACE.key(), workspace);
 
     if (circusTrainConfigLocation != null) {
+      ConfigFileValidator.validate(circusTrainConfigLocation);
       baseConf.set(CT_CONFIG.key(), circusTrainConfigLocation);
     }
     return baseConf;

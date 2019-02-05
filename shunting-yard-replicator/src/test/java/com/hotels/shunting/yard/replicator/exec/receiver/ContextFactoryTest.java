@@ -112,16 +112,11 @@ public class ContextFactoryTest {
     assertThat(context.getConfigLocation()).matches(actualWorkspacePattern + "/replication.yml");
     verify(marshaller).marshall(eq(context.getConfigLocation()), circusTrainConfigCaptor.capture());
     CircusTrainConfig circusTrainConfig = circusTrainConfigCaptor.getValue();
-    assertThat(circusTrainConfig.getSourceCatalog().getHiveMetastoreUris()).isEqualTo(SOURCE_METASTORE_URIS);
-    assertThat(circusTrainConfig.getReplicaCatalog().getHiveMetastoreUris()).isEqualTo(REPLICA_METASTORE_URIS);
-    assertThat(circusTrainConfig.getTableReplications()).hasSize(1);
+    assertCircusTrainConfig(circusTrainConfig);
     TableReplication replication = circusTrainConfig.getTableReplications().get(0);
-    assertThat(replication.getReplicationMode()).isSameAs(ReplicationMode.FULL);
-    assertThat(replication.getSourceTable().getTableName()).isEqualTo(TABLE);
-    assertThat(replication.getSourceTable().getTableName()).isEqualTo(TABLE);
+    assertTableReplication(replication);
+
     assertThat(replication.getSourceTable().getPartitionFilter()).isBlank();
-    assertThat(replication.getReplicaTable().getDatabaseName()).isEqualTo(DATABASE);
-    assertThat(replication.getReplicaTable().getTableName()).isEqualTo(TABLE);
     assertThat(replication.getReplicaTable().getTableLocation())
         .isEqualTo(replicaTableLocation.getParentFile().getAbsolutePath());
     assertThat(context.getCircusTrainConfigLocation()).isNull();
@@ -136,16 +131,10 @@ public class ContextFactoryTest {
     assertThat(context.getConfigLocation()).matches(actualWorkspacePattern + "/replication.yml");
     verify(marshaller).marshall(eq(context.getConfigLocation()), circusTrainConfigCaptor.capture());
     CircusTrainConfig circusTrainConfig = circusTrainConfigCaptor.getValue();
-    assertThat(circusTrainConfig.getSourceCatalog().getHiveMetastoreUris()).isEqualTo(SOURCE_METASTORE_URIS);
-    assertThat(circusTrainConfig.getReplicaCatalog().getHiveMetastoreUris()).isEqualTo(REPLICA_METASTORE_URIS);
-    assertThat(circusTrainConfig.getTableReplications()).hasSize(1);
+    assertCircusTrainConfig(circusTrainConfig);
     TableReplication replication = circusTrainConfig.getTableReplications().get(0);
-    assertThat(replication.getReplicationMode()).isSameAs(ReplicationMode.FULL);
-    assertThat(replication.getSourceTable().getTableName()).isEqualTo(TABLE);
-    assertThat(replication.getSourceTable().getTableName()).isEqualTo(TABLE);
+    assertTableReplication(replication);
     assertThat(replication.getSourceTable().getPartitionFilter()).isEqualTo("(s='a' AND i='1') OR (s='b' AND i='2')");
-    assertThat(replication.getReplicaTable().getDatabaseName()).isEqualTo(DATABASE);
-    assertThat(replication.getReplicaTable().getTableName()).isEqualTo(TABLE);
     assertThat(replication.getReplicaTable().getTableLocation())
         .isEqualTo(replicaTableLocation.getParentFile().getAbsolutePath());
     assertThat(context.getCircusTrainConfigLocation()).isNull();
@@ -161,11 +150,9 @@ public class ContextFactoryTest {
     Context context = factory.createContext(event);
     verify(marshaller).marshall(eq(context.getConfigLocation()), circusTrainConfigCaptor.capture());
     CircusTrainConfig circusTrainConfig = circusTrainConfigCaptor.getValue();
+    assertThat(circusTrainConfig.getTableReplications()).hasSize(1);
     TableReplication replication = circusTrainConfig.getTableReplications().get(0);
-    assertThat(replication.getSourceTable().getTableName()).isEqualTo(TABLE);
-    assertThat(replication.getSourceTable().getTableName()).isEqualTo(TABLE);
-    assertThat(replication.getReplicaTable().getDatabaseName()).isEqualTo(DATABASE);
-    assertThat(replication.getReplicaTable().getTableName()).isEqualTo(TABLE);
+    assertTableReplication(replication);
     assertThat(replication.getReplicaTable().getTableLocation()).isEqualTo(REPLICA_DATABASE_LOCATION + "/" + TABLE);
     assertThat(context.getCircusTrainConfigLocation()).isNull();
   }
@@ -180,16 +167,10 @@ public class ContextFactoryTest {
     assertThat(context.getConfigLocation()).matches(actualWorkspacePattern + "/replication.yml");
     verify(marshaller).marshall(eq(context.getConfigLocation()), circusTrainConfigCaptor.capture());
     CircusTrainConfig circusTrainConfig = circusTrainConfigCaptor.getValue();
-    assertThat(circusTrainConfig.getSourceCatalog().getHiveMetastoreUris()).isEqualTo(SOURCE_METASTORE_URIS);
-    assertThat(circusTrainConfig.getReplicaCatalog().getHiveMetastoreUris()).isEqualTo(REPLICA_METASTORE_URIS);
-    assertThat(circusTrainConfig.getTableReplications()).hasSize(1);
+    assertCircusTrainConfig(circusTrainConfig);
     TableReplication replication = circusTrainConfig.getTableReplications().get(0);
-    assertThat(replication.getReplicationMode()).isSameAs(ReplicationMode.FULL);
-    assertThat(replication.getSourceTable().getTableName()).isEqualTo(TABLE);
-    assertThat(replication.getSourceTable().getTableName()).isEqualTo(TABLE);
+    assertTableReplication(replication);
     assertThat(replication.getSourceTable().getPartitionFilter()).isEqualTo("(s='a' AND i='1') OR (s='b' AND i='2')");
-    assertThat(replication.getReplicaTable().getDatabaseName()).isEqualTo(DATABASE);
-    assertThat(replication.getReplicaTable().getTableName()).isEqualTo(TABLE);
     assertThat(replication.getReplicaTable().getTableLocation())
         .isEqualTo(replicaTableLocation.getParentFile().getAbsolutePath());
     assertThat(context.getCircusTrainConfigLocation()).isEqualTo("ct-config.yml");
@@ -201,6 +182,20 @@ public class ContextFactoryTest {
     when(replicaMetaStoreClient.getTable(DATABASE, TABLE)).thenThrow(NoSuchObjectException.class);
     when(replicaMetaStoreClient.getDatabase(DATABASE)).thenThrow(TException.class);
     factory.createContext(event);
+  }
+
+  private void assertCircusTrainConfig(CircusTrainConfig circusTrainConfig) {
+    assertThat(circusTrainConfig.getSourceCatalog().getHiveMetastoreUris()).isEqualTo(SOURCE_METASTORE_URIS);
+    assertThat(circusTrainConfig.getReplicaCatalog().getHiveMetastoreUris()).isEqualTo(REPLICA_METASTORE_URIS);
+    assertThat(circusTrainConfig.getTableReplications()).hasSize(1);
+  }
+
+  private void assertTableReplication(TableReplication replication) {
+    assertThat(replication.getReplicationMode()).isSameAs(ReplicationMode.FULL);
+    assertThat(replication.getSourceTable().getDatabaseName()).isEqualTo(DATABASE);
+    assertThat(replication.getSourceTable().getTableName()).isEqualTo(TABLE);
+    assertThat(replication.getReplicaTable().getDatabaseName()).isEqualTo(DATABASE);
+    assertThat(replication.getReplicaTable().getTableName()).isEqualTo(TABLE);
   }
 
 }
