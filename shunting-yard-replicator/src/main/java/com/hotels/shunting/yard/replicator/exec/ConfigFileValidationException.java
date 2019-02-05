@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,13 @@ import org.springframework.validation.ObjectError;
 
 import com.hotels.shunting.yard.common.ShuntingYardException;
 
-class ConfigFileValidationException extends ShuntingYardException {
+public class ConfigFileValidationException extends ShuntingYardException {
 
   private static final long serialVersionUID = 1L;
 
   private final List<ObjectError> errors = new ArrayList<>();
 
-  ConfigFileValidationException(List<String> errors) {
+  public ConfigFileValidationException(List<String> errors) {
     super("Error reading config file(s).");
     for (String error : errors) {
       this.errors.add(new ObjectError("config-file-error", error));

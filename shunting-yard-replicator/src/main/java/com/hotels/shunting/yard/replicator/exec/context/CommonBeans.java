@@ -18,6 +18,7 @@ package com.hotels.shunting.yard.replicator.exec.context;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import static com.hotels.shunting.yard.replicator.exec.app.ConfigurationVariables.CT_CONFIG;
 import static com.hotels.shunting.yard.replicator.exec.app.ConfigurationVariables.WORKSPACE;
 
 import java.util.HashMap;
@@ -48,6 +49,7 @@ import com.hotels.shunting.yard.common.io.jackson.ApiarySqsMessageDeserializer;
 import com.hotels.shunting.yard.common.io.jackson.JsonMetaStoreEventDeserializer;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
 import com.hotels.shunting.yard.common.messaging.MessageReaderFactory;
+import com.hotels.shunting.yard.replicator.exec.ConfigFileValidator;
 import com.hotels.shunting.yard.replicator.exec.conf.EventReceiverConfiguration;
 import com.hotels.shunting.yard.replicator.exec.conf.ReplicaCatalog;
 import com.hotels.shunting.yard.replicator.exec.conf.SourceCatalog;
@@ -72,10 +74,17 @@ public class CommonBeans {
   private static final Logger LOG = LoggerFactory.getLogger(CommonBeans.class);
 
   @Bean
-  Configuration baseConfiguration(@Value("${instance.workspace}") String workspace) {
+  Configuration baseConfiguration(
+      @Value("${instance.workspace}") String workspace,
+      @Value("${ct-config:#{null}}") String circusTrainConfigLocation) {
     checkNotNull(workspace, "instance.workspace is required");
     Configuration baseConf = new Configuration();
     baseConf.set(WORKSPACE.key(), workspace);
+
+    if (circusTrainConfigLocation != null) {
+      ConfigFileValidator.validate(circusTrainConfigLocation);
+      baseConf.set(CT_CONFIG.key(), circusTrainConfigLocation);
+    }
     return baseConf;
   }
 

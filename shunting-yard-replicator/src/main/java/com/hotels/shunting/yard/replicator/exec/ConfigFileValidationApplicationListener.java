@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,39 +15,15 @@
  */
 package com.hotels.shunting.yard.replicator.exec;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationListener;
-
-import com.google.common.base.Splitter;
 
 class ConfigFileValidationApplicationListener implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
 
   @Override
   public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
     String configFilesString = event.getEnvironment().getProperty("spring.config.location");
-    List<String> errors = new ArrayList<>();
-    if (StringUtils.isBlank(configFilesString)) {
-      errors.add("No config file was specified.");
-    } else {
-      for (String configFileString : Splitter.on(',').split(configFilesString)) {
-        File configFile = new File(configFileString);
-        if (!configFile.exists()) {
-          errors.add("Config file " + configFileString + " does not exist.");
-        } else if (!configFile.isFile()) {
-          errors.add("Config file " + configFileString + " is a directory.");
-        } else if (!configFile.canRead()) {
-          errors.add("Config file " + configFileString + " cannot be read.");
-        }
-      }
-    }
-    if (!errors.isEmpty()) {
-      throw new ConfigFileValidationException(errors);
-    }
+    ConfigFileValidator.validate(configFilesString);
   }
 
 }

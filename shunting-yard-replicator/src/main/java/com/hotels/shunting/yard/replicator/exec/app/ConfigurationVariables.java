@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,8 @@ import com.hotels.shunting.yard.common.Property;
 
 public enum ConfigurationVariables implements Property {
 
-  WORKSPACE("workspace", null);
+  WORKSPACE("workspace", null),
+  CT_CONFIG("ct-config", null);
 
   private static final String PROPERTY_PREFIX = "com.hotels.shunting.yard.replicator.exec.app.";
 

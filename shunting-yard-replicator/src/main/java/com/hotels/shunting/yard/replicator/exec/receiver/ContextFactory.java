@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package com.hotels.shunting.yard.replicator.exec.receiver;
 
 import static org.apache.hadoop.hive.conf.HiveConf.ConfVars.METASTOREURIS;
 
+import static com.hotels.shunting.yard.replicator.exec.app.ConfigurationVariables.CT_CONFIG;
 import static com.hotels.shunting.yard.replicator.exec.app.ConfigurationVariables.WORKSPACE;
 
 import java.io.File;
@@ -93,6 +94,7 @@ public class ContextFactory {
   }
 
   public Context createContext(MetaStoreEvent event) {
+    String circusTrainConfigLocation = PropertyUtils.stringProperty(conf, CT_CONFIG);
     File workspace = new File(PropertyUtils.stringProperty(conf, WORKSPACE), dir(event));
     workspace.mkdirs();
     File configLocation = new File(workspace, "replication.yml");
@@ -101,7 +103,7 @@ public class ContextFactory {
 
     marshaller.marshall(configLocation.getAbsolutePath(), circusTrainConfig);
 
-    return new Context(workspace.getAbsolutePath(), configLocation.getAbsolutePath());
+    return new Context(workspace.getAbsolutePath(), configLocation.getAbsolutePath(), circusTrainConfigLocation);
   }
 
   private CircusTrainConfig generateConfiguration(MetaStoreEvent event) {

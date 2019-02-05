@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,12 @@ public class Context {
 
   private final String workspace;
   private final String configLocation;
+  private final String circusTrainConfigLocation;
 
-  Context(String workspace, String configLocation) {
+  Context(String workspace, String configLocation, String circusTrainConfigLocation) {
     this.workspace = workspace;
     this.configLocation = configLocation;
+    this.circusTrainConfigLocation = circusTrainConfigLocation;
   }
 
   public String getWorkspace() {
@@ -31,6 +33,10 @@ public class Context {
 
   public String getConfigLocation() {
     return configLocation;
+  }
+
+  public String getCircusTrainConfigLocation() {
+    return circusTrainConfigLocation;
   }
 
 }

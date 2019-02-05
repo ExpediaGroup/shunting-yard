@@ -31,10 +31,9 @@ import org.apache.commons.exec.Executor;
 import org.apache.commons.exec.LogOutputStream;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.output.TeeOutputStream;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.ImmutableMap;
 
 import com.hotels.bdp.circustrain.api.CircusTrainException;
 import com.hotels.shunting.yard.replicator.exec.receiver.Context;
@@ -46,8 +45,11 @@ public class CircusTrainRunner {
     try (OutputStream out = outStream(context); OutputStream err = errStream(context)) {
       CommandLine cli = CommandLine
           .parse(String.format("%s/%s", getProcEnvironment().get(CIRCUS_TRAIN_HOME_ENV_VAR), CIRCUS_TRAIN_HOME_SCRIPT));
-      cli.addArgument("--config=${CONFIG_LOCATION}");
-      cli.setSubstitutionMap(ImmutableMap.of("CONFIG_LOCATION", context.getConfigLocation()));
+      cli.addArgument("--config=" + context.getConfigLocation());
+
+      if (!StringUtils.isEmpty(context.getCircusTrainConfigLocation())) {
+        cli.addArgument("--config=" + context.getCircusTrainConfigLocation());
+      }
 
       Executor executor = new DefaultExecutor();
       executor.setWorkingDirectory(new File(context.getWorkspace()));
