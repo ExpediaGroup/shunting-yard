@@ -21,6 +21,7 @@ public class DropTableEvent extends ListenerEvent {
   private String protocolVersion;
   private String dbName;
   private String tableName;
+  private String tableLocation;
 
   DropTableEvent() {}
 
@@ -36,6 +37,10 @@ public class DropTableEvent extends ListenerEvent {
   @Override
   public String getTableName() {
     return tableName;
+  }
+
+  public String getTableLocation() {
+    return tableLocation;
   }
 
 }

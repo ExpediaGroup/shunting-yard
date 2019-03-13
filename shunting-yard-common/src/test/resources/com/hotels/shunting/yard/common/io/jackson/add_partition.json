@@ -1,0 +1,8 @@
+"Message" : "{
+   \"protocolVersion\":\"1.0\",
+   \"eventType\":\"ADD_PARTITION\",
+   \"dbName\":\"some_db\",
+   \"tableName\":\"some_table\",
+   \"partitionKeys\":{\"col_1\":\"string\", \"col_2\": \"integer\",\"col_3\":\"string\"},
+   \"partitionValues\":[\"val_1\", \"val_2\", \"val_3\"]
+   }"

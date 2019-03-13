@@ -1,0 +1,9 @@
+"Message" : "{
+    \"protocolVersion\":\"1.0\",
+    \"eventType\": \"INSERT\",
+    \"dbName\": \"some_db\",
+    \"tableName\":\"some_table\",
+    \"files\": [\"file:/a/b.txt\",\"file:/a/c.txt\"],
+    \"fileChecksums\":[\"123\",\"456\"],
+    \"partitionKeyValues\": {\"col_1\": \"val_1\",\"col_2\": \"val_2\",\"col_3\": \"val_3\"}
+    }"

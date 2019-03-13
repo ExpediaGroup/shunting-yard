@@ -24,8 +24,10 @@ public class AddPartitionEvent extends ListenerEvent {
   private String protocolVersion;
   private String dbName;
   private String tableName;
+  private String tableLocation;
   private Map<String, String> partitionKeys;
   private List<String> partitionValues;
+  private String partitionLocation;
 
   AddPartitionEvent() {}
 
@@ -43,12 +45,20 @@ public class AddPartitionEvent extends ListenerEvent {
     return tableName;
   }
 
+  public String getTableLocation() {
+    return tableLocation;
+  }
+
   public Map<String, String> getPartitionKeys() {
     return partitionKeys;
   }
 
   public List<String> getPartitionValues() {
     return partitionValues;
+  }
+
+  public String getPartitionLocation() {
+    return partitionLocation;
   }
 
 }

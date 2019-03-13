@@ -19,9 +19,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -61,13 +64,12 @@ public class DeserializerWithJsonInputTest {
       + "  \"SigningCertURL\" : \"https://sns.us-west-2.amazonaws.com/SimpleNotificationService-xxxx\","
       + "  \"UnsubscribeURL\" : \"https://sns.us-west-2.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:us-west-2:440407435941:sns-topic\",";
 
-  private final static String ADD_PARTITION_EVENT = "\"Message\" : \"{\\\"protocolVersion\\\":\\\"1.0\\\",\\\"eventType\\\":\\\"ADD_PARTITION\\\",\\\"dbName\\\":\\\"some_db\\\",\\\"tableName\\\":\\\"some_table\\\",\\\"partitionKeys\\\":{\\\"col_1\\\": \\\"string\\\", \\\"col_2\\\": \\\"integer\\\",\\\"col_3\\\": \\\"string\\\"},\\\"partitionValues\\\":[\\\"val_1\\\", \\\"val_2\\\", \\\"val_3\\\"]}\"";
-  private final static String ALTER_PARTITION_EVENT = "\"Message\" : \"{\\\"protocolVersion\\\":\\\"1.0\\\",\\\"eventType\\\":\\\"ALTER_PARTITION\\\",\\\"dbName\\\":\\\"some_db\\\",\\\"tableName\\\":\\\"some_table\\\",\\\"partitionKeys\\\": {\\\"col_1\\\": \\\"string\\\", \\\"col_2\\\": \\\"integer\\\",\\\"col_3\\\": \\\"string\\\"}, \\\"partitionValues\\\":[\\\"val_1\\\", \\\"val_2\\\", \\\"val_3\\\"],\\\"oldPartitionValues\\\": [\\\"val_4\\\", \\\"val_5\\\", \\\"val_6\\\"]}\"";
-  private final static String DROP_PARTITION_EVENT = "\"Message\" : \"{\\\"protocolVersion\\\":\\\"1.0\\\",\\\"eventType\\\":\\\"DROP_PARTITION\\\",\\\"dbName\\\":\\\"some_db\\\",\\\"tableName\\\":\\\"some_table\\\",\\\"partitionKeys\\\": {\\\"col_1\\\": \\\"string\\\", \\\"col_2\\\": \\\"integer\\\",\\\"col_3\\\": \\\"string\\\"},\\\"partitionValues\\\":[\\\"val_1\\\", \\\"val_2\\\", \\\"val_3\\\"]}\"";
-
-  private final static String CREATE_TABLE_EVENT = "\"Message\" : \"{\\\"protocolVersion\\\":\\\"1.0\\\",\\\"eventType\\\":\\\"CREATE_TABLE\\\",\\\"dbName\\\":\\\"some_db\\\",\\\"tableName\\\":\\\"some_table\\\"}\"";
-  private final static String DROP_TABLE_EVENT = "\"Message\" : \"{\\\"protocolVersion\\\":\\\"1.0\\\",\\\"eventType\\\":\\\"DROP_TABLE\\\",\\\"dbName\\\":\\\"some_db\\\",\\\"tableName\\\":\\\"some_table\\\"}\"";
-  private final static String INSERT_EVENT = "\"Message\" : \"{\\\"protocolVersion\\\": \\\"1.0\\\",\\\"eventType\\\": \\\"INSERT\\\",\\\"dbName\\\": \\\"some_db\\\",\\\"tableName\\\": \\\"some_table\\\",\\\"files\\\": [\\\"file:/a/b.txt\\\",\\\"file:/a/c.txt\\\"],\\\"fileChecksums\\\": [\\\"123\\\",\\\"456\\\"],\\\"partitionKeyValues\\\": {\\\"col_1\\\": \\\"val_1\\\",\\\"col_2\\\": \\\"val_2\\\", \\\"col_3\\\": \\\"val_3\\\"}}\"";
+  private String ADD_PARTITION_EVENT;
+  private String ALTER_PARTITION_EVENT;
+  private String CREATE_TABLE_EVENT;
+  private String DROP_PARTITION_EVENT;
+  private String DROP_TABLE_EVENT;
+  private String INSERT_EVENT;
 
   private static final Map<String, String> PARTITION_KEYS_MAP = ImmutableMap
       .of("col_1", "string", "col_2", "integer", "col_3", "string");
@@ -75,6 +77,22 @@ public class DeserializerWithJsonInputTest {
   private static final List<String> OLD_PARTITION_VALUES = ImmutableList.of("val_4", "val_5", "val_6");
   private final static String TEST_DB = "some_db";
   private final static String TEST_TABLE = "some_table";
+
+  @Before
+  public void init() throws IOException {
+    ADD_PARTITION_EVENT = IOUtils
+        .toString(this.getClass().getResource("add_partition.json"), "UTF-8")
+        .replace("\n", "");
+    ALTER_PARTITION_EVENT = IOUtils
+        .toString(this.getClass().getResource("alter_partition.json"), "UTF-8")
+        .replace("\n", "");
+    DROP_PARTITION_EVENT = IOUtils
+        .toString(this.getClass().getResource("drop_partition.json"), "UTF-8")
+        .replace("\n", "");
+    CREATE_TABLE_EVENT = IOUtils.toString(this.getClass().getResource("create_table.json"), "UTF-8").replace("\n", "");
+    DROP_TABLE_EVENT = IOUtils.toString(this.getClass().getResource("drop_table.json"), "UTF-8").replace("\n", "");
+    INSERT_EVENT = IOUtils.toString(this.getClass().getResource("insert_table.json"), "UTF-8").replace("\n", "");
+  }
 
   @Test
   public void addPartitionEvent() throws Exception {

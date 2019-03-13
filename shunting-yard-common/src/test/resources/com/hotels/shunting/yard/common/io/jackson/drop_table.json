@@ -1,0 +1,6 @@
+"Message" : "{
+    \"protocolVersion\":\"1.0\",
+    \"eventType\":\"DROP_TABLE\",
+    \"dbName\":\"some_db\",
+    \"tableName\":\"some_table\"
+    }"
