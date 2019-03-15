@@ -60,7 +60,7 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
   private MetaStoreEvent map(ListenerEvent listenerEvent) {
     MetaStoreEvent.Builder builder = MetaStoreEvent
         .builder(listenerEvent.getEventType(), listenerEvent.getDbName(), listenerEvent.getTableName())
-        .parameters(listenerEvent.getParameters())
+        .parameters(listenerEvent.getTableParameters())
         .parameter(METASTOREURIS.varname, sourceHiveMetastoreUris)
         .environmentContext(
             listenerEvent.getEnvironmentContext() != null ? listenerEvent.getEnvironmentContext().getProperties()
@@ -96,7 +96,7 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
       break;
     case ALTER_TABLE:
       AlterTableEvent alterTable = (AlterTableEvent) listenerEvent;
-      if (alterTable.getTableLocation() == alterTable.getTableLocation()) {
+      if (alterTable.getTableLocation() == alterTable.getOldTableLocation()) {
         builder.replicationMode(ReplicationMode.METADATA_UPDATE);
       }
       break;

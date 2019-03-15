@@ -3,6 +3,12 @@
     \"eventType\":\"DROP_PARTITION\",
     \"dbName\":\"some_db\",
     \"tableName\":\"some_table\",
+    \"tableLocation\":\"s3://table_location\",
     \"partitionKeys\":{\"col_1\": \"string\", \"col_2\": \"integer\",\"col_3\":\"string\"},
-    \"partitionValues\":[\"val_1\", \"val_2\", \"val_3\"]
-    }"
+    \"partitionValues\":[\"val_1\", \"val_2\", \"val_3\"],
+    \"partitionLocation\":\"s3://table_location/partition_location\",
+    \"tableParameters\":{
+        \"param_1\": \"val_1\",
+        \"param_2\": \"val_2\"
+    }
+}"
