@@ -4,4 +4,4 @@
     \"dbName\":\"some_db\",
     \"tableName\":\"some_table\",
     \"tableLocation\":\"s3://table_location\"
-    }"
+}"

@@ -63,7 +63,6 @@ public class MessageReaderAdapterTest {
   private static final String PARTITION_LOCATION = "s3://table_location/partition_location";
   private static final String TEST_DB = "test_db";
   private static final String TEST_TABLE = "test_table";
-  private static final String OLD_TEST_TABLE = "old_test_table";
   private static final String OLD_TEST_TABLE_LOCATION = "s3://old_table_location";
   private static final String TEST_TABLE_LOCATION = "s3://table_location";
   private static final String SOURCE_METASTORE_URIS = "thrift://remote_host:9883";

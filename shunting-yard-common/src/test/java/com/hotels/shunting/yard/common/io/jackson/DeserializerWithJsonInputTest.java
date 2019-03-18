@@ -15,21 +15,23 @@
  */
 package com.hotels.shunting.yard.common.io.jackson;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import fm.last.commons.test.file.ClassDataFolder;
+import fm.last.commons.test.file.DataFolder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
@@ -52,6 +54,9 @@ public class DeserializerWithJsonInputTest {
   static {
     OBJECT_MAPPER.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
   }
+
+  @Rule
+  public DataFolder dataFolder = new ClassDataFolder();
 
   private final JsonMetaStoreEventDeserializer metaStoreEventDeserializer = new JsonMetaStoreEventDeserializer(
       OBJECT_MAPPER);
@@ -92,21 +97,17 @@ public class DeserializerWithJsonInputTest {
 
   @Before
   public void init() throws IOException {
-    addPartitionEvent = IOUtils
-        .toString(this.getClass().getResource("add_partition.json"), UTF_8.name())
+    addPartitionEvent = new String(Files.readAllBytes(dataFolder.getFile("add_partition.json").toPath()))
         .replace("\n", "");
-    alterPartitionEvent = IOUtils
-        .toString(this.getClass().getResource("alter_partition.json"), UTF_8.name())
+    alterPartitionEvent = new String(Files.readAllBytes(dataFolder.getFile("alter_partition.json").toPath()))
         .replace("\n", "");
-    dropPartitionEvent = IOUtils
-        .toString(this.getClass().getResource("drop_partition.json"), UTF_8.name())
+    dropPartitionEvent = new String(Files.readAllBytes(dataFolder.getFile("drop_partition.json").toPath()))
         .replace("\n", "");
-    createTableEvent = IOUtils
-        .toString(this.getClass().getResource("create_table.json"), UTF_8.name())
+    createTableEvent = new String(Files.readAllBytes(dataFolder.getFile("create_table.json").toPath()))
         .replace("\n", "");
-    insertEvent = IOUtils.toString(this.getClass().getResource("insert_table.json"), UTF_8.name()).replace("\n", "");
-    alterTableEvent = IOUtils.toString(this.getClass().getResource("alter_table.json"), UTF_8.name()).replace("\n", "");
-    dropTableEvent = IOUtils.toString(this.getClass().getResource("drop_table.json"), UTF_8.name()).replace("\n", "");
+    insertEvent = new String(Files.readAllBytes(dataFolder.getFile("insert_table.json").toPath())).replace("\n", "");
+    alterTableEvent = new String(Files.readAllBytes(dataFolder.getFile("alter_table.json").toPath())).replace("\n", "");
+    dropTableEvent = new String(Files.readAllBytes(dataFolder.getFile("drop_table.json").toPath())).replace("\n", "");
   }
 
   @Test

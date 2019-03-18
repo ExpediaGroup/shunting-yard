@@ -1,12 +1,14 @@
 "Message" : "{
     \"protocolVersion\":\"1.0\",
-    \"eventType\":\"DROP_PARTITION\",
+    \"eventType\":\"ALTER_PARTITION\",
     \"dbName\":\"some_db\",
     \"tableName\":\"some_table\",
     \"tableLocation\":\"s3://table_location\",
-    \"partitionKeys\":{\"col_1\": \"string\", \"col_2\": \"integer\",\"col_3\":\"string\"},
+    \"partitionKeys\":{\"col_1\": \"string\", \"col_2\": \"integer\",\"col_3\": \"string\"},
     \"partitionValues\":[\"val_1\", \"val_2\", \"val_3\"],
     \"partitionLocation\":\"s3://table_location/partition_location\",
+    \"oldPartitionValues\": [\"val_4\",\"val_5\", \"val_6\"],
+    \"oldPartitionLocation\":\"s3://table_location/old_partition_location\",
     \"tableParameters\":{
         \"param_1\": \"val_1\",
         \"param_2\": \"val_2\"
