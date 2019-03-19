@@ -15,6 +15,8 @@
  */
 package com.hotels.shunting.yard.common.io.jackson;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
@@ -97,17 +99,13 @@ public class DeserializerWithJsonInputTest {
 
   @Before
   public void init() throws IOException {
-    addPartitionEvent = new String(Files.readAllBytes(dataFolder.getFile("add_partition.json").toPath()))
-        .replace("\n", "");
-    alterPartitionEvent = new String(Files.readAllBytes(dataFolder.getFile("alter_partition.json").toPath()))
-        .replace("\n", "");
-    dropPartitionEvent = new String(Files.readAllBytes(dataFolder.getFile("drop_partition.json").toPath()))
-        .replace("\n", "");
-    createTableEvent = new String(Files.readAllBytes(dataFolder.getFile("create_table.json").toPath()))
-        .replace("\n", "");
-    insertEvent = new String(Files.readAllBytes(dataFolder.getFile("insert_table.json").toPath())).replace("\n", "");
-    alterTableEvent = new String(Files.readAllBytes(dataFolder.getFile("alter_table.json").toPath())).replace("\n", "");
-    dropTableEvent = new String(Files.readAllBytes(dataFolder.getFile("drop_table.json").toPath())).replace("\n", "");
+    addPartitionEvent = new String(Files.readAllBytes(dataFolder.getFile("add_partition.json").toPath()), UTF_8);
+    alterPartitionEvent = new String(Files.readAllBytes(dataFolder.getFile("alter_partition.json").toPath()), UTF_8);
+    dropPartitionEvent = new String(Files.readAllBytes(dataFolder.getFile("drop_partition.json").toPath()), UTF_8);
+    createTableEvent = new String(Files.readAllBytes(dataFolder.getFile("create_table.json").toPath()), UTF_8);
+    insertEvent = new String(Files.readAllBytes(dataFolder.getFile("insert_table.json").toPath()), UTF_8);
+    alterTableEvent = new String(Files.readAllBytes(dataFolder.getFile("alter_table.json").toPath()), UTF_8);
+    dropTableEvent = new String(Files.readAllBytes(dataFolder.getFile("drop_table.json").toPath()), UTF_8);
   }
 
   @Test

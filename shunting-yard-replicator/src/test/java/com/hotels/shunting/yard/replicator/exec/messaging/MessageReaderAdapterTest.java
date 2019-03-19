@@ -215,7 +215,6 @@ public class MessageReaderAdapterTest {
 
     when(apiaryAlterPartitionEvent.getPartitionKeys()).thenReturn(PARTITION_KEYS_MAP);
     when(apiaryAlterPartitionEvent.getPartitionValues()).thenReturn(PARTITION_VALUES);
-    when(apiaryAlterPartitionEvent.getOldPartitionLocation()).thenReturn(null);
     when(apiaryAlterPartitionEvent.getPartitionLocation()).thenReturn(null);
     when(apiaryAlterPartitionEvent.getEventType()).thenReturn(EventType.ALTER_PARTITION);
 
@@ -260,7 +259,6 @@ public class MessageReaderAdapterTest {
     configureMockedEvent(apiaryAlterTableEvent);
 
     when(apiaryAlterTableEvent.getTableLocation()).thenReturn(null);
-    when(apiaryAlterTableEvent.getOldTableLocation()).thenReturn(null);
     when(apiaryAlterTableEvent.getEventType()).thenReturn(EventType.ALTER_TABLE);
 
     MetaStoreEvent expected = MetaStoreEvent
