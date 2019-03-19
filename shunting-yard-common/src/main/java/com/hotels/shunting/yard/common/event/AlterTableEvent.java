@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,9 @@ public class AlterTableEvent extends ListenerEvent {
   private String protocolVersion;
   private String dbName;
   private String tableName;
+  private String tableLocation;
   private String oldTableName;
+  private String oldTableLocation;
 
   AlterTableEvent() {}
 
@@ -39,8 +41,16 @@ public class AlterTableEvent extends ListenerEvent {
     return tableName;
   }
 
+  public String getTableLocation() {
+    return tableLocation;
+  }
+
   public String getOldTableName() {
     return oldTableName;
+  }
+
+  public String getOldTableLocation() {
+    return oldTableLocation;
   }
 
 }

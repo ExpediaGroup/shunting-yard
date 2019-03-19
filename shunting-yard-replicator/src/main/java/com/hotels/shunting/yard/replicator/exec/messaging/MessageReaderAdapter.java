@@ -21,8 +21,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
 import com.hotels.shunting.yard.common.event.AddPartitionEvent;
 import com.hotels.shunting.yard.common.event.AlterPartitionEvent;
+import com.hotels.shunting.yard.common.event.AlterTableEvent;
 import com.hotels.shunting.yard.common.event.DropPartitionEvent;
 import com.hotels.shunting.yard.common.event.EventType;
 import com.hotels.shunting.yard.common.event.InsertTableEvent;
@@ -58,7 +60,7 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
   private MetaStoreEvent map(ListenerEvent listenerEvent) {
     MetaStoreEvent.Builder builder = MetaStoreEvent
         .builder(listenerEvent.getEventType(), listenerEvent.getDbName(), listenerEvent.getTableName())
-        .parameters(listenerEvent.getParameters())
+        .parameters(listenerEvent.getTableParameters())
         .parameter(METASTOREURIS.varname, sourceHiveMetastoreUris)
         .environmentContext(
             listenerEvent.getEnvironmentContext() != null ? listenerEvent.getEnvironmentContext().getProperties()
@@ -74,6 +76,11 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
       break;
     case ALTER_PARTITION:
       AlterPartitionEvent alterPartition = (AlterPartitionEvent) listenerEvent;
+      if (alterPartition.getPartitionLocation() != null) {
+        if (alterPartition.getPartitionLocation().equals(alterPartition.getOldPartitionLocation())) {
+          builder.replicationMode(ReplicationMode.METADATA_UPDATE);
+        }
+      }
       builder.partitionColumns(new ArrayList<>(alterPartition.getPartitionKeys().keySet()));
       builder.partitionValues(alterPartition.getPartitionValues());
       break;
@@ -87,6 +94,14 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
       InsertTableEvent insertTable = (InsertTableEvent) listenerEvent;
       builder.partitionColumns(new ArrayList<>(insertTable.getPartitionKeyValues().keySet()));
       builder.partitionValues(new ArrayList<>(insertTable.getPartitionKeyValues().values()));
+      break;
+    case ALTER_TABLE:
+      AlterTableEvent alterTable = (AlterTableEvent) listenerEvent;
+      if (alterTable.getTableLocation() != null) {
+        if (alterTable.getTableLocation().equals(alterTable.getOldTableLocation())) {
+          builder.replicationMode(ReplicationMode.METADATA_UPDATE);
+        }
+      }
       break;
     case DROP_TABLE:
       builder.deleteData(true);

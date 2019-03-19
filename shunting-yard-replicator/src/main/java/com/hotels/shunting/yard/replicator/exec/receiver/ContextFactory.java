@@ -35,7 +35,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 import com.hotels.shunting.yard.common.PropertyUtils;
 import com.hotels.shunting.yard.common.ShuntingYardException;
@@ -113,7 +112,7 @@ public class ContextFactory {
         .builder()
         .sourceMetaStoreUri(sourceMetaStoreUri)
         .replicaMetaStoreUri(conf.get(METASTOREURIS.varname))
-        .replication(ReplicationMode.FULL, event.getDatabaseName(), event.getTableName(), replicaTableLocation,
+        .replication(event.getReplicationMode(), event.getDatabaseName(), event.getTableName(), replicaTableLocation,
             event.getPartitionColumns(), event.getPartitionValues())
         .build();
     return config;

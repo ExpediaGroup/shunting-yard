@@ -93,6 +93,7 @@ public class ContextFactoryTest {
     when(event.getEventType()).thenReturn(EventType.CREATE_TABLE);
     when(event.getDatabaseName()).thenReturn(DATABASE);
     when(event.getTableName()).thenReturn(TABLE);
+    when(event.getReplicationMode()).thenReturn(ReplicationMode.FULL);
     when(eventParameters.get(METASTOREURIS.varname)).thenReturn(SOURCE_METASTORE_URIS);
 
     replicaTableLocation = tmp.newFolder(CT_EVENT_ID);
@@ -115,7 +116,7 @@ public class ContextFactoryTest {
     assertCircusTrainConfig(circusTrainConfig);
     TableReplication replication = circusTrainConfig.getTableReplications().get(0);
     assertTableReplication(replication);
-
+    assertThat(replication.getReplicationMode()).isSameAs(event.getReplicationMode());
     assertThat(replication.getSourceTable().getPartitionFilter()).isBlank();
     assertThat(replication.getReplicaTable().getTableLocation())
         .isEqualTo(replicaTableLocation.getParentFile().getAbsolutePath());
@@ -134,6 +135,7 @@ public class ContextFactoryTest {
     assertCircusTrainConfig(circusTrainConfig);
     TableReplication replication = circusTrainConfig.getTableReplications().get(0);
     assertTableReplication(replication);
+    assertThat(replication.getReplicationMode()).isSameAs(event.getReplicationMode());
     assertThat(replication.getSourceTable().getPartitionFilter()).isEqualTo("(s='a' AND i='1') OR (s='b' AND i='2')");
     assertThat(replication.getReplicaTable().getTableLocation())
         .isEqualTo(replicaTableLocation.getParentFile().getAbsolutePath());
@@ -153,6 +155,7 @@ public class ContextFactoryTest {
     assertThat(circusTrainConfig.getTableReplications()).hasSize(1);
     TableReplication replication = circusTrainConfig.getTableReplications().get(0);
     assertTableReplication(replication);
+    assertThat(replication.getReplicationMode()).isSameAs(event.getReplicationMode());
     assertThat(replication.getReplicaTable().getTableLocation()).isEqualTo(REPLICA_DATABASE_LOCATION + "/" + TABLE);
     assertThat(context.getCircusTrainConfigLocation()).isNull();
   }
@@ -170,10 +173,30 @@ public class ContextFactoryTest {
     assertCircusTrainConfig(circusTrainConfig);
     TableReplication replication = circusTrainConfig.getTableReplications().get(0);
     assertTableReplication(replication);
+    assertThat(replication.getReplicationMode()).isSameAs(event.getReplicationMode());
     assertThat(replication.getSourceTable().getPartitionFilter()).isEqualTo("(s='a' AND i='1') OR (s='b' AND i='2')");
     assertThat(replication.getReplicaTable().getTableLocation())
         .isEqualTo(replicaTableLocation.getParentFile().getAbsolutePath());
     assertThat(context.getCircusTrainConfigLocation()).isEqualTo("ct-config.yml");
+  }
+
+  @Test
+  public void replicationModeIsMetadataUpdateWhenProvidedAsSuchInTheEvent() {
+    when(event.getReplicationMode()).thenReturn(ReplicationMode.METADATA_UPDATE);
+    Context context = factory.createContext(event);
+    assertThat(context.getWorkspace()).matches(actualWorkspacePattern);
+    assertThat(context.getConfigLocation()).matches(actualWorkspacePattern + "/replication.yml");
+    verify(marshaller).marshall(eq(context.getConfigLocation()), circusTrainConfigCaptor.capture());
+    CircusTrainConfig circusTrainConfig = circusTrainConfigCaptor.getValue();
+    assertCircusTrainConfig(circusTrainConfig);
+    TableReplication replication = circusTrainConfig.getTableReplications().get(0);
+    assertTableReplication(replication);
+
+    assertThat(replication.getReplicationMode()).isSameAs(event.getReplicationMode());
+    assertThat(replication.getSourceTable().getPartitionFilter()).isBlank();
+    assertThat(replication.getReplicaTable().getTableLocation())
+        .isEqualTo(replicaTableLocation.getParentFile().getAbsolutePath());
+    assertThat(context.getCircusTrainConfigLocation()).isNull();
   }
 
   @Test(expected = ShuntingYardException.class)
@@ -191,7 +214,6 @@ public class ContextFactoryTest {
   }
 
   private void assertTableReplication(TableReplication replication) {
-    assertThat(replication.getReplicationMode()).isSameAs(ReplicationMode.FULL);
     assertThat(replication.getSourceTable().getDatabaseName()).isEqualTo(DATABASE);
     assertThat(replication.getSourceTable().getTableName()).isEqualTo(TABLE);
     assertThat(replication.getReplicaTable().getDatabaseName()).isEqualTo(DATABASE);

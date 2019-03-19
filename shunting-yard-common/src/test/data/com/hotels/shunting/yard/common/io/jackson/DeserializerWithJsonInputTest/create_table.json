@@ -1,0 +1,7 @@
+"Message" : "{
+    \"protocolVersion\":\"1.0\",
+    \"eventType\":\"CREATE_TABLE\",
+    \"dbName\":\"some_db\",
+    \"tableName\":\"some_table\",
+    \"tableLocation\":\"s3://table_location\"
+}"

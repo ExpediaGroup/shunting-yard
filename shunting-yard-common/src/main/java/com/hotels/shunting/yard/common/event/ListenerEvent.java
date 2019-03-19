@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ public abstract class ListenerEvent implements Serializable {
   /**
    * Unmodifiable parameters in {@link ListenerEvent}
    */
-  private final Map<String, String> parameters = new HashMap<>();
+  private final Map<String, String> tableParameters = new HashMap<>();
 
   /**
    * Properties passed by the client, to be used in execution hooks. EnvironmentContext in {@link ListenerEvent}
@@ -59,8 +59,8 @@ public abstract class ListenerEvent implements Serializable {
     return status;
   }
 
-  public Map<String, String> getParameters() {
-    return parameters;
+  public Map<String, String> getTableParameters() {
+    return tableParameters;
   }
 
   public EnvironmentContext getEnvironmentContext() {
@@ -77,7 +77,7 @@ public abstract class ListenerEvent implements Serializable {
     }
     ListenerEvent other = (ListenerEvent) obj;
     return Objects.equals(status, other.status)
-        && Objects.equals(parameters, other.parameters)
+        && Objects.equals(tableParameters, other.tableParameters)
         && Objects.equals(getEnvironmentContext(), other.getEnvironmentContext());
   }
 

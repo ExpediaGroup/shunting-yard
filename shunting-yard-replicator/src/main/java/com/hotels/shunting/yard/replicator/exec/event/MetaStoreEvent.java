@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.apache.hadoop.hive.common.StatsSetupConst;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
+import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
 import com.hotels.shunting.yard.common.event.EventType;
 
 public class MetaStoreEvent {
@@ -46,6 +47,7 @@ public class MetaStoreEvent {
     private List<List<String>> partitionValues;
     private Map<String, String> parameters;
     private Map<String, String> environmentContext;
+    private ReplicationMode replicationMode;
 
     private Builder(EventType eventType, String databaseName, String tableName) {
       checkNotNull(eventType, "eventType is required");
@@ -108,6 +110,11 @@ public class MetaStoreEvent {
       return this;
     }
 
+    public Builder replicationMode(ReplicationMode replicationMode) {
+      this.replicationMode = replicationMode;
+      return this;
+    }
+
     public MetaStoreEvent build() {
       return new MetaStoreEvent(this);
     }
@@ -128,6 +135,7 @@ public class MetaStoreEvent {
   private final List<List<String>> partitionValues;
   private final Map<String, String> parameters;
   private final Map<String, String> environmentContext;
+  private final ReplicationMode replicationMode;
 
   private MetaStoreEvent(Builder builder) {
     eventType = builder.eventType;
@@ -137,6 +145,7 @@ public class MetaStoreEvent {
     partitionValues = builder.partitionValues == null ? null : ImmutableList.copyOf(builder.partitionValues);
     parameters = builder.parameters == null ? null : ImmutableMap.copyOf(builder.parameters);
     environmentContext = builder.environmentContext == null ? null : ImmutableMap.copyOf(builder.environmentContext);
+    replicationMode = builder.replicationMode == null ? ReplicationMode.FULL : builder.replicationMode;
   }
 
   public EventType getEventType() {
@@ -165,6 +174,10 @@ public class MetaStoreEvent {
 
   public Map<String, String> getEnvironmentContext() {
     return environmentContext;
+  }
+
+  public ReplicationMode getReplicationMode() {
+    return replicationMode;
   }
 
   public String getQualifiedTableName() {

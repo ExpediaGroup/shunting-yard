@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,12 @@ public class AlterPartitionEvent extends ListenerEvent {
   private String protocolVersion;
   private String dbName;
   private String tableName;
+  private String tableLocation;
   private Map<String, String> partitionKeys;
   private List<String> partitionValues;
+  private String partitionLocation;
   private List<String> oldPartitionValues;
+  private String oldPartitionLocation;
 
   AlterPartitionEvent() {}
 
@@ -44,6 +47,10 @@ public class AlterPartitionEvent extends ListenerEvent {
     return tableName;
   }
 
+  public String getTableLocation() {
+    return tableLocation;
+  }
+
   public Map<String, String> getPartitionKeys() {
     return partitionKeys;
   }
@@ -52,8 +59,16 @@ public class AlterPartitionEvent extends ListenerEvent {
     return partitionValues;
   }
 
+  public String getPartitionLocation() {
+    return partitionLocation;
+  }
+
   public List<String> getOldPartitionValues() {
     return oldPartitionValues;
+  }
+
+  public String getOldPartitionLocation() {
+    return oldPartitionLocation;
   }
 
 }
