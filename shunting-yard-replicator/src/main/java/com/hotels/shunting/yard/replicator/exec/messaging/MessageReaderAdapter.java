@@ -76,9 +76,10 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
       break;
     case ALTER_PARTITION:
       AlterPartitionEvent alterPartition = (AlterPartitionEvent) listenerEvent;
-
-      if (alterPartition.getPartitionLocation().equals(alterPartition.getOldPartitionLocation())) {
-        builder.replicationMode(ReplicationMode.METADATA_UPDATE);
+      if (alterPartition.getPartitionLocation() != null && alterPartition.getOldPartitionLocation() != null) {
+        if (alterPartition.getPartitionLocation().equals(alterPartition.getOldPartitionLocation())) {
+          builder.replicationMode(ReplicationMode.METADATA_UPDATE);
+        }
       }
       builder.partitionColumns(new ArrayList<>(alterPartition.getPartitionKeys().keySet()));
       builder.partitionValues(alterPartition.getPartitionValues());
@@ -96,8 +97,10 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
       break;
     case ALTER_TABLE:
       AlterTableEvent alterTable = (AlterTableEvent) listenerEvent;
-      if (alterTable.getTableLocation().equals(alterTable.getOldTableLocation())) {
-        builder.replicationMode(ReplicationMode.METADATA_UPDATE);
+      if (alterTable.getTableLocation() != null && alterTable.getOldTableLocation() != null) {
+        if (alterTable.getTableLocation().equals(alterTable.getOldTableLocation())) {
+          builder.replicationMode(ReplicationMode.METADATA_UPDATE);
+        }
       }
       break;
     case DROP_TABLE:

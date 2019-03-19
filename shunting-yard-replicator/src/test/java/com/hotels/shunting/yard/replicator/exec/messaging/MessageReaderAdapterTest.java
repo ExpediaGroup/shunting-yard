@@ -209,6 +209,31 @@ public class MessageReaderAdapterTest {
   }
 
   @Test
+  public void metadataOnlySyncEventForPartitionWithNullLocations() {
+    when(messageReader.next()).thenReturn(Optional.of(apiaryAlterPartitionEvent));
+    configureMockedEvent(apiaryAlterPartitionEvent);
+
+    when(apiaryAlterPartitionEvent.getPartitionKeys()).thenReturn(PARTITION_KEYS_MAP);
+    when(apiaryAlterPartitionEvent.getPartitionValues()).thenReturn(PARTITION_VALUES);
+    when(apiaryAlterPartitionEvent.getOldPartitionLocation()).thenReturn(null);
+    when(apiaryAlterPartitionEvent.getPartitionLocation()).thenReturn(null);
+    when(apiaryAlterPartitionEvent.getEventType()).thenReturn(EventType.ALTER_PARTITION);
+
+    MetaStoreEvent expected = MetaStoreEvent
+        .builder(EventType.ALTER_PARTITION, TEST_DB, TEST_TABLE)
+        .partitionColumns(new ArrayList<String>(PARTITION_KEYS_MAP.keySet()))
+        .partitionValues(PARTITION_VALUES)
+        .replicationMode(ReplicationMode.FULL)
+        .environmentContext(EMPTY_MAP)
+        .parameters(PARAMETERS)
+        .build();
+
+    MetaStoreEvent actual = messageReaderAdapter.next().get();
+
+    assertMetaStoreEvent(expected, actual);
+  }
+
+  @Test
   public void metadataOnlySyncEventForTable() {
     when(messageReader.next()).thenReturn(Optional.of(apiaryAlterTableEvent));
     configureMockedEvent(apiaryAlterTableEvent);
@@ -222,6 +247,27 @@ public class MessageReaderAdapterTest {
         .environmentContext(EMPTY_MAP)
         .parameters(PARAMETERS)
         .replicationMode(ReplicationMode.METADATA_UPDATE)
+        .build();
+
+    MetaStoreEvent actual = messageReaderAdapter.next().get();
+
+    assertMetaStoreEvent(expected, actual);
+  }
+
+  @Test
+  public void metadataOnlySyncEventForTableWithNullLocation() {
+    when(messageReader.next()).thenReturn(Optional.of(apiaryAlterTableEvent));
+    configureMockedEvent(apiaryAlterTableEvent);
+
+    when(apiaryAlterTableEvent.getTableLocation()).thenReturn(null);
+    when(apiaryAlterTableEvent.getOldTableLocation()).thenReturn(null);
+    when(apiaryAlterTableEvent.getEventType()).thenReturn(EventType.ALTER_TABLE);
+
+    MetaStoreEvent expected = MetaStoreEvent
+        .builder(EventType.ALTER_TABLE, TEST_DB, TEST_TABLE)
+        .environmentContext(EMPTY_MAP)
+        .parameters(PARAMETERS)
+        .replicationMode(ReplicationMode.FULL)
         .build();
 
     MetaStoreEvent actual = messageReaderAdapter.next().get();
