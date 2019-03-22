@@ -40,7 +40,7 @@ public class MessageTest {
   }
 
   @Test
-  public void nullTable() {
+  public void emptyTable() {
     Message.Builder objectUnderTest = createMessageBuilder("test_db_1", "",
         "foo", 1553013512L);
 
