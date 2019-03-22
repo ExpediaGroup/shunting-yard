@@ -17,49 +17,49 @@ package com.hotels.shunting.yard.common.messaging;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+
+import org.junit.Before;
 import org.junit.Test;
 
 public class MessageTest {
 
-  private Message.Builder createMessageBuilder(String db, String table, String payload, long timestamp) {
-    Message.Builder objectUnderTest = Message.builder();
-    objectUnderTest.database(db);
-    objectUnderTest.table(table);
-    objectUnderTest.payload(payload);
-    objectUnderTest.timestamp(timestamp);
-    return objectUnderTest;
+  private final Message.Builder objectUnderTest = Message.builder();
+
+  @Before
+  public void setUp() {
+    objectUnderTest.database("test_db");
+    objectUnderTest.table("test_table");
+    objectUnderTest.payload("test_payload");
+    objectUnderTest.timestamp(1515585600000L);
   }
 
   @Test
   public void nullPayload() {
-    Message.Builder objectUnderTest = createMessageBuilder("test_db", "test_table",
-        null, 1515585600000L);
-
-    assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> objectUnderTest.build())
+    objectUnderTest.payload(null);
+    assertThatExceptionOfType(IllegalArgumentException.class)
+        .isThrownBy(() -> objectUnderTest.build())
         .withMessage("Parameter 'payload' is required");
   }
 
   @Test
   public void emptyTable() {
-    Message.Builder objectUnderTest = createMessageBuilder("test_db_1", "",
-        "foo", 1553013512L);
+    objectUnderTest.table("");
 
-    assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> objectUnderTest.build())
+    assertThatExceptionOfType(IllegalArgumentException.class)
+        .isThrownBy(() -> objectUnderTest.build())
         .withMessage("Parameter 'table' is required");
   }
 
   @Test
   public void typical() {
-    Message.Builder objectUnderTest = createMessageBuilder("test_db_2", "test_table",
-        "foo", 1269015963L);
-    final Message message = objectUnderTest.build();
+    Message message = objectUnderTest.build();
 
     assertThat(message).isNotNull();
-    assertThat(message.getDatabase()).isEqualTo("test_db_2");
-    assertThat(message.getPayload()).isEqualTo("foo");
-    assertThat(message.getQualifiedTableName()).isEqualTo("test_db_2.test_table");
+    assertThat(message.getDatabase()).isEqualTo("test_db");
+    assertThat(message.getPayload()).isEqualTo("test_payload");
+    assertThat(message.getQualifiedTableName()).isEqualTo("test_db.test_table");
     assertThat(message.getTable()).isEqualTo("test_table");
-    assertThat(message.getTimestamp()).isEqualTo(1269015963L);
+    assertThat(message.getTimestamp()).isEqualTo(1515585600000L);
   }
 
 }
