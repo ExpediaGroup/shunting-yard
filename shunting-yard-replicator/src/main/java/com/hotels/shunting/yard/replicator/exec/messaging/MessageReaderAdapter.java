@@ -58,7 +58,6 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
   }
 
   private MetaStoreEvent map(ListenerEvent listenerEvent) {
-
     MetaStoreEvent.Builder builder = MetaStoreEvent
         .builder(listenerEvent.getEventType(), listenerEvent.getDbName(), listenerEvent.getTableName())
         .parameters(listenerEvent.getTableParameters())

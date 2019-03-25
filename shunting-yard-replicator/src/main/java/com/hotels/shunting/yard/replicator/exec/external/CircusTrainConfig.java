@@ -124,7 +124,7 @@ public class CircusTrainConfig {
       tableReplication.setSourceTable(sourceTable);
 
       ReplicaTable replicaTable = new ReplicaTable();
-      replicaTable.setDatabaseName(checkNotNull(replicaDatabaseName, " replicaDatabaseName is required"));
+      replicaTable.setDatabaseName(checkNotNull(replicaDatabaseName, "replicaDatabaseName is required"));
       replicaTable.setTableName(checkNotNull(replicaTableName, "replicaTableName is required"));
       replicaTable.setTableLocation(checkNotNull(replicaTableLocation, "replicaTableLocation is required"));
       tableReplication.setReplicaTable(replicaTable);
