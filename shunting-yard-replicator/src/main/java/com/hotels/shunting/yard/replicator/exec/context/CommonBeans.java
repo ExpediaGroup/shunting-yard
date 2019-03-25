@@ -40,6 +40,8 @@ import org.springframework.core.annotation.Order;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Supplier;
 
+import com.hotels.bdp.circustrain.api.conf.TableReplication;
+import com.hotels.bdp.circustrain.api.conf.TableReplications;
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 import com.hotels.hcommon.hive.metastore.client.api.MetaStoreClientFactory;
 import com.hotels.hcommon.hive.metastore.client.closeable.CloseableMetaStoreClientFactory;
@@ -131,9 +133,11 @@ public class CommonBeans {
   @Bean
   ReplicationMetaStoreEventListener replicationMetaStoreEventListener(
       HiveConf replicaHiveConf,
-      Supplier<CloseableMetaStoreClient> replicaMetaStoreClientSupplier) {
+      Supplier<CloseableMetaStoreClient> replicaMetaStoreClientSupplier,
+      TableReplications circusTrainTableReplications) {
     CloseableMetaStoreClient metaStoreClient = replicaMetaStoreClientSupplier.get();
-    ContextFactory contextFactory = new ContextFactory(replicaHiveConf, metaStoreClient, new Marshaller());
+    ContextFactory contextFactory = new ContextFactory(replicaHiveConf, metaStoreClient, new Marshaller(),
+        transformTableReplicationsToMap(circusTrainTableReplications));
     return new CircusTrainReplicationMetaStoreEventListener(metaStoreClient, contextFactory, new CircusTrainRunner());
   }
 
@@ -162,8 +166,8 @@ public class CommonBeans {
   }
 
   @Bean
-  TableSelector tableSelector(SourceTableFilter targetReplication) {
-    return new TableSelector(targetReplication);
+  TableSelector tableSelector(SourceTableFilter sourceTableFilter) {
+    return new TableSelector(sourceTableFilter);
   }
 
   @Bean
@@ -178,6 +182,18 @@ public class CommonBeans {
     MessageReader messageReader = messaReaderFactory.newInstance(replicaHiveConf, sqsMessageSerDe);
     FilteringMessageReader filteringMessageReader = new FilteringMessageReader(messageReader, tableSelector);
     return new MessageReaderAdapter(filteringMessageReader, sourceCatalog.getHiveMetastoreUris());
+  }
+
+  private Map<String, TableReplication> transformTableReplicationsToMap(TableReplications tableReplications) {
+    Map<String, TableReplication> tableReplicationsMap = new HashMap<>();
+    for (TableReplication tableReplication : tableReplications.getTableReplications()) {
+      String key = String
+          .join(".", tableReplication.getSourceTable().getDatabaseName(),
+              tableReplication.getSourceTable().getTableName());
+      tableReplicationsMap.put(key, tableReplication);
+
+    }
+    return tableReplicationsMap;
   }
 
   @Bean

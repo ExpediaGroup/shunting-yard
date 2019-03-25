@@ -28,6 +28,7 @@ import static com.hotels.shunting.yard.replicator.exec.app.ConfigurationVariable
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
@@ -46,6 +47,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import com.hotels.bdp.circustrain.api.conf.ReplicaTable;
 import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
 import com.hotels.bdp.circustrain.api.conf.TableReplication;
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
@@ -64,6 +66,8 @@ public class ContextFactoryTest {
   private static final String REPLICA_DATABASE_LOCATION = "replicaDatabaseLocation";
   private static final String DATABASE = "db";
   private static final String TABLE = "tbl";
+  private static final String REPLICA_DATABASE = "replica_db";
+  private static final String REPLICA_TABLE = "replica_tbl";
 
   public @Rule TemporaryFolder tmp = new TemporaryFolder();
 
@@ -102,8 +106,9 @@ public class ContextFactoryTest {
     when(replicaTable.getSd()).thenReturn(replicaStorageDescriptor);
 
     when(replicaMetaStoreClient.getTable(DATABASE, TABLE)).thenReturn(replicaTable);
+    when(replicaMetaStoreClient.getTable(REPLICA_DATABASE, REPLICA_TABLE)).thenReturn(replicaTable);
 
-    factory = new ContextFactory(conf, replicaMetaStoreClient, marshaller);
+    factory = new ContextFactory(conf, replicaMetaStoreClient, marshaller, new HashMap<String, TableReplication>());
   }
 
   @Test
@@ -135,6 +140,41 @@ public class ContextFactoryTest {
     assertCircusTrainConfig(circusTrainConfig);
     TableReplication replication = circusTrainConfig.getTableReplications().get(0);
     assertTableReplication(replication);
+    assertThat(replication.getReplicationMode()).isSameAs(event.getReplicationMode());
+    assertThat(replication.getSourceTable().getPartitionFilter()).isEqualTo("(s='a' AND i='1') OR (s='b' AND i='2')");
+    assertThat(replication.getReplicaTable().getTableLocation())
+        .isEqualTo(replicaTableLocation.getParentFile().getAbsolutePath());
+    assertThat(context.getCircusTrainConfigLocation()).isNull();
+  }
+
+  @Test
+  public void createContextForPartitionedTableWithReplicaTableSpecified() {
+    TableReplication tableReplication = new TableReplication();
+    ReplicaTable replicaTable = new ReplicaTable();
+    replicaTable.setDatabaseName(REPLICA_DATABASE);
+    replicaTable.setTableName(REPLICA_TABLE);
+    tableReplication.setReplicaTable(replicaTable);
+
+    Map<String, TableReplication> tableReplicationsMap = new HashMap<>();
+    tableReplicationsMap.put(String.join(".", DATABASE, TABLE), tableReplication);
+
+    factory = new ContextFactory(conf, replicaMetaStoreClient, marshaller, tableReplicationsMap);
+
+    when(event.getPartitionColumns()).thenReturn(Arrays.asList("s", "i"));
+    when(event.getPartitionValues()).thenReturn(Arrays.asList(Arrays.asList("a", "1"), Arrays.asList("b", "2")));
+    Context context = factory.createContext(event);
+    assertThat(context.getWorkspace()).matches(actualWorkspacePattern);
+    assertThat(context.getConfigLocation()).matches(actualWorkspacePattern + "/replication.yml");
+    verify(marshaller).marshall(eq(context.getConfigLocation()), circusTrainConfigCaptor.capture());
+    CircusTrainConfig circusTrainConfig = circusTrainConfigCaptor.getValue();
+    assertCircusTrainConfig(circusTrainConfig);
+
+    TableReplication replication = circusTrainConfig.getTableReplications().get(0);
+
+    assertThat(replication.getSourceTable().getDatabaseName()).isEqualTo(DATABASE);
+    assertThat(replication.getSourceTable().getTableName()).isEqualTo(TABLE);
+    assertThat(replication.getReplicaTable().getDatabaseName()).isEqualTo(REPLICA_DATABASE);
+    assertThat(replication.getReplicaTable().getTableName()).isEqualTo(REPLICA_TABLE);
     assertThat(replication.getReplicationMode()).isSameAs(event.getReplicationMode());
     assertThat(replication.getSourceTable().getPartitionFilter()).isEqualTo("(s='a' AND i='1') OR (s='b' AND i='2')");
     assertThat(replication.getReplicaTable().getTableLocation())
