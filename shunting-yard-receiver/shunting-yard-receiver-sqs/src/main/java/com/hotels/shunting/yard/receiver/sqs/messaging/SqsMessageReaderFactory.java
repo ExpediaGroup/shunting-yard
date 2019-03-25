@@ -16,7 +16,6 @@
 package com.hotels.shunting.yard.receiver.sqs.messaging;
 
 import static com.hotels.shunting.yard.receiver.sqs.SqsReceiverUtils.credentials;
-import static com.hotels.shunting.yard.receiver.sqs.SqsReceiverUtils.maxMessages;
 import static com.hotels.shunting.yard.receiver.sqs.SqsReceiverUtils.queue;
 import static com.hotels.shunting.yard.receiver.sqs.SqsReceiverUtils.region;
 import static com.hotels.shunting.yard.receiver.sqs.SqsReceiverUtils.waitTimeSeconds;
@@ -42,7 +41,6 @@ public class SqsMessageReaderFactory implements MessageReaderFactory {
 
     return new SqsMessageReader.Builder(queue(conf))
         .withConsumer(consumer)
-        .withMaxMessages(maxMessages(conf))
         .withWaitTimeSeconds(waitTimeSeconds(conf))
         .build();
   }

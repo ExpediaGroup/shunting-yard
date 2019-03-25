@@ -18,7 +18,6 @@ package com.hotels.shunting.yard.receiver.sqs;
 import static com.hotels.shunting.yard.common.Preconditions.checkNotNull;
 import static com.hotels.shunting.yard.common.PropertyUtils.intProperty;
 import static com.hotels.shunting.yard.common.PropertyUtils.stringProperty;
-import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.MAX_MESSAGES;
 import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.QUEUE;
 import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.REGION;
 import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.WAIT_TIME_SECONDS;
@@ -47,10 +46,6 @@ public final class SqsReceiverUtils {
 
   public static int waitTimeSeconds(Configuration conf) {
     return checkNotNull(intProperty(conf, WAIT_TIME_SECONDS), "Property " + WAIT_TIME_SECONDS + " is not set");
-  }
-
-  public static int maxMessages(Configuration conf) {
-    return checkNotNull(intProperty(conf, MAX_MESSAGES), "Property " + MAX_MESSAGES + " is not set");
   }
 
   public static AWSCredentialsProvider credentials(final Configuration conf) {

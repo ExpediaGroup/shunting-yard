@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.AWS_ACCESS_KEY;
 import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.AWS_SECRET_KEY;
-import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.MAX_MESSAGES;
 import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.QUEUE;
 import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.REGION;
 import static com.hotels.shunting.yard.receiver.sqs.SqsConsumerProperty.WAIT_TIME_SECONDS;
@@ -34,7 +33,7 @@ public class SqsConsumerPropertyTest {
 
   @Test
   public void numberOfProperties() {
-    assertThat(SqsConsumerProperty.values().length).isEqualTo(6);
+    assertThat(SqsConsumerProperty.values().length).isEqualTo(5);
   }
 
   @Test
@@ -56,13 +55,6 @@ public class SqsConsumerPropertyTest {
     assertThat(WAIT_TIME_SECONDS.unPrefixedKey()).isEqualTo("wait.time.seconds");
     assertThat(WAIT_TIME_SECONDS.key()).isEqualTo(prefixedKey("wait.time.seconds"));
     assertThat(WAIT_TIME_SECONDS.defaultValue()).isEqualTo(10);
-  }
-
-  @Test
-  public void maxMessages() {
-    assertThat(MAX_MESSAGES.unPrefixedKey()).isEqualTo("max.messages");
-    assertThat(MAX_MESSAGES.key()).isEqualTo(prefixedKey("max.messages"));
-    assertThat(MAX_MESSAGES.defaultValue()).isEqualTo(10);
   }
 
   @Test
