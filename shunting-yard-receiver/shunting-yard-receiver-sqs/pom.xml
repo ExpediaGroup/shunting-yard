@@ -20,6 +20,7 @@
       <version>${project.version}</version>
     </dependency>
 
+    <!-- Apiary -->
     <dependency>
       <groupId>com.expedia.apiary</groupId>
       <artifactId>apiary-receiver-sqs</artifactId>
