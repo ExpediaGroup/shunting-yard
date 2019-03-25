@@ -19,8 +19,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
-import static com.hotels.shunting.yard.common.event.EventType.DROP_PARTITION;
-import static com.hotels.shunting.yard.common.event.EventType.DROP_TABLE;
+import static com.expedia.apiary.extensions.receiver.common.event.EventType.DROP_PARTITION;
+import static com.expedia.apiary.extensions.receiver.common.event.EventType.DROP_TABLE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,8 +32,9 @@ import org.apache.hadoop.hive.common.StatsSetupConst;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
+import com.expedia.apiary.extensions.receiver.common.event.EventType;
+
 import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
-import com.hotels.shunting.yard.common.event.EventType;
 
 public class MetaStoreEvent {
 

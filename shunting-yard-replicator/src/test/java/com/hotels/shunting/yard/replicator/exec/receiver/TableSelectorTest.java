@@ -26,7 +26,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import com.hotels.shunting.yard.common.event.ListenerEvent;
+import com.expedia.apiary.extensions.receiver.common.event.ListenerEvent;
 import com.hotels.shunting.yard.replicator.exec.conf.SourceTableFilter;
 
 @RunWith(MockitoJUnitRunner.class)

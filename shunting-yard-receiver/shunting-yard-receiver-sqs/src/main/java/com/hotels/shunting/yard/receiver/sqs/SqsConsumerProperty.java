@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ public enum SqsConsumerProperty implements Property {
   QUEUE("queue", null),
   REGION("region", US_WEST_2.getName()),
   WAIT_TIME_SECONDS("wait.time.seconds", 10),
+  MAX_MESSAGES("max.messages", 10),
   AWS_ACCESS_KEY("aws.access.key", null),
   AWS_SECRET_KEY("aws.secret.key", null);
 

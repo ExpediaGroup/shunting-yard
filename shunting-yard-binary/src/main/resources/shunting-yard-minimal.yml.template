@@ -9,6 +9,8 @@ event-receiver:
   configuration-properties:
     com.hotels.shunting.yard.event.receiver.sqs.queue: https://sqs.us-west-2.amazonaws.com/1234567/sqs-queue
     com.hotels.shunting.yard.event.receiver.sqs.wait.time.seconds: 15
+    # max.messages acceptable values: 1 to 10, default is 10. For more details, see https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_ReceiveMessage.html
+    com.hotels.shunting.yard.event.receiver.sqs.max.messages: 10
 source-table-filter:
   table-names:
     - db1.table_1

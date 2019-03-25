@@ -42,7 +42,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
-import com.hotels.shunting.yard.common.io.SerDeException;
+import com.expedia.apiary.extensions.receiver.common.error.SerDeException;
+
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 import com.hotels.shunting.yard.replicator.exec.event.aggregation.MetaStoreEventAggregator;
 
@@ -75,16 +76,16 @@ public class AggregatingMetaStoreEventReaderTest {
   @Test
   public void readExceedsTheWindow() {
     List<MetaStoreEvent> events = Arrays.asList(mock(MetaStoreEvent.class));
-    when(delegate.next()).thenAnswer(new Answer<Optional<MetaStoreEvent>>() {
+    when(delegate.read()).thenAnswer(new Answer<Optional<MetaStoreEvent>>() {
       @Override
       public Optional<MetaStoreEvent> answer(InvocationOnMock invocation) throws Throwable {
         WINDOW_UNITS.sleep(WINDOW + 1);
         return Optional.of(events.get(0));
       }
     });
-    Optional<MetaStoreEvent> next = aggregatingMessageReader.next();
+    Optional<MetaStoreEvent> next = aggregatingMessageReader.read();
     assertThat(next.get()).isEqualTo(events.get(0));
-    verify(delegate).next();
+    verify(delegate).read();
     verify(aggregator).aggregate(events);
   }
 
@@ -97,16 +98,16 @@ public class AggregatingMetaStoreEventReaderTest {
         mock(MetaStoreEvent.class),
         mock(MetaStoreEvent.class) };
     final int counter[] = new int[] { 0 };
-    when(delegate.next()).thenAnswer(new Answer<Optional<MetaStoreEvent>>() {
+    when(delegate.read()).thenAnswer(new Answer<Optional<MetaStoreEvent>>() {
       @Override
       public Optional<MetaStoreEvent> answer(InvocationOnMock invocation) throws Throwable {
         WINDOW_UNITS.sleep(counter[0] < events.length - 1 ? 1 : WINDOW);
         return Optional.of(events[counter[0]++]);
       }
     });
-    Optional<MetaStoreEvent> next = aggregatingMessageReader.next();
+    Optional<MetaStoreEvent> next = aggregatingMessageReader.read();
     assertThat(next.get()).isEqualTo(events[0]);
-    verify(delegate, atLeast(2)).next();
+    verify(delegate, atLeast(2)).read();
     verify(aggregator).aggregate(any());
     int numOfEventsCaptured = buffer.size();
     assertThat(buffer).containsAll(Arrays.asList(Arrays.copyOfRange(events, 1, numOfEventsCaptured)));
@@ -116,13 +117,13 @@ public class AggregatingMetaStoreEventReaderTest {
   public void failuresInDelegateArePropagated() {
     SerDeException e = new SerDeException("oops");
     expectedException.expect(is(e));
-    when(delegate.next()).thenThrow(e);
-    aggregatingMessageReader.next();
+    when(delegate.read()).thenThrow(e);
+    aggregatingMessageReader.read();
   }
 
   @Test
   public void emptyAggregate() {
-    when(delegate.next()).thenAnswer(new Answer<Optional<MetaStoreEvent>>() {
+    when(delegate.read()).thenAnswer(new Answer<Optional<MetaStoreEvent>>() {
       @Override
       public Optional<MetaStoreEvent> answer(InvocationOnMock invocation) throws Throwable {
         WINDOW_UNITS.sleep(WINDOW + 1);
@@ -130,8 +131,8 @@ public class AggregatingMetaStoreEventReaderTest {
       }
     });
 
-    Optional<MetaStoreEvent> next = aggregatingMessageReader.next();
-    assertThat(next).isEqualTo(Optional.empty());
+    Optional<MetaStoreEvent> event = aggregatingMessageReader.read();
+    assertThat(event).isEqualTo(Optional.empty());
   }
 
 }

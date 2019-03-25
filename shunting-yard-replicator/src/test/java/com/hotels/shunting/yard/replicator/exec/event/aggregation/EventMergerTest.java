@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
-import static com.hotels.shunting.yard.common.event.EventType.ADD_PARTITION;
-import static com.hotels.shunting.yard.common.event.EventType.ALTER_PARTITION;
-import static com.hotels.shunting.yard.common.event.EventType.ALTER_TABLE;
-import static com.hotels.shunting.yard.common.event.EventType.CREATE_TABLE;
-import static com.hotels.shunting.yard.common.event.EventType.DROP_PARTITION;
-import static com.hotels.shunting.yard.common.event.EventType.DROP_TABLE;
-import static com.hotels.shunting.yard.common.event.EventType.INSERT;
+import static com.expedia.apiary.extensions.receiver.common.event.EventType.ADD_PARTITION;
+import static com.expedia.apiary.extensions.receiver.common.event.EventType.ALTER_PARTITION;
+import static com.expedia.apiary.extensions.receiver.common.event.EventType.ALTER_TABLE;
+import static com.expedia.apiary.extensions.receiver.common.event.EventType.CREATE_TABLE;
+import static com.expedia.apiary.extensions.receiver.common.event.EventType.DROP_PARTITION;
+import static com.expedia.apiary.extensions.receiver.common.event.EventType.DROP_TABLE;
+import static com.expedia.apiary.extensions.receiver.common.event.EventType.INSERT;
 
 import java.util.List;
 

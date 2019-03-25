@@ -40,14 +40,15 @@ import org.springframework.core.annotation.Order;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Supplier;
 
+import com.expedia.apiary.extensions.receiver.common.MessageReader;
+import com.expedia.apiary.extensions.receiver.common.messaging.JsonMetaStoreEventDeserializer;
+import com.expedia.apiary.extensions.receiver.common.messaging.MetaStoreEventDeserializer;
+import com.expedia.apiary.extensions.receiver.sqs.messaging.SqsMessageDeserializer;
+
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 import com.hotels.hcommon.hive.metastore.client.api.MetaStoreClientFactory;
 import com.hotels.hcommon.hive.metastore.client.closeable.CloseableMetaStoreClientFactory;
 import com.hotels.hcommon.hive.metastore.conf.HiveConfFactory;
-import com.hotels.shunting.yard.common.io.MetaStoreEventDeserializer;
-import com.hotels.shunting.yard.common.io.jackson.ApiarySqsMessageDeserializer;
-import com.hotels.shunting.yard.common.io.jackson.JsonMetaStoreEventDeserializer;
-import com.hotels.shunting.yard.common.messaging.MessageReader;
 import com.hotels.shunting.yard.common.messaging.MessageReaderFactory;
 import com.hotels.shunting.yard.replicator.exec.ConfigFileValidator;
 import com.hotels.shunting.yard.replicator.exec.conf.EventReceiverConfiguration;
@@ -150,10 +151,10 @@ public class CommonBeans {
   }
 
   @Bean
-  ApiarySqsMessageDeserializer sqsMessageSerDe(
+  SqsMessageDeserializer sqsMessageSerDe(
       MetaStoreEventDeserializer metaStoreEventDeserializer,
       ObjectMapper objectMapper) {
-    return new ApiarySqsMessageDeserializer(metaStoreEventDeserializer, objectMapper);
+    return new SqsMessageDeserializer(metaStoreEventDeserializer, objectMapper);
   }
 
   @Bean
@@ -169,7 +170,7 @@ public class CommonBeans {
   @Bean
   MessageReaderAdapter messageReaderAdapter(
       HiveConf replicaHiveConf,
-      ApiarySqsMessageDeserializer sqsMessageSerDe,
+      SqsMessageDeserializer sqsMessageSerDe,
       EventReceiverConfiguration messageReaderConfig,
       SourceCatalog sourceCatalog,
       TableSelector tableSelector) {

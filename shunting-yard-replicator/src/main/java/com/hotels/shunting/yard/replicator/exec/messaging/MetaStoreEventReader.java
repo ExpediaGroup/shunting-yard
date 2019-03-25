@@ -23,6 +23,6 @@ import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 
 public interface MetaStoreEventReader extends Closeable {
 
-  Optional<MetaStoreEvent> next();
+  Optional<MetaStoreEvent> read();
 
 }

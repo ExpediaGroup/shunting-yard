@@ -21,15 +21,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import com.expedia.apiary.extensions.receiver.common.MessageReader;
+import com.expedia.apiary.extensions.receiver.common.event.AddPartitionEvent;
+import com.expedia.apiary.extensions.receiver.common.event.AlterPartitionEvent;
+import com.expedia.apiary.extensions.receiver.common.event.AlterTableEvent;
+import com.expedia.apiary.extensions.receiver.common.event.DropPartitionEvent;
+import com.expedia.apiary.extensions.receiver.common.event.EventType;
+import com.expedia.apiary.extensions.receiver.common.event.InsertTableEvent;
+import com.expedia.apiary.extensions.receiver.common.event.ListenerEvent;
+
 import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
-import com.hotels.shunting.yard.common.event.AddPartitionEvent;
-import com.hotels.shunting.yard.common.event.AlterPartitionEvent;
-import com.hotels.shunting.yard.common.event.AlterTableEvent;
-import com.hotels.shunting.yard.common.event.DropPartitionEvent;
-import com.hotels.shunting.yard.common.event.EventType;
-import com.hotels.shunting.yard.common.event.InsertTableEvent;
-import com.hotels.shunting.yard.common.event.ListenerEvent;
-import com.hotels.shunting.yard.common.messaging.MessageReader;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 
 public class MessageReaderAdapter implements MetaStoreEventReader {
@@ -48,10 +49,10 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
   }
 
   @Override
-  public Optional<MetaStoreEvent> next() {
-    Optional<ListenerEvent> next = messageReader.next();
-    if (next.isPresent()) {
-      return Optional.of(map(next.get()));
+  public Optional<MetaStoreEvent> read() {
+    Optional<ListenerEvent> event = messageReader.read();
+    if (event.isPresent()) {
+      return Optional.of(map(event.get()));
     } else {
       return Optional.empty();
     }

@@ -26,8 +26,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import com.hotels.shunting.yard.common.event.ListenerEvent;
-import com.hotels.shunting.yard.common.messaging.MessageReader;
+import com.expedia.apiary.extensions.receiver.common.MessageReader;
+import com.expedia.apiary.extensions.receiver.common.event.ListenerEvent;
+
 import com.hotels.shunting.yard.replicator.exec.receiver.TableSelector;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -54,7 +55,7 @@ public class FilteringMessageReaderTest {
     when(listenerEvent3.getDbName()).thenReturn(DB_NAME);
     when(listenerEvent3.getTableName()).thenReturn(TABLE_NAME3);
 
-    when(delegate.next())
+    when(delegate.read())
         .thenReturn(Optional.of(listenerEvent1))
         .thenReturn(Optional.of(listenerEvent2))
         .thenReturn(Optional.of(listenerEvent3));
@@ -68,14 +69,14 @@ public class FilteringMessageReaderTest {
 
     filteringMessageReader = new FilteringMessageReader(delegate, tableSelector);
 
-    ListenerEvent event = filteringMessageReader.next().get();
+    ListenerEvent event = filteringMessageReader.read().get();
     assertThat(event.getDbName()).isEqualTo(DB_NAME);
     assertThat(event.getTableName()).isEqualTo(TABLE_NAME1);
 
-    Optional<ListenerEvent> filtered = filteringMessageReader.next();
+    Optional<ListenerEvent> filtered = filteringMessageReader.read();
     assertThat(filtered).isEqualTo(Optional.empty());
 
-    event = filteringMessageReader.next().get();
+    event = filteringMessageReader.read().get();
     assertThat(event.getDbName()).isEqualTo(DB_NAME);
     assertThat(event.getTableName()).isEqualTo(TABLE_NAME3);
   }
@@ -88,14 +89,14 @@ public class FilteringMessageReaderTest {
 
     filteringMessageReader = new FilteringMessageReader(delegate, tableSelector);
 
-    Optional<ListenerEvent> filtered = filteringMessageReader.next();
+    Optional<ListenerEvent> filtered = filteringMessageReader.read();
     assertThat(filtered).isEqualTo(Optional.empty());
 
-    ListenerEvent event = filteringMessageReader.next().get();
+    ListenerEvent event = filteringMessageReader.read().get();
     assertThat(event.getDbName()).isEqualTo(DB_NAME);
     assertThat(event.getTableName()).isEqualTo(TABLE_NAME2);
 
-    event = filteringMessageReader.next().get();
+    event = filteringMessageReader.read().get();
     assertThat(event.getDbName()).isEqualTo(DB_NAME);
     assertThat(event.getTableName()).isEqualTo(TABLE_NAME3);
   }
@@ -103,7 +104,7 @@ public class FilteringMessageReaderTest {
   @Test
   public void emptyDelegateReader() {
     filteringMessageReader = new FilteringMessageReader(delegate, tableSelector);
-    assertThat(filteringMessageReader.next()).isEqualTo(Optional.empty());
+    assertThat(filteringMessageReader.read()).isEqualTo(Optional.empty());
   }
 
 }

@@ -39,17 +39,18 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
+import com.expedia.apiary.extensions.receiver.common.MessageReader;
+import com.expedia.apiary.extensions.receiver.common.event.AddPartitionEvent;
+import com.expedia.apiary.extensions.receiver.common.event.AlterPartitionEvent;
+import com.expedia.apiary.extensions.receiver.common.event.AlterTableEvent;
+import com.expedia.apiary.extensions.receiver.common.event.CreateTableEvent;
+import com.expedia.apiary.extensions.receiver.common.event.DropPartitionEvent;
+import com.expedia.apiary.extensions.receiver.common.event.DropTableEvent;
+import com.expedia.apiary.extensions.receiver.common.event.EventType;
+import com.expedia.apiary.extensions.receiver.common.event.InsertTableEvent;
+import com.expedia.apiary.extensions.receiver.common.event.ListenerEvent;
+
 import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
-import com.hotels.shunting.yard.common.event.AddPartitionEvent;
-import com.hotels.shunting.yard.common.event.AlterPartitionEvent;
-import com.hotels.shunting.yard.common.event.AlterTableEvent;
-import com.hotels.shunting.yard.common.event.CreateTableEvent;
-import com.hotels.shunting.yard.common.event.DropPartitionEvent;
-import com.hotels.shunting.yard.common.event.DropTableEvent;
-import com.hotels.shunting.yard.common.event.EventType;
-import com.hotels.shunting.yard.common.event.InsertTableEvent;
-import com.hotels.shunting.yard.common.event.ListenerEvent;
-import com.hotels.shunting.yard.common.messaging.MessageReader;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -98,7 +99,7 @@ public class MessageReaderAdapterTest {
 
   @Test
   public void createTableEvent() {
-    when(messageReader.next()).thenReturn(Optional.of(apiaryCreateTableEvent));
+    when(messageReader.read()).thenReturn(Optional.of(apiaryCreateTableEvent));
     configureMockedEvent(apiaryCreateTableEvent);
     when(apiaryCreateTableEvent.getEventType()).thenReturn(EventType.CREATE_TABLE);
 
@@ -109,14 +110,14 @@ public class MessageReaderAdapterTest {
         .replicationMode(ReplicationMode.FULL)
         .build();
 
-    MetaStoreEvent actual = messageReaderAdapter.next().get();
+    MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
   }
 
   @Test
   public void addPartitionEvent() {
-    when(messageReader.next()).thenReturn(Optional.of(apiaryAddPartitionEvent));
+    when(messageReader.read()).thenReturn(Optional.of(apiaryAddPartitionEvent));
     configureMockedEvent(apiaryAddPartitionEvent);
 
     when(apiaryAddPartitionEvent.getPartitionKeys()).thenReturn(PARTITION_KEYS_MAP);
@@ -132,14 +133,14 @@ public class MessageReaderAdapterTest {
         .parameters(PARAMETERS)
         .build();
 
-    MetaStoreEvent actual = messageReaderAdapter.next().get();
+    MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
   }
 
   @Test
   public void alterPartitionEvent() {
-    when(messageReader.next()).thenReturn(Optional.of(apiaryAlterPartitionEvent));
+    when(messageReader.read()).thenReturn(Optional.of(apiaryAlterPartitionEvent));
     configureMockedEvent(apiaryAlterPartitionEvent);
 
     when(apiaryAlterPartitionEvent.getPartitionKeys()).thenReturn(PARTITION_KEYS_MAP);
@@ -157,14 +158,14 @@ public class MessageReaderAdapterTest {
         .parameters(PARAMETERS)
         .build();
 
-    MetaStoreEvent actual = messageReaderAdapter.next().get();
+    MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
   }
 
   @Test
   public void alterTableEvent() {
-    when(messageReader.next()).thenReturn(Optional.of(apiaryAlterTableEvent));
+    when(messageReader.read()).thenReturn(Optional.of(apiaryAlterTableEvent));
     configureMockedEvent(apiaryAlterTableEvent);
 
     when(apiaryAlterTableEvent.getTableLocation()).thenReturn(TEST_TABLE_LOCATION);
@@ -178,14 +179,14 @@ public class MessageReaderAdapterTest {
         .replicationMode(ReplicationMode.FULL)
         .build();
 
-    MetaStoreEvent actual = messageReaderAdapter.next().get();
+    MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
   }
 
   @Test
   public void metadataOnlySyncEventForPartition() {
-    when(messageReader.next()).thenReturn(Optional.of(apiaryAlterPartitionEvent));
+    when(messageReader.read()).thenReturn(Optional.of(apiaryAlterPartitionEvent));
     configureMockedEvent(apiaryAlterPartitionEvent);
 
     when(apiaryAlterPartitionEvent.getPartitionKeys()).thenReturn(PARTITION_KEYS_MAP);
@@ -203,14 +204,14 @@ public class MessageReaderAdapterTest {
         .parameters(PARAMETERS)
         .build();
 
-    MetaStoreEvent actual = messageReaderAdapter.next().get();
+    MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
   }
 
   @Test
   public void metadataOnlySyncEventForPartitionWithNullLocations() {
-    when(messageReader.next()).thenReturn(Optional.of(apiaryAlterPartitionEvent));
+    when(messageReader.read()).thenReturn(Optional.of(apiaryAlterPartitionEvent));
     configureMockedEvent(apiaryAlterPartitionEvent);
 
     when(apiaryAlterPartitionEvent.getPartitionKeys()).thenReturn(PARTITION_KEYS_MAP);
@@ -227,14 +228,14 @@ public class MessageReaderAdapterTest {
         .parameters(PARAMETERS)
         .build();
 
-    MetaStoreEvent actual = messageReaderAdapter.next().get();
+    MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
   }
 
   @Test
   public void metadataOnlySyncEventForTable() {
-    when(messageReader.next()).thenReturn(Optional.of(apiaryAlterTableEvent));
+    when(messageReader.read()).thenReturn(Optional.of(apiaryAlterTableEvent));
     configureMockedEvent(apiaryAlterTableEvent);
 
     when(apiaryAlterTableEvent.getTableLocation()).thenReturn(TEST_TABLE_LOCATION);
@@ -248,14 +249,14 @@ public class MessageReaderAdapterTest {
         .replicationMode(ReplicationMode.METADATA_UPDATE)
         .build();
 
-    MetaStoreEvent actual = messageReaderAdapter.next().get();
+    MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
   }
 
   @Test
   public void metadataOnlySyncEventForTableWithNullLocation() {
-    when(messageReader.next()).thenReturn(Optional.of(apiaryAlterTableEvent));
+    when(messageReader.read()).thenReturn(Optional.of(apiaryAlterTableEvent));
     configureMockedEvent(apiaryAlterTableEvent);
 
     when(apiaryAlterTableEvent.getTableLocation()).thenReturn(null);
@@ -268,14 +269,14 @@ public class MessageReaderAdapterTest {
         .replicationMode(ReplicationMode.FULL)
         .build();
 
-    MetaStoreEvent actual = messageReaderAdapter.next().get();
+    MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
   }
 
   @Test
   public void dropPartitionEvent() {
-    when(messageReader.next()).thenReturn(Optional.of(apiaryDropPartitionEvent));
+    when(messageReader.read()).thenReturn(Optional.of(apiaryDropPartitionEvent));
     configureMockedEvent(apiaryDropPartitionEvent);
 
     when(apiaryDropPartitionEvent.getPartitionKeys()).thenReturn(PARTITION_KEYS_MAP);
@@ -291,7 +292,7 @@ public class MessageReaderAdapterTest {
         .environmentContext(EMPTY_MAP)
         .build();
 
-    MetaStoreEvent actual = messageReaderAdapter.next().get();
+    MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
   }
@@ -303,7 +304,7 @@ public class MessageReaderAdapterTest {
         .collect(LinkedHashMap::new,
             (m, i) -> m.put(partitionKeys.get(i).getName(), partitionValues.get(0).getValues().get(i)), Map::putAll);
 
-    when(messageReader.next()).thenReturn(Optional.of(apiaryInsertTableEvent));
+    when(messageReader.read()).thenReturn(Optional.of(apiaryInsertTableEvent));
     configureMockedEvent(apiaryInsertTableEvent);
 
     when(apiaryInsertTableEvent.getPartitionKeyValues()).thenReturn(partitionKeyValues);
@@ -317,14 +318,14 @@ public class MessageReaderAdapterTest {
         .parameters(PARAMETERS)
         .build();
 
-    MetaStoreEvent actual = messageReaderAdapter.next().get();
+    MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
   }
 
   @Test
   public void dropTableEvent() {
-    when(messageReader.next()).thenReturn(Optional.of(apiaryDropTableEvent));
+    when(messageReader.read()).thenReturn(Optional.of(apiaryDropTableEvent));
     configureMockedEvent(apiaryDropTableEvent);
     when(apiaryDropTableEvent.getEventType()).thenReturn(EventType.DROP_TABLE);
 
@@ -335,7 +336,7 @@ public class MessageReaderAdapterTest {
         .parameters(PARAMETERS)
         .build();
 
-    MetaStoreEvent actual = messageReaderAdapter.next().get();
+    MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
   }

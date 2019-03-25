@@ -57,7 +57,7 @@ class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator {
     log.info("Starting");
     while (running) {
       try {
-        Optional<MetaStoreEvent> event = eventReader.next();
+        Optional<MetaStoreEvent> event = eventReader.read();
         if (event.isPresent()) {
           MetaStoreEvent metaStoreEvent = event.get();
           log.info("New event received: {}", metaStoreEvent);
