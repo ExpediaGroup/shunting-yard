@@ -39,7 +39,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
-import com.expedia.apiary.extensions.receiver.common.MessageReader;
+import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
 import com.expedia.apiary.extensions.receiver.common.event.AddPartitionEvent;
 import com.expedia.apiary.extensions.receiver.common.event.AlterPartitionEvent;
 import com.expedia.apiary.extensions.receiver.common.event.AlterTableEvent;

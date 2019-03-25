@@ -17,8 +17,7 @@ package com.hotels.shunting.yard.common.messaging;
 
 import org.apache.hadoop.conf.Configuration;
 
-import com.expedia.apiary.extensions.receiver.common.MessageReader;
-import com.expedia.apiary.extensions.receiver.sqs.messaging.SqsMessageDeserializer;
+import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
 
 import com.hotels.shunting.yard.common.ShuntingYardException;
 
@@ -39,6 +38,6 @@ public interface MessageReaderFactory {
     }
   }
 
-  MessageReader newInstance(Configuration conf, SqsMessageDeserializer sqsMessageSerde);
+  MessageReader newInstance(Configuration conf);
 
 }

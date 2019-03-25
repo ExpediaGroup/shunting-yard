@@ -17,13 +17,12 @@ package com.hotels.shunting.yard.common.messaging;
 
 import org.apache.hadoop.conf.Configuration;
 
-import com.expedia.apiary.extensions.receiver.common.MessageReader;
-import com.expedia.apiary.extensions.receiver.sqs.messaging.SqsMessageDeserializer;
+import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
 
 class SomeMessageReaderFactory implements MessageReaderFactory {
 
   @Override
-  public MessageReader newInstance(Configuration conf, SqsMessageDeserializer sqsMessageSerDe) {
+  public MessageReader newInstance(Configuration conf) {
     return null;
   }
 

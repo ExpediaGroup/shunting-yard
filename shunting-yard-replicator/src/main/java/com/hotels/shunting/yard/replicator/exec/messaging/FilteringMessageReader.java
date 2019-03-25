@@ -18,7 +18,7 @@ package com.hotels.shunting.yard.replicator.exec.messaging;
 import java.io.IOException;
 import java.util.Optional;
 
-import com.expedia.apiary.extensions.receiver.common.MessageReader;
+import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
 import com.expedia.apiary.extensions.receiver.common.event.ListenerEvent;
 
 import com.hotels.shunting.yard.replicator.exec.receiver.TableSelector;

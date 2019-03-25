@@ -26,22 +26,22 @@ import org.apache.hadoop.conf.Configuration;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 
-import com.expedia.apiary.extensions.receiver.common.MessageReader;
-import com.expedia.apiary.extensions.receiver.sqs.SqsMessageReader;
-import com.expedia.apiary.extensions.receiver.sqs.messaging.SqsMessageDeserializer;
+import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
+import com.expedia.apiary.extensions.receiver.sqs.messaging.SqsMessageReader;
 
 import com.hotels.shunting.yard.common.messaging.MessageReaderFactory;
 
 public class SqsMessageReaderFactory implements MessageReaderFactory {
 
   @Override
-  public MessageReader newInstance(Configuration conf, SqsMessageDeserializer sqsMessageSerde) {
+  public MessageReader newInstance(Configuration conf) {
     AmazonSQS consumer = AmazonSQSClientBuilder.standard()
         .withRegion(region(conf))
         .withCredentials(credentials(conf))
         .build();
 
-    return new SqsMessageReader.Builder(queue(conf), consumer, sqsMessageSerde)
+    return new SqsMessageReader.Builder(queue(conf))
+        .withConsumer(consumer)
         .withMaxMessages(maxMessages(conf))
         .withWaitTimeSeconds(waitTimeSeconds(conf))
         .build();

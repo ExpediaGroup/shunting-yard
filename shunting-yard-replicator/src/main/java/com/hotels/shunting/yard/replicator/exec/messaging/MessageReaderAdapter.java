@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import com.expedia.apiary.extensions.receiver.common.MessageReader;
+import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
 import com.expedia.apiary.extensions.receiver.common.event.AddPartitionEvent;
 import com.expedia.apiary.extensions.receiver.common.event.AlterPartitionEvent;
 import com.expedia.apiary.extensions.receiver.common.event.AlterTableEvent;

@@ -40,10 +40,9 @@ import org.springframework.core.annotation.Order;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Supplier;
 
-import com.expedia.apiary.extensions.receiver.common.MessageReader;
+import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
 import com.expedia.apiary.extensions.receiver.common.messaging.JsonMetaStoreEventDeserializer;
 import com.expedia.apiary.extensions.receiver.common.messaging.MetaStoreEventDeserializer;
-import com.expedia.apiary.extensions.receiver.sqs.messaging.SqsMessageDeserializer;
 
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 import com.hotels.hcommon.hive.metastore.client.api.MetaStoreClientFactory;
@@ -151,13 +150,6 @@ public class CommonBeans {
   }
 
   @Bean
-  SqsMessageDeserializer sqsMessageSerDe(
-      MetaStoreEventDeserializer metaStoreEventDeserializer,
-      ObjectMapper objectMapper) {
-    return new SqsMessageDeserializer(metaStoreEventDeserializer, objectMapper);
-  }
-
-  @Bean
   MetaStoreEventAggregator eventAggregator() {
     return new DefaultMetaStoreEventAggregator();
   }
@@ -170,13 +162,12 @@ public class CommonBeans {
   @Bean
   MessageReaderAdapter messageReaderAdapter(
       HiveConf replicaHiveConf,
-      SqsMessageDeserializer sqsMessageSerDe,
       EventReceiverConfiguration messageReaderConfig,
       SourceCatalog sourceCatalog,
       TableSelector tableSelector) {
     MessageReaderFactory messaReaderFactory = MessageReaderFactory
         .newInstance(messageReaderConfig.getMessageReaderFactoryClass());
-    MessageReader messageReader = messaReaderFactory.newInstance(replicaHiveConf, sqsMessageSerDe);
+    MessageReader messageReader = messaReaderFactory.newInstance(replicaHiveConf);
     FilteringMessageReader filteringMessageReader = new FilteringMessageReader(messageReader, tableSelector);
     return new MessageReaderAdapter(filteringMessageReader, sourceCatalog.getHiveMetastoreUris());
   }
