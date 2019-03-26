@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 * Support for handling new elements (location and table parameters) coming in from Apiary events.
 * Support for performing metadata only sync in alter table and alter partition event.
 
+### Changed
+* Extracted Apiary sqs receiver logic to library in [`apiary-extensions`](https://github.com/ExpediaInc/apiary-extensions).
+
 ## [0.0.8] - 2019-02-05
 ### Added
 * Support for passing certain configurations like Graphite directly to internal CT instance using `--ct-config` argument.

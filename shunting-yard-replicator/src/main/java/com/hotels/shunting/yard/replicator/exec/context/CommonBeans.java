@@ -15,7 +15,6 @@
  */
 package com.hotels.shunting.yard.replicator.exec.context;
 
-import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import static com.hotels.shunting.yard.replicator.exec.app.ConfigurationVariables.CT_CONFIG;
@@ -37,12 +36,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Supplier;
 
 import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
-import com.expedia.apiary.extensions.receiver.common.messaging.JsonMetaStoreEventDeserializer;
-import com.expedia.apiary.extensions.receiver.common.messaging.MetaStoreEventDeserializer;
 
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 import com.hotels.hcommon.hive.metastore.client.api.MetaStoreClientFactory;
