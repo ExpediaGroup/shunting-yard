@@ -22,7 +22,6 @@ import static com.hotels.shunting.yard.replicator.exec.app.ConfigurationVariable
 
 import java.io.File;
 import java.net.URI;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,6 +39,7 @@ import com.hotels.bdp.circustrain.api.conf.TableReplication;
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 import com.hotels.shunting.yard.common.PropertyUtils;
 import com.hotels.shunting.yard.common.ShuntingYardException;
+import com.hotels.shunting.yard.replicator.exec.conf.ShuntingYardTableReplications;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 import com.hotels.shunting.yard.replicator.exec.external.CircusTrainConfig;
 import com.hotels.shunting.yard.replicator.exec.external.Marshaller;
@@ -54,17 +54,17 @@ public class ContextFactory {
   private final Configuration conf;
   private final CloseableMetaStoreClient metaStoreClient;
   private final Marshaller marshaller;
-  private final Map<String, TableReplication> tableReplicationsMap;
+  private final ShuntingYardTableReplications shuntingYardTableReplications;
 
   public ContextFactory(
       Configuration conf,
       CloseableMetaStoreClient metaStoreClient,
       Marshaller marshaller,
-      Map<String, TableReplication> tableReplicationsMap) {
+      ShuntingYardTableReplications shuntingYardTableReplications) {
     this.conf = conf;
     this.metaStoreClient = metaStoreClient;
     this.marshaller = marshaller;
-    this.tableReplicationsMap = tableReplicationsMap;
+    this.shuntingYardTableReplications = shuntingYardTableReplications;
   }
 
   private String dir(MetaStoreEvent event) {
@@ -119,7 +119,8 @@ public class ContextFactory {
     String replicaDatabaseName = event.getDatabaseName();
     String replicaTableName = event.getTableName();
 
-    TableReplication tableReplication = tableReplicationsMap
+    TableReplication tableReplication = shuntingYardTableReplications
+        .getTableReplicationsMap()
         .get(String.join(".", event.getDatabaseName(), event.getTableName()));
 
     if (tableReplication != null) {

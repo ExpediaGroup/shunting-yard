@@ -27,8 +27,9 @@ import static com.hotels.shunting.yard.replicator.exec.app.ConfigurationVariable
 import static com.hotels.shunting.yard.replicator.exec.app.ConfigurationVariables.WORKSPACE;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
@@ -49,10 +50,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.hotels.bdp.circustrain.api.conf.ReplicaTable;
 import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
+import com.hotels.bdp.circustrain.api.conf.SourceTable;
 import com.hotels.bdp.circustrain.api.conf.TableReplication;
+import com.hotels.bdp.circustrain.api.conf.TableReplications;
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 import com.hotels.shunting.yard.common.ShuntingYardException;
 import com.hotels.shunting.yard.common.event.EventType;
+import com.hotels.shunting.yard.replicator.exec.conf.ShuntingYardTableReplications;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 import com.hotels.shunting.yard.replicator.exec.external.CircusTrainConfig;
 import com.hotels.shunting.yard.replicator.exec.external.Marshaller;
@@ -108,7 +112,7 @@ public class ContextFactoryTest {
     when(replicaMetaStoreClient.getTable(DATABASE, TABLE)).thenReturn(replicaTable);
     when(replicaMetaStoreClient.getTable(REPLICA_DATABASE, REPLICA_TABLE)).thenReturn(replicaTable);
 
-    factory = new ContextFactory(conf, replicaMetaStoreClient, marshaller, new HashMap<String, TableReplication>());
+    factory = new ContextFactory(conf, replicaMetaStoreClient, marshaller, new ShuntingYardTableReplications());
   }
 
   @Test
@@ -150,15 +154,25 @@ public class ContextFactoryTest {
   @Test
   public void createContextForPartitionedTableWithReplicaTableSpecified() {
     TableReplication tableReplication = new TableReplication();
+    SourceTable sourceTable = new SourceTable();
+    sourceTable.setDatabaseName(DATABASE);
+    sourceTable.setTableName(TABLE);
+
     ReplicaTable replicaTable = new ReplicaTable();
     replicaTable.setDatabaseName(REPLICA_DATABASE);
     replicaTable.setTableName(REPLICA_TABLE);
+
+    tableReplication.setSourceTable(sourceTable);
     tableReplication.setReplicaTable(replicaTable);
 
-    Map<String, TableReplication> tableReplicationsMap = new HashMap<>();
-    tableReplicationsMap.put(String.join(".", DATABASE, TABLE), tableReplication);
+    List<TableReplication> tableReplications = new ArrayList<>();
+    tableReplications.add(tableReplication);
 
-    factory = new ContextFactory(conf, replicaMetaStoreClient, marshaller, tableReplicationsMap);
+    TableReplications tableReplicationsWrapper = new TableReplications();
+    tableReplicationsWrapper.setTableReplications(tableReplications);
+
+    factory = new ContextFactory(conf, replicaMetaStoreClient, marshaller,
+        new ShuntingYardTableReplications(tableReplicationsWrapper));
 
     when(event.getPartitionColumns()).thenReturn(Arrays.asList("s", "i"));
     when(event.getPartitionValues()).thenReturn(Arrays.asList(Arrays.asList("a", "1"), Arrays.asList("b", "2")));

@@ -54,6 +54,7 @@ import com.hotels.shunting.yard.common.messaging.MessageReaderFactory;
 import com.hotels.shunting.yard.replicator.exec.ConfigFileValidator;
 import com.hotels.shunting.yard.replicator.exec.conf.EventReceiverConfiguration;
 import com.hotels.shunting.yard.replicator.exec.conf.ReplicaCatalog;
+import com.hotels.shunting.yard.replicator.exec.conf.ShuntingYardTableReplications;
 import com.hotels.shunting.yard.replicator.exec.conf.SourceCatalog;
 import com.hotels.shunting.yard.replicator.exec.conf.SourceTableFilter;
 import com.hotels.shunting.yard.replicator.exec.event.aggregation.DefaultMetaStoreEventAggregator;
@@ -137,7 +138,7 @@ public class CommonBeans {
       TableReplications circusTrainTableReplications) {
     CloseableMetaStoreClient metaStoreClient = replicaMetaStoreClientSupplier.get();
     ContextFactory contextFactory = new ContextFactory(replicaHiveConf, metaStoreClient, new Marshaller(),
-        transformTableReplicationsToMap(circusTrainTableReplications));
+        new ShuntingYardTableReplications(circusTrainTableReplications));
     return new CircusTrainReplicationMetaStoreEventListener(metaStoreClient, contextFactory, new CircusTrainRunner());
   }
 
