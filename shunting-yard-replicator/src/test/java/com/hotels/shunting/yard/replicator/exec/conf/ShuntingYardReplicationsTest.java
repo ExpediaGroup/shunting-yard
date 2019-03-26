@@ -55,7 +55,7 @@ public class ShuntingYardReplicationsTest {
     List<TableReplication> tableReplications = new ArrayList<>();
     tableReplications.add(tableReplication);
 
-    TableReplications tableReplicationsWrapper = new TableReplications();
+    TableReplications tableReplicationsWrapper = new CircusTrainTableReplications();
     tableReplicationsWrapper.setTableReplications(tableReplications);
     syTableReplications = new ShuntingYardTableReplications(tableReplicationsWrapper);
   }
