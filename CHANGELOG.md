@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 * Support for performing metadata only sync in alter table and alter partition event.
 
 ### Changed
-* Extracted Apiary sqs receiver logic to library in [`apiary-extensions`](https://github.com/ExpediaInc/apiary-extensions).
+* Extracted Apiary SQS receiver logic to library in [`apiary-receivers`](https://github.com/ExpediaInc/apiary-extensions/tree/master/apiary-receivers).
 
 ## [0.0.8] - 2019-02-05
 ### Added
