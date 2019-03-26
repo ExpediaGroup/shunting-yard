@@ -138,18 +138,6 @@ public class CommonBeans {
   }
 
   @Bean
-  ObjectMapper objectMapper() {
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
-    return mapper;
-  }
-
-  @Bean
-  MetaStoreEventDeserializer metaStoreEventSerDe(ObjectMapper objectMapper) {
-    return new JsonMetaStoreEventDeserializer(objectMapper);
-  }
-
-  @Bean
   MetaStoreEventAggregator eventAggregator() {
     return new DefaultMetaStoreEventAggregator();
   }
