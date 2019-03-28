@@ -120,8 +120,7 @@ public class ContextFactory {
     String replicaTableName = event.getTableName();
 
     TableReplication tableReplication = shuntingYardTableReplications
-        .getTableReplicationsMap()
-        .get(String.join(".", event.getDatabaseName(), event.getTableName()));
+        .getTableReplication(event.getDatabaseName(), event.getTableName());
 
     if (tableReplication != null) {
       replicaDatabaseName = tableReplication.getReplicaDatabaseName();

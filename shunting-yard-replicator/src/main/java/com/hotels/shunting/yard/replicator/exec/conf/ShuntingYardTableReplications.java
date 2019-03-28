@@ -37,8 +37,9 @@ public class ShuntingYardTableReplications {
     }
   }
 
-  public Map<String, TableReplication> getTableReplicationsMap() {
-    return tableReplicationsMap;
+  public TableReplication getTableReplication(String dbName, String tableName) {
+    String key = String.join(".", dbName, tableName);
+    return tableReplicationsMap.get(key);
   }
 
 }

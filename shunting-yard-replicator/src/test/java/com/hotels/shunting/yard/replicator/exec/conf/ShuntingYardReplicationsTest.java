@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -62,29 +61,28 @@ public class ShuntingYardReplicationsTest {
 
   @Test
   public void typical() {
-    Map<String, TableReplication> tableReplicationsMap = syTableReplications.getTableReplicationsMap();
-    String key = String.join(".", SOURCE_DATABASE, SOURCE_TABLE);
+    TableReplication tableReplication = syTableReplications.getTableReplication(SOURCE_DATABASE, SOURCE_TABLE);
 
-    assertThat(tableReplicationsMap.get(key).getReplicaDatabaseName()).isEqualTo(REPLICA_DATABASE);
-    assertThat(tableReplicationsMap.get(key).getReplicaTableName()).isEqualTo(REPLICA_TABLE);
+    assertThat(tableReplication.getReplicaDatabaseName()).isEqualTo(REPLICA_DATABASE);
+    assertThat(tableReplication.getReplicaTableName()).isEqualTo(REPLICA_TABLE);
   }
 
   @Test
   public void defaultConstructor() {
     syTableReplications = new ShuntingYardTableReplications();
-    assertThat(syTableReplications.getTableReplicationsMap()).isEmpty();
+    assertThat(syTableReplications.getTableReplication(SOURCE_DATABASE, SOURCE_TABLE)).isNull();
   }
 
   @Test
   public void emptyTableReplications() {
     syTableReplications = new ShuntingYardTableReplications(new TableReplications());
-    assertThat(syTableReplications.getTableReplicationsMap()).isEmpty();
+    assertThat(syTableReplications.getTableReplication(SOURCE_DATABASE, SOURCE_TABLE)).isNull();
   }
 
   @Test
   public void nullTableReplications() {
     syTableReplications = new ShuntingYardTableReplications(null);
-    assertThat(syTableReplications.getTableReplicationsMap()).isEmpty();
+    assertThat(syTableReplications.getTableReplication(SOURCE_DATABASE, SOURCE_TABLE)).isNull();
   }
 
 }
