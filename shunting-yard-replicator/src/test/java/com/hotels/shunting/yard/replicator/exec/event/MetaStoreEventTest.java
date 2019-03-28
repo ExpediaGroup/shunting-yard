@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ package com.hotels.shunting.yard.replicator.exec.event;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import static com.hotels.shunting.yard.common.event.EventType.CREATE_TABLE;
+import static com.expedia.apiary.extensions.receiver.common.event.EventType.CREATE_TABLE;
 
 import java.util.Arrays;
 
