@@ -13,13 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.shunting.yard.replicator.exec.conf;
+package com.hotels.shunting.yard.replicator.exec.conf.ct;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import org.hibernate.validator.constraints.NotBlank;
 
-import com.hotels.bdp.circustrain.api.conf.TableReplications;
+public class SyReplicaTable {
+  private @NotBlank String databaseName;
+  private @NotBlank String tableName;
 
-@Configuration
-@ConfigurationProperties(prefix = "table-replications")
-public class CircusTrainTableReplications extends TableReplications {}
+  public String getDatabaseName() {
+    return databaseName;
+  }
+
+  public void setDatabaseName(String databaseName) {
+    this.databaseName = databaseName;
+  }
+
+  public String getTableName() {
+    return tableName;
+  }
+
+  public void setTableName(String tableName) {
+    this.tableName = tableName;
+  }
+
+}

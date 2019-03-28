@@ -35,11 +35,11 @@ import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hotels.bdp.circustrain.api.conf.TableReplication;
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 import com.hotels.shunting.yard.common.PropertyUtils;
 import com.hotels.shunting.yard.common.ShuntingYardException;
 import com.hotels.shunting.yard.replicator.exec.conf.ShuntingYardTableReplications;
+import com.hotels.shunting.yard.replicator.exec.conf.ct.SyTableReplication;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 import com.hotels.shunting.yard.replicator.exec.external.CircusTrainConfig;
 import com.hotels.shunting.yard.replicator.exec.external.Marshaller;
@@ -119,7 +119,7 @@ public class ContextFactory {
     String replicaDatabaseName = event.getDatabaseName();
     String replicaTableName = event.getTableName();
 
-    TableReplication tableReplication = shuntingYardTableReplications
+    SyTableReplication tableReplication = shuntingYardTableReplications
         .getTableReplication(event.getDatabaseName(), event.getTableName());
 
     if (tableReplication != null) {

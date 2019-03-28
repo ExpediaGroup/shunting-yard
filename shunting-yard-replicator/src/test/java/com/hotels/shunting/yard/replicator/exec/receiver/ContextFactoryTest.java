@@ -48,15 +48,16 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import com.hotels.bdp.circustrain.api.conf.ReplicaTable;
 import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
 import com.hotels.bdp.circustrain.api.conf.SourceTable;
 import com.hotels.bdp.circustrain.api.conf.TableReplication;
-import com.hotels.bdp.circustrain.api.conf.TableReplications;
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 import com.hotels.shunting.yard.common.ShuntingYardException;
 import com.hotels.shunting.yard.common.event.EventType;
 import com.hotels.shunting.yard.replicator.exec.conf.ShuntingYardTableReplications;
+import com.hotels.shunting.yard.replicator.exec.conf.ct.SyReplicaTable;
+import com.hotels.shunting.yard.replicator.exec.conf.ct.SyTableReplication;
+import com.hotels.shunting.yard.replicator.exec.conf.ct.SyTableReplications;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 import com.hotels.shunting.yard.replicator.exec.external.CircusTrainConfig;
 import com.hotels.shunting.yard.replicator.exec.external.Marshaller;
@@ -153,22 +154,22 @@ public class ContextFactoryTest {
 
   @Test
   public void createContextForPartitionedTableWithReplicaTableSpecified() {
-    TableReplication tableReplication = new TableReplication();
+    SyTableReplication tableReplication = new SyTableReplication();
     SourceTable sourceTable = new SourceTable();
     sourceTable.setDatabaseName(DATABASE);
     sourceTable.setTableName(TABLE);
 
-    ReplicaTable replicaTable = new ReplicaTable();
+    SyReplicaTable replicaTable = new SyReplicaTable();
     replicaTable.setDatabaseName(REPLICA_DATABASE);
     replicaTable.setTableName(REPLICA_TABLE);
 
     tableReplication.setSourceTable(sourceTable);
     tableReplication.setReplicaTable(replicaTable);
 
-    List<TableReplication> tableReplications = new ArrayList<>();
+    List<SyTableReplication> tableReplications = new ArrayList<>();
     tableReplications.add(tableReplication);
 
-    TableReplications tableReplicationsWrapper = new TableReplications();
+    SyTableReplications tableReplicationsWrapper = new SyTableReplications();
     tableReplicationsWrapper.setTableReplications(tableReplications);
 
     factory = new ContextFactory(conf, replicaMetaStoreClient, marshaller,
