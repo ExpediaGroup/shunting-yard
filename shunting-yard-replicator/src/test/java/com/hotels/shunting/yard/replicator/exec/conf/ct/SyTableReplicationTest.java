@@ -28,10 +28,8 @@ import javax.validation.ValidatorFactory;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.hotels.bdp.circustrain.api.conf.SourceTable;
-
 public class SyTableReplicationTest {
-  private SourceTable sourceTable;
+  private SySourceTable sourceTable;
   private SyReplicaTable replicaTable;
   private SyTableReplication tableReplication;
   private Validator validator;
@@ -44,7 +42,7 @@ public class SyTableReplicationTest {
 
   @Before
   public void buildConfig() {
-    sourceTable = new SourceTable();
+    sourceTable = new SySourceTable();
     replicaTable = new SyReplicaTable();
 
     tableReplication = new SyTableReplication();

@@ -18,17 +18,15 @@ package com.hotels.shunting.yard.replicator.exec.conf.ct;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import com.hotels.bdp.circustrain.api.conf.SourceTable;
-
 public class SyTableReplication {
-  private @Valid @NotNull SourceTable sourceTable;
+  private @Valid @NotNull SySourceTable sourceTable;
   private @Valid @NotNull SyReplicaTable replicaTable;
 
-  public SourceTable getSourceTable() {
+  public SySourceTable getSourceTable() {
     return sourceTable;
   }
 
-  public void setSourceTable(SourceTable sourceTable) {
+  public void setSourceTable(SySourceTable sourceTable) {
     this.sourceTable = sourceTable;
   }
 
@@ -41,7 +39,7 @@ public class SyTableReplication {
   }
 
   public String getReplicaDatabaseName() {
-    SourceTable sourceTable = getSourceTable();
+    SySourceTable sourceTable = getSourceTable();
     SyReplicaTable replicaTable = getReplicaTable();
     String databaseName = replicaTable.getDatabaseName() != null ? replicaTable.getDatabaseName()
         : sourceTable.getDatabaseName();
@@ -49,7 +47,7 @@ public class SyTableReplication {
   }
 
   public String getReplicaTableName() {
-    SourceTable sourceTable = getSourceTable();
+    SySourceTable sourceTable = getSourceTable();
     SyReplicaTable replicaTable = getReplicaTable();
     String tableNameName = replicaTable.getTableName() != null ? replicaTable.getTableName()
         : sourceTable.getTableName();

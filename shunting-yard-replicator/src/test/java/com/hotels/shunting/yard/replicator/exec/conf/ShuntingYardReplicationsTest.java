@@ -23,9 +23,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.hotels.bdp.circustrain.api.conf.SourceTable;
-import com.hotels.shunting.yard.replicator.exec.conf.ct.CircusTrainTableReplications;
 import com.hotels.shunting.yard.replicator.exec.conf.ct.SyReplicaTable;
+import com.hotels.shunting.yard.replicator.exec.conf.ct.SySourceTable;
 import com.hotels.shunting.yard.replicator.exec.conf.ct.SyTableReplication;
 import com.hotels.shunting.yard.replicator.exec.conf.ct.SyTableReplications;
 
@@ -42,7 +41,7 @@ public class ShuntingYardReplicationsTest {
   public void init() {
     SyTableReplication tableReplication = new SyTableReplication();
 
-    SourceTable sourceTable = new SourceTable();
+    SySourceTable sourceTable = new SySourceTable();
     sourceTable.setDatabaseName(SOURCE_DATABASE);
     sourceTable.setTableName(SOURCE_TABLE);
     tableReplication.setSourceTable(sourceTable);
@@ -55,7 +54,7 @@ public class ShuntingYardReplicationsTest {
     List<SyTableReplication> tableReplications = new ArrayList<>();
     tableReplications.add(tableReplication);
 
-    SyTableReplications tableReplicationsWrapper = new CircusTrainTableReplications();
+    SyTableReplications tableReplicationsWrapper = new SyTableReplications();
     tableReplicationsWrapper.setTableReplications(tableReplications);
     syTableReplications = new ShuntingYardTableReplications(tableReplicationsWrapper);
   }

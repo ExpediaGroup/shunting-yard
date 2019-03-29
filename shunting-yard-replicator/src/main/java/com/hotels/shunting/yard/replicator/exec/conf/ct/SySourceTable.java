@@ -15,9 +15,26 @@
  */
 package com.hotels.shunting.yard.replicator.exec.conf.ct;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import org.hibernate.validator.constraints.NotBlank;
 
-@Configuration("tableReplications")
-@ConfigurationProperties(prefix = "")
-public class CircusTrainTableReplications extends SyTableReplications {}
+public class SySourceTable {
+  private @NotBlank String databaseName;
+  private @NotBlank String tableName;
+
+  public String getDatabaseName() {
+    return databaseName;
+  }
+
+  public void setDatabaseName(String databaseName) {
+    this.databaseName = databaseName;
+  }
+
+  public String getTableName() {
+    return tableName;
+  }
+
+  public void setTableName(String tableName) {
+    this.tableName = tableName;
+  }
+
+}
