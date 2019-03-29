@@ -18,17 +18,17 @@ package com.hotels.shunting.yard.replicator.exec.conf;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.hotels.bdp.circustrain.api.conf.TableReplication;
-import com.hotels.bdp.circustrain.api.conf.TableReplications;
+import com.hotels.shunting.yard.replicator.exec.conf.ct.SyTableReplication;
+import com.hotels.shunting.yard.replicator.exec.conf.ct.SyTableReplications;
 
 public class ShuntingYardTableReplications {
-  private final Map<String, TableReplication> tableReplicationsMap = new HashMap<>();
+  private final Map<String, SyTableReplication> tableReplicationsMap = new HashMap<>();
 
   public ShuntingYardTableReplications() {}
 
-  public ShuntingYardTableReplications(TableReplications tableReplications) {
+  public ShuntingYardTableReplications(SyTableReplications tableReplications) {
     if ((tableReplications != null) && (tableReplications.getTableReplications() != null)) {
-      for (TableReplication tableReplication : tableReplications.getTableReplications()) {
+      for (SyTableReplication tableReplication : tableReplications.getTableReplications()) {
         String key = String
             .join(".", tableReplication.getSourceTable().getDatabaseName(),
                 tableReplication.getSourceTable().getTableName());
@@ -37,7 +37,7 @@ public class ShuntingYardTableReplications {
     }
   }
 
-  public TableReplication getTableReplication(String dbName, String tableName) {
+  public SyTableReplication getTableReplication(String dbName, String tableName) {
     String key = String.join(".", dbName, tableName);
     return tableReplicationsMap.get(key);
   }

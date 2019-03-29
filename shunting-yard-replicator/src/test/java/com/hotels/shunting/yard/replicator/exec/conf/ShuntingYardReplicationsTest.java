@@ -23,10 +23,11 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.hotels.bdp.circustrain.api.conf.ReplicaTable;
 import com.hotels.bdp.circustrain.api.conf.SourceTable;
-import com.hotels.bdp.circustrain.api.conf.TableReplication;
-import com.hotels.bdp.circustrain.api.conf.TableReplications;
+import com.hotels.shunting.yard.replicator.exec.conf.ct.CircusTrainTableReplications;
+import com.hotels.shunting.yard.replicator.exec.conf.ct.SyReplicaTable;
+import com.hotels.shunting.yard.replicator.exec.conf.ct.SyTableReplication;
+import com.hotels.shunting.yard.replicator.exec.conf.ct.SyTableReplications;
 
 public class ShuntingYardReplicationsTest {
 
@@ -39,29 +40,29 @@ public class ShuntingYardReplicationsTest {
 
   @Before
   public void init() {
-    TableReplication tableReplication = new TableReplication();
+    SyTableReplication tableReplication = new SyTableReplication();
 
     SourceTable sourceTable = new SourceTable();
     sourceTable.setDatabaseName(SOURCE_DATABASE);
     sourceTable.setTableName(SOURCE_TABLE);
     tableReplication.setSourceTable(sourceTable);
 
-    ReplicaTable replicaTable = new ReplicaTable();
+    SyReplicaTable replicaTable = new SyReplicaTable();
     replicaTable.setDatabaseName(REPLICA_DATABASE);
     replicaTable.setTableName(REPLICA_TABLE);
     tableReplication.setReplicaTable(replicaTable);
 
-    List<TableReplication> tableReplications = new ArrayList<>();
+    List<SyTableReplication> tableReplications = new ArrayList<>();
     tableReplications.add(tableReplication);
 
-    TableReplications tableReplicationsWrapper = new CircusTrainTableReplications();
+    SyTableReplications tableReplicationsWrapper = new CircusTrainTableReplications();
     tableReplicationsWrapper.setTableReplications(tableReplications);
     syTableReplications = new ShuntingYardTableReplications(tableReplicationsWrapper);
   }
 
   @Test
   public void typical() {
-    TableReplication tableReplication = syTableReplications.getTableReplication(SOURCE_DATABASE, SOURCE_TABLE);
+    SyTableReplication tableReplication = syTableReplications.getTableReplication(SOURCE_DATABASE, SOURCE_TABLE);
 
     assertThat(tableReplication.getReplicaDatabaseName()).isEqualTo(REPLICA_DATABASE);
     assertThat(tableReplication.getReplicaTableName()).isEqualTo(REPLICA_TABLE);
@@ -75,7 +76,7 @@ public class ShuntingYardReplicationsTest {
 
   @Test
   public void emptyTableReplications() {
-    syTableReplications = new ShuntingYardTableReplications(new TableReplications());
+    syTableReplications = new ShuntingYardTableReplications(new SyTableReplications());
     assertThat(syTableReplications.getTableReplication(SOURCE_DATABASE, SOURCE_TABLE)).isNull();
   }
 

@@ -40,7 +40,6 @@ import com.google.common.base.Supplier;
 
 import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
 
-import com.hotels.bdp.circustrain.api.conf.TableReplications;
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 import com.hotels.hcommon.hive.metastore.client.api.MetaStoreClientFactory;
 import com.hotels.hcommon.hive.metastore.client.closeable.CloseableMetaStoreClientFactory;
@@ -52,6 +51,7 @@ import com.hotels.shunting.yard.replicator.exec.conf.ReplicaCatalog;
 import com.hotels.shunting.yard.replicator.exec.conf.ShuntingYardTableReplications;
 import com.hotels.shunting.yard.replicator.exec.conf.SourceCatalog;
 import com.hotels.shunting.yard.replicator.exec.conf.SourceTableFilter;
+import com.hotels.shunting.yard.replicator.exec.conf.ct.SyTableReplications;
 import com.hotels.shunting.yard.replicator.exec.event.aggregation.DefaultMetaStoreEventAggregator;
 import com.hotels.shunting.yard.replicator.exec.event.aggregation.MetaStoreEventAggregator;
 import com.hotels.shunting.yard.replicator.exec.external.Marshaller;
@@ -130,7 +130,7 @@ public class CommonBeans {
   ReplicationMetaStoreEventListener replicationMetaStoreEventListener(
       HiveConf replicaHiveConf,
       Supplier<CloseableMetaStoreClient> replicaMetaStoreClientSupplier,
-      TableReplications circusTrainTableReplications) {
+      SyTableReplications circusTrainTableReplications) {
     CloseableMetaStoreClient metaStoreClient = replicaMetaStoreClientSupplier.get();
     ContextFactory contextFactory = new ContextFactory(replicaHiveConf, metaStoreClient, new Marshaller(),
         new ShuntingYardTableReplications(circusTrainTableReplications));
