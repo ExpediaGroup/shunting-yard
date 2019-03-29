@@ -30,14 +30,6 @@
   </dependencyManagement>
 
   <dependencies>
-<!--     <dependency>
-    <groupId>javax.el</groupId>
-    <artifactId>javax.el-api</artifactId>
-   </dependency> -->
-   <dependency>
-    <groupId>org.glassfish</groupId>
-    <artifactId>javax.el</artifactId>
-   </dependency>
     <dependency>
       <groupId>com.hotels</groupId>
       <artifactId>shunting-yard-common</artifactId>
@@ -48,10 +40,10 @@
       <artifactId>shunting-yard-receiver-sqs</artifactId>
       <version>${project.version}</version>
     </dependency>
-    
 
- 
-<!--  -->
+
+
+    <!-- -->
 
     <!-- Spring Boot -->
     <dependency>
@@ -90,6 +82,12 @@
       <artifactId>hadoop-common</artifactId>
       <exclusions>
         <exclusion>
+          <!-- Exclude add because it conflicts with
+            <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.el</artifactId>
+            </dependency>
+          -->
           <groupId>javax.servlet.jsp</groupId>
           <artifactId>jsp-api</artifactId>
         </exclusion>
@@ -100,12 +98,6 @@
     <dependency>
       <groupId>org.apache.hive</groupId>
       <artifactId>hive-metastore</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.servlet</groupId>
-          <artifactId>jsp-api</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.hive</groupId>
@@ -121,8 +113,10 @@
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
     </dependency>
-    
-   
+    <dependency>
+      <groupId>org.glassfish</groupId>
+      <artifactId>javax.el</artifactId>
+    </dependency>
 
     <!-- Apache Commons -->
     <dependency>
