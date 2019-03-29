@@ -17,7 +17,8 @@ package com.hotels.shunting.yard.replicator.exec.receiver;
 
 import java.util.List;
 
-import com.hotels.shunting.yard.common.event.ListenerEvent;
+import com.expedia.apiary.extensions.receiver.common.event.ListenerEvent;
+
 import com.hotels.shunting.yard.replicator.exec.conf.SourceTableFilter;
 
 public class TableSelector {

@@ -76,21 +76,21 @@ public class ReplicationRunnerTest {
 
   @Test
   public void onEvent() throws InterruptedException {
-    when(eventReader.next()).thenReturn(Optional.of(event));
+    when(eventReader.read()).thenReturn(Optional.of(event));
     runRunner();
     verify(listener, atLeastOnce()).onEvent(event);
   }
 
   @Test
   public void onEmptyEvent() throws InterruptedException {
-    when(eventReader.next()).thenReturn(Optional.empty());
+    when(eventReader.read()).thenReturn(Optional.empty());
     runRunner();
     verifyZeroInteractions(listener);
   }
 
   @Test
   public void onEventProcessingFailure() throws InterruptedException {
-    when(eventReader.next()).thenThrow(RuntimeException.class);
+    when(eventReader.read()).thenThrow(RuntimeException.class);
     runRunner();
     verifyZeroInteractions(listener);
   }

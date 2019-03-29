@@ -15,7 +15,6 @@
  */
 package com.hotels.shunting.yard.replicator.exec.context;
 
-import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import static com.hotels.shunting.yard.replicator.exec.app.ConfigurationVariables.CT_CONFIG;
@@ -37,18 +36,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Supplier;
+
+import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
 
 import com.hotels.bdp.circustrain.api.conf.TableReplications;
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 import com.hotels.hcommon.hive.metastore.client.api.MetaStoreClientFactory;
 import com.hotels.hcommon.hive.metastore.client.closeable.CloseableMetaStoreClientFactory;
 import com.hotels.hcommon.hive.metastore.conf.HiveConfFactory;
-import com.hotels.shunting.yard.common.io.MetaStoreEventDeserializer;
-import com.hotels.shunting.yard.common.io.jackson.ApiarySqsMessageDeserializer;
-import com.hotels.shunting.yard.common.io.jackson.JsonMetaStoreEventDeserializer;
-import com.hotels.shunting.yard.common.messaging.MessageReader;
 import com.hotels.shunting.yard.common.messaging.MessageReaderFactory;
 import com.hotels.shunting.yard.replicator.exec.ConfigFileValidator;
 import com.hotels.shunting.yard.replicator.exec.conf.EventReceiverConfiguration;
@@ -142,25 +138,6 @@ public class CommonBeans {
   }
 
   @Bean
-  ObjectMapper objectMapper() {
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
-    return mapper;
-  }
-
-  @Bean
-  MetaStoreEventDeserializer metaStoreEventSerDe(ObjectMapper objectMapper) {
-    return new JsonMetaStoreEventDeserializer(objectMapper);
-  }
-
-  @Bean
-  ApiarySqsMessageDeserializer sqsMessageSerDe(
-      MetaStoreEventDeserializer metaStoreEventDeserializer,
-      ObjectMapper objectMapper) {
-    return new ApiarySqsMessageDeserializer(metaStoreEventDeserializer, objectMapper);
-  }
-
-  @Bean
   MetaStoreEventAggregator eventAggregator() {
     return new DefaultMetaStoreEventAggregator();
   }
@@ -173,13 +150,12 @@ public class CommonBeans {
   @Bean
   MessageReaderAdapter messageReaderAdapter(
       HiveConf replicaHiveConf,
-      ApiarySqsMessageDeserializer sqsMessageSerDe,
       EventReceiverConfiguration messageReaderConfig,
       SourceCatalog sourceCatalog,
       TableSelector tableSelector) {
     MessageReaderFactory messaReaderFactory = MessageReaderFactory
         .newInstance(messageReaderConfig.getMessageReaderFactoryClass());
-    MessageReader messageReader = messaReaderFactory.newInstance(replicaHiveConf, sqsMessageSerDe);
+    MessageReader messageReader = messaReaderFactory.newInstance(replicaHiveConf);
     FilteringMessageReader filteringMessageReader = new FilteringMessageReader(messageReader, tableSelector);
     return new MessageReaderAdapter(filteringMessageReader, sourceCatalog.getHiveMetastoreUris());
   }

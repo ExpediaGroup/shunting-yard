@@ -32,13 +32,13 @@ import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 import static com.hotels.bdp.circustrain.api.CircusTrainTableParameter.REPLICATION_EVENT;
-import static com.hotels.shunting.yard.common.event.EventType.ADD_PARTITION;
-import static com.hotels.shunting.yard.common.event.EventType.ALTER_PARTITION;
-import static com.hotels.shunting.yard.common.event.EventType.ALTER_TABLE;
-import static com.hotels.shunting.yard.common.event.EventType.CREATE_TABLE;
-import static com.hotels.shunting.yard.common.event.EventType.DROP_PARTITION;
-import static com.hotels.shunting.yard.common.event.EventType.DROP_TABLE;
-import static com.hotels.shunting.yard.common.event.EventType.INSERT;
+import static com.expedia.apiary.extensions.receiver.common.event.EventType.ADD_PARTITION;
+import static com.expedia.apiary.extensions.receiver.common.event.EventType.ALTER_PARTITION;
+import static com.expedia.apiary.extensions.receiver.common.event.EventType.ALTER_TABLE;
+import static com.expedia.apiary.extensions.receiver.common.event.EventType.CREATE_TABLE;
+import static com.expedia.apiary.extensions.receiver.common.event.EventType.DROP_PARTITION;
+import static com.expedia.apiary.extensions.receiver.common.event.EventType.DROP_TABLE;
+import static com.expedia.apiary.extensions.receiver.common.event.EventType.INSERT;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -65,7 +65,7 @@ import com.google.common.collect.ImmutableMap;
 
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 import com.hotels.shunting.yard.common.ShuntingYardException;
-import com.hotels.shunting.yard.common.event.EventType;
+import com.expedia.apiary.extensions.receiver.common.event.EventType;
 import com.hotels.shunting.yard.common.receiver.thrift.ThriftListenerUtils;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 import com.hotels.shunting.yard.replicator.exec.launcher.CircusTrainRunner;

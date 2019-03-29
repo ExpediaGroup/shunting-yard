@@ -18,8 +18,9 @@ package com.hotels.shunting.yard.replicator.exec.messaging;
 import java.io.IOException;
 import java.util.Optional;
 
-import com.hotels.shunting.yard.common.event.ListenerEvent;
-import com.hotels.shunting.yard.common.messaging.MessageReader;
+import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
+import com.expedia.apiary.extensions.receiver.common.event.ListenerEvent;
+
 import com.hotels.shunting.yard.replicator.exec.receiver.TableSelector;
 
 public class FilteringMessageReader implements MessageReader {
@@ -33,10 +34,10 @@ public class FilteringMessageReader implements MessageReader {
   }
 
   @Override
-  public Optional<ListenerEvent> next() {
-    Optional<ListenerEvent> next = delegate.next();
-    if (next.isPresent() && tableSelector.canProcess(next.get())) {
-      return next;
+  public Optional<ListenerEvent> read() {
+    Optional<ListenerEvent> event = delegate.read();
+    if (event.isPresent() && tableSelector.canProcess(event.get())) {
+      return event;
     } else {
       return Optional.empty();
     }
