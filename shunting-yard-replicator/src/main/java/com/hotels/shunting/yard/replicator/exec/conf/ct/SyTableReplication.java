@@ -57,8 +57,4 @@ public class SyTableReplication {
     return tableNameName.toLowerCase();
   }
 
-  public String getQualifiedReplicaName() {
-    return getReplicaDatabaseName() + "." + getReplicaTableName();
-  }
-
 }

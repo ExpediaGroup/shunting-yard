@@ -45,7 +45,8 @@ class EventMerger {
     checkArgument(canMerge(a, b), "Events cannot be merged");
     // Event type of the first event is kept for the new event
     Builder builder = MetaStoreEvent
-        .builder(a.getEventType(), a.getDatabaseName(), a.getTableName())
+        .builder(a.getEventType(), a.getDatabaseName(), a.getTableName(), a.getReplicaDatabaseName(),
+            a.getReplicaTableName())
         .parameters(a.getParameters())
         .parameters(b.getParameters())
         .environmentContext(a.getEnvironmentContext())

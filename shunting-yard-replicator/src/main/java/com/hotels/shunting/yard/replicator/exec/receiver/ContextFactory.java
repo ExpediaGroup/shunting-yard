@@ -38,8 +38,6 @@ import org.slf4j.LoggerFactory;
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 import com.hotels.shunting.yard.common.PropertyUtils;
 import com.hotels.shunting.yard.common.ShuntingYardException;
-import com.hotels.shunting.yard.replicator.exec.conf.ShuntingYardTableReplications;
-import com.hotels.shunting.yard.replicator.exec.conf.ct.SyTableReplication;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 import com.hotels.shunting.yard.replicator.exec.external.CircusTrainConfig;
 import com.hotels.shunting.yard.replicator.exec.external.Marshaller;
@@ -54,17 +52,11 @@ public class ContextFactory {
   private final Configuration conf;
   private final CloseableMetaStoreClient metaStoreClient;
   private final Marshaller marshaller;
-  private final ShuntingYardTableReplications shuntingYardTableReplications;
 
-  public ContextFactory(
-      Configuration conf,
-      CloseableMetaStoreClient metaStoreClient,
-      Marshaller marshaller,
-      ShuntingYardTableReplications shuntingYardTableReplications) {
+  public ContextFactory(Configuration conf, CloseableMetaStoreClient metaStoreClient, Marshaller marshaller) {
     this.conf = conf;
     this.metaStoreClient = metaStoreClient;
     this.marshaller = marshaller;
-    this.shuntingYardTableReplications = shuntingYardTableReplications;
   }
 
   private String dir(MetaStoreEvent event) {
@@ -116,24 +108,14 @@ public class ContextFactory {
   private CircusTrainConfig generateConfiguration(MetaStoreEvent event) {
     String sourceMetaStoreUri = getSourceMetaStoreUri(event);
 
-    String replicaDatabaseName = event.getDatabaseName();
-    String replicaTableName = event.getTableName();
-
-    SyTableReplication tableReplication = shuntingYardTableReplications
-        .getTableReplication(event.getDatabaseName(), event.getTableName());
-
-    if (tableReplication != null) {
-      replicaDatabaseName = tableReplication.getReplicaDatabaseName();
-      replicaTableName = tableReplication.getReplicaTableName();
-    }
-
-    String replicaTableLocation = workOutReplicaLocation(replicaDatabaseName, replicaTableName);
+    String replicaTableLocation = workOutReplicaLocation(event.getReplicaDatabaseName(), event.getReplicaTableName());
     CircusTrainConfig config = CircusTrainConfig
         .builder()
         .sourceMetaStoreUri(sourceMetaStoreUri)
         .replicaMetaStoreUri(conf.get(METASTOREURIS.varname))
-        .replication(event.getReplicationMode(), event.getDatabaseName(), event.getTableName(), replicaDatabaseName,
-            replicaTableName, replicaTableLocation, event.getPartitionColumns(), event.getPartitionValues())
+        .replication(event.getReplicationMode(), event.getDatabaseName(), event.getTableName(),
+            event.getReplicaDatabaseName(), event.getReplicaTableName(), replicaTableLocation,
+            event.getPartitionColumns(), event.getPartitionValues())
         .build();
     return config;
   }

@@ -44,19 +44,28 @@ public class MetaStoreEvent {
     private final EventType eventType;
     private final String databaseName;
     private final String tableName;
+    private final String replicaDatabaseName;
+    private final String replicaTableName;
     private List<String> partitionColumns;
     private List<List<String>> partitionValues;
     private Map<String, String> parameters;
     private Map<String, String> environmentContext;
     private ReplicationMode replicationMode;
 
-    private Builder(EventType eventType, String databaseName, String tableName) {
+    private Builder(
+        EventType eventType,
+        String databaseName,
+        String tableName,
+        String replicaDatabaseName,
+        String replicaTableName) {
       checkNotNull(eventType, "eventType is required");
       checkNotNull(databaseName, "databaseName is required");
       checkNotNull(tableName, "tableName is required");
       this.eventType = eventType;
       this.databaseName = databaseName;
       this.tableName = tableName;
+      this.replicaDatabaseName = replicaDatabaseName;
+      this.replicaTableName = replicaTableName;
     }
 
     public Builder partitionColumns(List<String> partitionColumns) {
@@ -121,8 +130,13 @@ public class MetaStoreEvent {
     }
   }
 
-  public static Builder builder(EventType eventType, String databaseName, String tableName) {
-    return new Builder(eventType, databaseName, tableName);
+  public static Builder builder(
+      EventType eventType,
+      String databaseName,
+      String tableName,
+      String replicaDatabaseName,
+      String replicaTableName) {
+    return new Builder(eventType, databaseName, tableName, replicaDatabaseName, replicaTableName);
   }
 
   private static boolean isDropEvent(EventType eventType) {
@@ -132,6 +146,8 @@ public class MetaStoreEvent {
   private final EventType eventType;
   private final String databaseName;
   private final String tableName;
+  private final String replicaDatabaseName;
+  private final String replicaTableName;
   private final List<String> partitionColumns;
   private final List<List<String>> partitionValues;
   private final Map<String, String> parameters;
@@ -142,6 +158,8 @@ public class MetaStoreEvent {
     eventType = builder.eventType;
     databaseName = builder.databaseName;
     tableName = builder.tableName;
+    replicaDatabaseName = builder.replicaDatabaseName;
+    replicaTableName = builder.replicaTableName;
     partitionColumns = builder.partitionColumns;
     partitionValues = builder.partitionValues == null ? null : ImmutableList.copyOf(builder.partitionValues);
     parameters = builder.parameters == null ? null : ImmutableMap.copyOf(builder.parameters);
@@ -159,6 +177,14 @@ public class MetaStoreEvent {
 
   public String getTableName() {
     return tableName;
+  }
+
+  public String getReplicaDatabaseName() {
+    return replicaDatabaseName;
+  }
+
+  public String getReplicaTableName() {
+    return replicaTableName;
   }
 
   public List<String> getPartitionColumns() {
@@ -183,6 +209,10 @@ public class MetaStoreEvent {
 
   public String getQualifiedTableName() {
     return String.join(".", getDatabaseName(), getTableName());
+  }
+
+  public String getQualifiedReplicaTableName() {
+    return String.join(".", getReplicaDatabaseName(), getReplicaTableName());
   }
 
   public boolean isDropEvent() {

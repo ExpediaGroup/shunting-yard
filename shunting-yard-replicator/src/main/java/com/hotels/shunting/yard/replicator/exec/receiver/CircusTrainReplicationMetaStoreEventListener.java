@@ -65,10 +65,10 @@ public class CircusTrainReplicationMetaStoreEventListener implements Replication
 
   @Override
   public void onEvent(MetaStoreEvent event) {
-    if (!canReplicate(event.getDatabaseName(), event.getTableName())) {
+    if (!canReplicate(event.getReplicaDatabaseName(), event.getReplicaTableName())) {
       log
           .info("Skipping event {} on table {}: table does not seem to be a replica", event.getEventType(),
-              event.getQualifiedTableName());
+              event.getQualifiedReplicaTableName());
       return;
     }
 
@@ -100,11 +100,11 @@ public class CircusTrainReplicationMetaStoreEventListener implements Replication
     // We update here because CT won't cascade the operation
     if (event.isCascade()) {
       try {
-        Table newReplicaTable = metaStoreClient.getTable(event.getDatabaseName(), event.getTableName());
+        Table newReplicaTable = metaStoreClient.getTable(event.getReplicaDatabaseName(), event.getReplicaTableName());
         // This will make sure the partitions are updated if the cascade option was set
         metaStoreClient
-            .alter_table_with_environmentContext(event.getDatabaseName(), event.getTableName(), newReplicaTable,
-                new EnvironmentContext(event.getEnvironmentContext()));
+            .alter_table_with_environmentContext(event.getReplicaDatabaseName(), event.getReplicaTableName(),
+                newReplicaTable, new EnvironmentContext(event.getEnvironmentContext()));
       } catch (Exception e) {
         log.warn("ShuntingYard Replication could not propagate the CASCADE operation", e);
       }
@@ -113,7 +113,8 @@ public class CircusTrainReplicationMetaStoreEventListener implements Replication
 
   private void onDropTable(MetaStoreEvent event) {
     try {
-      metaStoreClient.dropTable(event.getDatabaseName(), event.getTableName(), event.isDeleteData(), ifExists());
+      metaStoreClient
+          .dropTable(event.getReplicaDatabaseName(), event.getReplicaTableName(), event.isDeleteData(), ifExists());
     } catch (Exception e) {
       throw new ShuntingYardException("Cannot drop table", e);
     }
@@ -123,7 +124,8 @@ public class CircusTrainReplicationMetaStoreEventListener implements Replication
     try {
       for (List<String> partitionValues : event.getPartitionValues()) {
         metaStoreClient
-            .dropPartition(event.getDatabaseName(), event.getTableName(), partitionValues, event.isDeleteData());
+            .dropPartition(event.getReplicaDatabaseName(), event.getReplicaTableName(), partitionValues,
+                event.isDeleteData());
       }
     } catch (Exception e) {
       throw new ShuntingYardException("Cannot drop partitions", e);

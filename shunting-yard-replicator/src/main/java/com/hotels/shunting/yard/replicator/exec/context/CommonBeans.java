@@ -129,11 +129,9 @@ public class CommonBeans {
   @Bean
   ReplicationMetaStoreEventListener replicationMetaStoreEventListener(
       HiveConf replicaHiveConf,
-      Supplier<CloseableMetaStoreClient> replicaMetaStoreClientSupplier,
-      SyTableReplications circusTrainTableReplications) {
+      Supplier<CloseableMetaStoreClient> replicaMetaStoreClientSupplier) {
     CloseableMetaStoreClient metaStoreClient = replicaMetaStoreClientSupplier.get();
-    ContextFactory contextFactory = new ContextFactory(replicaHiveConf, metaStoreClient, new Marshaller(),
-        new ShuntingYardTableReplications(circusTrainTableReplications));
+    ContextFactory contextFactory = new ContextFactory(replicaHiveConf, metaStoreClient, new Marshaller());
     return new CircusTrainReplicationMetaStoreEventListener(metaStoreClient, contextFactory, new CircusTrainRunner());
   }
 
@@ -152,12 +150,14 @@ public class CommonBeans {
       HiveConf replicaHiveConf,
       EventReceiverConfiguration messageReaderConfig,
       SourceCatalog sourceCatalog,
-      TableSelector tableSelector) {
+      TableSelector tableSelector,
+      SyTableReplications shuntingYardTableReplications) {
     MessageReaderFactory messaReaderFactory = MessageReaderFactory
         .newInstance(messageReaderConfig.getMessageReaderFactoryClass());
     MessageReader messageReader = messaReaderFactory.newInstance(replicaHiveConf);
     FilteringMessageReader filteringMessageReader = new FilteringMessageReader(messageReader, tableSelector);
-    return new MessageReaderAdapter(filteringMessageReader, sourceCatalog.getHiveMetastoreUris());
+    return new MessageReaderAdapter(filteringMessageReader, sourceCatalog.getHiveMetastoreUris(),
+        new ShuntingYardTableReplications(shuntingYardTableReplications));
   }
 
   @Bean

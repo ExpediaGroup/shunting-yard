@@ -23,8 +23,8 @@ import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
-@ConfigurationProperties(prefix = "table-replications")
+@Configuration("tableReplications")
+@ConfigurationProperties(prefix = "")
 public class SyTableReplications {
 
   private @Valid @NotEmpty List<SyTableReplication> tableReplications;

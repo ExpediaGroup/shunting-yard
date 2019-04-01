@@ -30,44 +30,48 @@ public class MetaStoreEventTest {
 
   private static final String DATABASE = "db";
   private static final String TABLE = "tbl";
+  private static final String REPLICA_DATABASE = "replica_db";
+  private static final String REPLICA_TABLE = "replica_tbl";
 
   @Test(expected = NullPointerException.class)
   public void missingEventType() {
-    MetaStoreEvent.builder(null, DATABASE, TABLE);
+    MetaStoreEvent.builder(null, DATABASE, TABLE, REPLICA_DATABASE, REPLICA_TABLE);
   }
 
   @Test(expected = NullPointerException.class)
   public void missingDatabaseName() {
-    MetaStoreEvent.builder(CREATE_TABLE, null, TABLE);
+    MetaStoreEvent.builder(CREATE_TABLE, null, TABLE, REPLICA_DATABASE, REPLICA_TABLE);
   }
 
   @Test(expected = NullPointerException.class)
   public void missingTableName() {
-    MetaStoreEvent.builder(CREATE_TABLE, DATABASE, null);
+    MetaStoreEvent.builder(CREATE_TABLE, DATABASE, null, REPLICA_DATABASE, REPLICA_TABLE);
   }
 
   @Test(expected = IllegalStateException.class)
   public void callPartitionColumnsMoreThanOnce() {
     MetaStoreEvent
-        .builder(CREATE_TABLE, DATABASE, TABLE)
+        .builder(CREATE_TABLE, DATABASE, TABLE, REPLICA_DATABASE, REPLICA_TABLE)
         .partitionColumns(Arrays.asList("p"))
         .partitionColumns(Arrays.asList("p"));
   }
 
   @Test(expected = NullPointerException.class)
   public void callPartitionColumnsWithNullValue() {
-    MetaStoreEvent.builder(CREATE_TABLE, DATABASE, TABLE).partitionColumns(null);
+    MetaStoreEvent.builder(CREATE_TABLE, DATABASE, TABLE, REPLICA_DATABASE, REPLICA_TABLE).partitionColumns(null);
   }
 
   @Test(expected = IllegalStateException.class)
   public void callPartitionValuesWithOutSetting() {
-    MetaStoreEvent.builder(CREATE_TABLE, DATABASE, TABLE).partitionValues(Arrays.asList("p1"));
+    MetaStoreEvent
+        .builder(CREATE_TABLE, DATABASE, TABLE, REPLICA_DATABASE, REPLICA_TABLE)
+        .partitionValues(Arrays.asList("p1"));
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void callPartitionValuesWithFewerValuesThanPartitionColums() {
     MetaStoreEvent
-        .builder(CREATE_TABLE, DATABASE, TABLE)
+        .builder(CREATE_TABLE, DATABASE, TABLE, REPLICA_DATABASE, REPLICA_TABLE)
         .partitionColumns(Arrays.asList("p", "q"))
         .partitionValues(Arrays.asList("p1"));
   }
@@ -75,19 +79,24 @@ public class MetaStoreEventTest {
   @Test(expected = IllegalArgumentException.class)
   public void callPartitionValuesWithMoreValuesThanPartitionColums() {
     MetaStoreEvent
-        .builder(CREATE_TABLE, DATABASE, TABLE)
+        .builder(CREATE_TABLE, DATABASE, TABLE, REPLICA_DATABASE, REPLICA_TABLE)
         .partitionColumns(Arrays.asList("p"))
         .partitionValues(Arrays.asList("p1", "q1"));
   }
 
   @Test(expected = NullPointerException.class)
   public void callPartitionValuesWithNull() {
-    MetaStoreEvent.builder(CREATE_TABLE, DATABASE, TABLE).partitionColumns(Arrays.asList("p")).partitionValues(null);
+    MetaStoreEvent
+        .builder(CREATE_TABLE, DATABASE, TABLE, REPLICA_DATABASE, REPLICA_TABLE)
+        .partitionColumns(Arrays.asList("p"))
+        .partitionValues(null);
   }
 
   @Test
   public void basicUnpartitionedTableEvent() {
-    MetaStoreEvent event = MetaStoreEvent.builder(CREATE_TABLE, DATABASE, TABLE).build();
+    MetaStoreEvent event = MetaStoreEvent
+        .builder(CREATE_TABLE, DATABASE, TABLE, REPLICA_DATABASE, REPLICA_TABLE)
+        .build();
     assertThat(event)
         .hasFieldOrPropertyWithValue("eventType", CREATE_TABLE)
         .hasFieldOrPropertyWithValue("databaseName", DATABASE)
@@ -101,7 +110,7 @@ public class MetaStoreEventTest {
   @Test
   public void fullUnpartitionedTableEvent() {
     MetaStoreEvent event = MetaStoreEvent
-        .builder(CREATE_TABLE, DATABASE, TABLE)
+        .builder(CREATE_TABLE, DATABASE, TABLE, REPLICA_DATABASE, REPLICA_TABLE)
         .parameter("key", "value")
         .parameters(ImmutableMap.of("moreKeys", "moreValues"))
         .environmentContext(ImmutableMap.of("envKeys", "envValues"))
@@ -119,7 +128,7 @@ public class MetaStoreEventTest {
   @Test
   public void basicPartitionedTableEvent() {
     MetaStoreEvent event = MetaStoreEvent
-        .builder(CREATE_TABLE, DATABASE, TABLE)
+        .builder(CREATE_TABLE, DATABASE, TABLE, REPLICA_DATABASE, REPLICA_TABLE)
         .partitionColumns(Arrays.asList("a", "b"))
         .partitionValues(Arrays.asList("a1", "b1"))
         .partitionValues(Arrays.asList("a2", "b2"))
@@ -138,7 +147,7 @@ public class MetaStoreEventTest {
   @Test
   public void fullPartitionedTableEvent() {
     MetaStoreEvent event = MetaStoreEvent
-        .builder(CREATE_TABLE, DATABASE, TABLE)
+        .builder(CREATE_TABLE, DATABASE, TABLE, REPLICA_DATABASE, REPLICA_TABLE)
         .partitionColumns(Arrays.asList("p"))
         .partitionValues(Arrays.asList("p1"))
         .parameter("key", "value")
@@ -158,7 +167,7 @@ public class MetaStoreEventTest {
   @Test
   public void callEnviromentPropertiesMoreThanOnce() {
     MetaStoreEvent event = MetaStoreEvent
-        .builder(CREATE_TABLE, DATABASE, TABLE)
+        .builder(CREATE_TABLE, DATABASE, TABLE, REPLICA_DATABASE, REPLICA_TABLE)
         .environmentContext(ImmutableMap.of("envKey1", "envValue1"))
         .environmentContext(ImmutableMap.of("envKey2", "envValue2"))
         .build();
@@ -170,7 +179,7 @@ public class MetaStoreEventTest {
   @Test
   public void isCascade() {
     MetaStoreEvent event = MetaStoreEvent
-        .builder(CREATE_TABLE, DATABASE, TABLE)
+        .builder(CREATE_TABLE, DATABASE, TABLE, REPLICA_DATABASE, REPLICA_TABLE)
         .environmentContext(ImmutableMap.of(StatsSetupConst.CASCADE, "true"))
         .build();
     assertThat(event.isCascade()).isTrue();
@@ -179,7 +188,7 @@ public class MetaStoreEventTest {
   @Test
   public void isNotCascade() {
     MetaStoreEvent event = MetaStoreEvent
-        .builder(CREATE_TABLE, DATABASE, TABLE)
+        .builder(CREATE_TABLE, DATABASE, TABLE, REPLICA_DATABASE, REPLICA_TABLE)
         .environmentContext(ImmutableMap.of("p", "v"))
         .build();
     assertThat(event.isCascade()).isFalse();
@@ -187,7 +196,9 @@ public class MetaStoreEventTest {
 
   @Test
   public void isNotCascadeIfEnvironmentContextIsNotSet() {
-    MetaStoreEvent event = MetaStoreEvent.builder(CREATE_TABLE, DATABASE, TABLE).build();
+    MetaStoreEvent event = MetaStoreEvent
+        .builder(CREATE_TABLE, DATABASE, TABLE, REPLICA_DATABASE, REPLICA_TABLE)
+        .build();
     assertThat(event.isCascade()).isFalse();
   }
 
