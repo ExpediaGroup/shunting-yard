@@ -50,13 +50,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.expedia.apiary.extensions.receiver.common.event.EventType;
 
+import com.hotels.bdp.circustrain.api.conf.ReplicaTable;
 import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
+import com.hotels.bdp.circustrain.api.conf.SourceTable;
 import com.hotels.bdp.circustrain.api.conf.TableReplication;
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 import com.hotels.shunting.yard.common.ShuntingYardException;
 import com.hotels.shunting.yard.replicator.exec.conf.ShuntingYardTableReplications;
-import com.hotels.shunting.yard.replicator.exec.conf.ct.SyReplicaTable;
-import com.hotels.shunting.yard.replicator.exec.conf.ct.SySourceTable;
 import com.hotels.shunting.yard.replicator.exec.conf.ct.SyTableReplication;
 import com.hotels.shunting.yard.replicator.exec.conf.ct.SyTableReplications;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
@@ -156,11 +156,11 @@ public class ContextFactoryTest {
   @Test
   public void createContextForPartitionedTableWithReplicaTableSpecified() {
     SyTableReplication tableReplication = new SyTableReplication();
-    SySourceTable sourceTable = new SySourceTable();
+    SourceTable sourceTable = new SourceTable();
     sourceTable.setDatabaseName(DATABASE);
     sourceTable.setTableName(TABLE);
 
-    SyReplicaTable replicaTable = new SyReplicaTable();
+    ReplicaTable replicaTable = new ReplicaTable();
     replicaTable.setDatabaseName(REPLICA_DATABASE);
     replicaTable.setTableName(REPLICA_TABLE);
 

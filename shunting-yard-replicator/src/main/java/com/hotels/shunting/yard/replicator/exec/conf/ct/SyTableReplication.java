@@ -18,40 +18,47 @@ package com.hotels.shunting.yard.replicator.exec.conf.ct;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-public class SyTableReplication {
-  private @Valid @NotNull SySourceTable sourceTable;
-  private @Valid @NotNull SyReplicaTable replicaTable;
+import com.hotels.bdp.circustrain.api.conf.ReplicaTable;
+import com.hotels.bdp.circustrain.api.conf.SourceTable;
 
-  public SySourceTable getSourceTable() {
+public class SyTableReplication {
+  private @Valid @NotNull SourceTable sourceTable;
+  private @Valid @NotNull ReplicaTable replicaTable;
+
+  public SourceTable getSourceTable() {
     return sourceTable;
   }
 
-  public void setSourceTable(SySourceTable sourceTable) {
+  public void setSourceTable(SourceTable sourceTable) {
     this.sourceTable = sourceTable;
   }
 
-  public SyReplicaTable getReplicaTable() {
+  public ReplicaTable getReplicaTable() {
     return replicaTable;
   }
 
-  public void setReplicaTable(SyReplicaTable replicaTable) {
+  public void setReplicaTable(ReplicaTable replicaTable) {
     this.replicaTable = replicaTable;
   }
 
   public String getReplicaDatabaseName() {
-    SySourceTable sourceTable = getSourceTable();
-    SyReplicaTable replicaTable = getReplicaTable();
+    SourceTable sourceTable = getSourceTable();
+    ReplicaTable replicaTable = getReplicaTable();
     String databaseName = replicaTable.getDatabaseName() != null ? replicaTable.getDatabaseName()
         : sourceTable.getDatabaseName();
     return databaseName.toLowerCase();
   }
 
   public String getReplicaTableName() {
-    SySourceTable sourceTable = getSourceTable();
-    SyReplicaTable replicaTable = getReplicaTable();
+    SourceTable sourceTable = getSourceTable();
+    ReplicaTable replicaTable = getReplicaTable();
     String tableNameName = replicaTable.getTableName() != null ? replicaTable.getTableName()
         : sourceTable.getTableName();
     return tableNameName.toLowerCase();
+  }
+
+  public String getQualifiedReplicaName() {
+    return getReplicaDatabaseName() + "." + getReplicaTableName();
   }
 
 }

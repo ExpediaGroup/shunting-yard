@@ -23,15 +23,15 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.hotels.shunting.yard.replicator.exec.conf.ct.SyReplicaTable;
-import com.hotels.shunting.yard.replicator.exec.conf.ct.SySourceTable;
+import com.hotels.bdp.circustrain.api.conf.ReplicaTable;
+import com.hotels.bdp.circustrain.api.conf.SourceTable;
 import com.hotels.shunting.yard.replicator.exec.conf.ct.SyTableReplication;
 import com.hotels.shunting.yard.replicator.exec.conf.ct.SyTableReplications;
 
 public class ShuntingYardReplicationsTest {
 
-  private static final String SOURCE_DATABASE = "db";
-  private static final String SOURCE_TABLE = "tbl";
+  private static final String SOURCE_DATABASE = "DATABASE";
+  private static final String SOURCE_TABLE = "TABLE";
   private static final String REPLICA_DATABASE = "replica_db";
   private static final String REPLICA_TABLE = "replica_tbl";
 
@@ -41,12 +41,12 @@ public class ShuntingYardReplicationsTest {
   public void init() {
     SyTableReplication tableReplication = new SyTableReplication();
 
-    SySourceTable sourceTable = new SySourceTable();
+    SourceTable sourceTable = new SourceTable();
     sourceTable.setDatabaseName(SOURCE_DATABASE);
     sourceTable.setTableName(SOURCE_TABLE);
     tableReplication.setSourceTable(sourceTable);
 
-    SyReplicaTable replicaTable = new SyReplicaTable();
+    ReplicaTable replicaTable = new ReplicaTable();
     replicaTable.setDatabaseName(REPLICA_DATABASE);
     replicaTable.setTableName(REPLICA_TABLE);
     tableReplication.setReplicaTable(replicaTable);

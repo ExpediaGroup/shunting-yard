@@ -29,16 +29,16 @@ public class ShuntingYardTableReplications {
   public ShuntingYardTableReplications(SyTableReplications tableReplications) {
     if ((tableReplications != null) && (tableReplications.getTableReplications() != null)) {
       for (SyTableReplication tableReplication : tableReplications.getTableReplications()) {
-        String key = String
-            .join(".", tableReplication.getSourceTable().getDatabaseName(),
-                tableReplication.getSourceTable().getTableName());
+        String key = (String
+            .join(".", tableReplication.getSourceTable().getDatabaseName().toLowerCase(),
+                tableReplication.getSourceTable().getTableName().toLowerCase()));
         tableReplicationsMap.put(key, tableReplication);
       }
     }
   }
 
   public SyTableReplication getTableReplication(String dbName, String tableName) {
-    String key = String.join(".", dbName, tableName);
+    String key = String.join(".", dbName.toLowerCase(), tableName.toLowerCase());
     return tableReplicationsMap.get(key);
   }
 

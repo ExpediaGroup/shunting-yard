@@ -28,9 +28,12 @@ import javax.validation.ValidatorFactory;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.hotels.bdp.circustrain.api.conf.ReplicaTable;
+import com.hotels.bdp.circustrain.api.conf.SourceTable;
+
 public class SyTableReplicationTest {
-  private SySourceTable sourceTable;
-  private SyReplicaTable replicaTable;
+  private SourceTable sourceTable;
+  private ReplicaTable replicaTable;
   private SyTableReplication tableReplication;
   private Validator validator;
 
@@ -42,8 +45,8 @@ public class SyTableReplicationTest {
 
   @Before
   public void buildConfig() {
-    sourceTable = new SySourceTable();
-    replicaTable = new SyReplicaTable();
+    sourceTable = new SourceTable();
+    replicaTable = new ReplicaTable();
 
     tableReplication = new SyTableReplication();
     tableReplication.setSourceTable(sourceTable);
@@ -62,12 +65,113 @@ public class SyTableReplicationTest {
     assertThat(violations.size(), is(0));
   }
 
-  // @Test
-  // public void nullTableLocation() throws Exception {
-  // replicaTable.setTableLocation(null);
-  //
-  // Set<ConstraintViolation<TableReplication>> violations = validator.validate(tableReplication);
-  //
-  // assertThat(violations.size(), is(1));
-  // }
+  @Test
+  public void typicalGetReplicaDatabaseAndTableName() throws Exception {
+    sourceTable.setDatabaseName("source-database");
+    sourceTable.setTableName("source-table");
+    replicaTable.setDatabaseName("replica-database");
+    replicaTable.setTableName("replica-table");
+
+    assertThat(tableReplication.getReplicaDatabaseName(), is("replica-database"));
+    assertThat(tableReplication.getReplicaTableName(), is("replica-table"));
+  }
+
+  @Test
+  public void testGetReplicaDatabaseAndTableNameWhenSetAsUpperCase() throws Exception {
+    sourceTable.setDatabaseName("source-database");
+    sourceTable.setTableName("source-table");
+    replicaTable.setDatabaseName("REPLICA-DATABASE");
+    replicaTable.setTableName("REPLICA-TABLE");
+
+    assertThat(tableReplication.getReplicaDatabaseName(), is("replica-database"));
+    assertThat(tableReplication.getReplicaTableName(), is("replica-table"));
+  }
+
+  @Test
+  public void testGetReplicaDatabaseAndTableNameWhenValueNotSet() throws Exception {
+    sourceTable.setDatabaseName("source-database");
+    sourceTable.setTableName("source-table");
+
+    assertThat(tableReplication.getReplicaDatabaseName(), is("source-database"));
+    assertThat(tableReplication.getReplicaTableName(), is("source-table"));
+  }
+
+  @Test
+  public void nullReplicaTable() throws Exception {
+    sourceTable.setDatabaseName("source-database");
+    sourceTable.setTableName("source-table");
+
+    tableReplication.setReplicaTable(null);
+
+    Set<ConstraintViolation<SyTableReplication>> violations = validator.validate(tableReplication);
+
+    assertThat(violations.size(), is(1));
+  }
+
+  @Test
+  public void nullSourceTable() throws Exception {
+    replicaTable.setDatabaseName("replica-database");
+    replicaTable.setTableName("replica-table");
+
+    tableReplication.setSourceTable(null);
+
+    Set<ConstraintViolation<SyTableReplication>> violations = validator.validate(tableReplication);
+
+    assertThat(violations.size(), is(1));
+  }
+
+  @Test
+  public void nullSourceAndReplicaTables() throws Exception {
+    tableReplication.setSourceTable(null);
+    tableReplication.setReplicaTable(null);
+
+    Set<ConstraintViolation<SyTableReplication>> violations = validator.validate(tableReplication);
+
+    assertThat(violations.size(), is(2));
+  }
+
+  @Test
+  public void sourceDbNotProvided() throws Exception {
+    sourceTable.setTableName("source-table");
+    replicaTable.setDatabaseName("replica-database");
+    replicaTable.setTableName("replica-table");
+
+    Set<ConstraintViolation<SyTableReplication>> violations = validator.validate(tableReplication);
+
+    assertThat(violations.size(), is(1));
+  }
+
+  @Test
+  public void sourceTableNotProvided() throws Exception {
+    sourceTable.setDatabaseName("source-database");
+    replicaTable.setDatabaseName("replica-database");
+    replicaTable.setTableName("replica-table");
+
+    Set<ConstraintViolation<SyTableReplication>> violations = validator.validate(tableReplication);
+
+    assertThat(violations.size(), is(1));
+  }
+
+  @Test
+  public void replicaDbNotProvided() throws Exception {
+    sourceTable.setDatabaseName("source-database");
+    sourceTable.setTableName("source-table");
+    replicaTable.setTableName("replica-table");
+
+    Set<ConstraintViolation<SyTableReplication>> violations = validator.validate(tableReplication);
+
+    assertThat(violations.size(), is(0));
+  }
+
+  @Test
+  public void replicaTableNotProvided() throws Exception {
+    sourceTable.setDatabaseName("source-database");
+    sourceTable.setTableName("source-table");
+    replicaTable.setDatabaseName("replica-database");
+
+    Set<ConstraintViolation<SyTableReplication>> violations = validator.validate(tableReplication);
+
+    assertThat(violations.size(), is(0));
+  }
+
 }
