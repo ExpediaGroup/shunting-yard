@@ -51,7 +51,7 @@ import com.hotels.shunting.yard.replicator.exec.conf.ReplicaCatalog;
 import com.hotels.shunting.yard.replicator.exec.conf.ShuntingYardReplications;
 import com.hotels.shunting.yard.replicator.exec.conf.SourceCatalog;
 import com.hotels.shunting.yard.replicator.exec.conf.SourceTableFilter;
-import com.hotels.shunting.yard.replicator.exec.conf.ct.SyTableReplications;
+import com.hotels.shunting.yard.replicator.exec.conf.ct.ShuntingYardTableReplications;
 import com.hotels.shunting.yard.replicator.exec.event.aggregation.DefaultMetaStoreEventAggregator;
 import com.hotels.shunting.yard.replicator.exec.event.aggregation.MetaStoreEventAggregator;
 import com.hotels.shunting.yard.replicator.exec.external.Marshaller;
@@ -151,7 +151,7 @@ public class CommonBeans {
       EventReceiverConfiguration messageReaderConfig,
       SourceCatalog sourceCatalog,
       TableSelector tableSelector,
-      SyTableReplications shuntingYardTableReplications) {
+      ShuntingYardTableReplications shuntingYardTableReplications) {
     MessageReaderFactory messaReaderFactory = MessageReaderFactory
         .newInstance(messageReaderConfig.getMessageReaderFactoryClass());
     MessageReader messageReader = messaReaderFactory.newInstance(replicaHiveConf);

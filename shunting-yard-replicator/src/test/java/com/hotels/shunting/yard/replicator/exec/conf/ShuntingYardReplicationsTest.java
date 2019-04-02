@@ -25,8 +25,8 @@ import org.junit.Test;
 
 import com.hotels.bdp.circustrain.api.conf.ReplicaTable;
 import com.hotels.bdp.circustrain.api.conf.SourceTable;
-import com.hotels.shunting.yard.replicator.exec.conf.ct.SyTableReplication;
-import com.hotels.shunting.yard.replicator.exec.conf.ct.SyTableReplications;
+import com.hotels.shunting.yard.replicator.exec.conf.ct.ShuntingYardTableReplication;
+import com.hotels.shunting.yard.replicator.exec.conf.ct.ShuntingYardTableReplications;
 
 public class ShuntingYardReplicationsTest {
 
@@ -39,7 +39,7 @@ public class ShuntingYardReplicationsTest {
 
   @Before
   public void init() {
-    SyTableReplication tableReplication = new SyTableReplication();
+    ShuntingYardTableReplication tableReplication = new ShuntingYardTableReplication();
 
     SourceTable sourceTable = new SourceTable();
     sourceTable.setDatabaseName(SOURCE_DATABASE);
@@ -51,17 +51,17 @@ public class ShuntingYardReplicationsTest {
     replicaTable.setTableName(REPLICA_TABLE);
     tableReplication.setReplicaTable(replicaTable);
 
-    List<SyTableReplication> tableReplications = new ArrayList<>();
+    List<ShuntingYardTableReplication> tableReplications = new ArrayList<>();
     tableReplications.add(tableReplication);
 
-    SyTableReplications tableReplicationsWrapper = new SyTableReplications();
+    ShuntingYardTableReplications tableReplicationsWrapper = new ShuntingYardTableReplications();
     tableReplicationsWrapper.setTableReplications(tableReplications);
     syTableReplications = new ShuntingYardReplications(tableReplicationsWrapper);
   }
 
   @Test
   public void typical() {
-    SyTableReplication tableReplication = syTableReplications.getTableReplication(SOURCE_DATABASE, SOURCE_TABLE);
+    ShuntingYardTableReplication tableReplication = syTableReplications.getTableReplication(SOURCE_DATABASE, SOURCE_TABLE);
 
     assertThat(tableReplication.getReplicaDatabaseName()).isEqualTo(REPLICA_DATABASE);
     assertThat(tableReplication.getReplicaTableName()).isEqualTo(REPLICA_TABLE);
@@ -69,7 +69,7 @@ public class ShuntingYardReplicationsTest {
 
   @Test
   public void queryMapWithLowerCaseSourceDatabaseAndTable() {
-    SyTableReplication tableReplication = syTableReplications
+    ShuntingYardTableReplication tableReplication = syTableReplications
         .getTableReplication(SOURCE_DATABASE.toLowerCase(), SOURCE_TABLE.toLowerCase());
 
     assertThat(tableReplication.getReplicaDatabaseName()).isEqualTo(REPLICA_DATABASE);
@@ -84,7 +84,7 @@ public class ShuntingYardReplicationsTest {
 
   @Test
   public void emptyTableReplications() {
-    syTableReplications = new ShuntingYardReplications(new SyTableReplications());
+    syTableReplications = new ShuntingYardReplications(new ShuntingYardTableReplications());
     assertThat(syTableReplications.getTableReplication(SOURCE_DATABASE, SOURCE_TABLE)).isNull();
   }
 

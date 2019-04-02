@@ -25,15 +25,15 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration("tableReplications")
 @ConfigurationProperties(prefix = "")
-public class SyTableReplications {
+public class ShuntingYardTableReplications {
 
-  private @Valid @NotEmpty List<SyTableReplication> tableReplications;
+  private @Valid @NotEmpty List<ShuntingYardTableReplication> tableReplications;
 
-  public List<SyTableReplication> getTableReplications() {
+  public List<ShuntingYardTableReplication> getTableReplications() {
     return tableReplications;
   }
 
-  public void setTableReplications(List<SyTableReplication> tableReplications) {
+  public void setTableReplications(List<ShuntingYardTableReplication> tableReplications) {
     this.tableReplications = tableReplications;
   }
 

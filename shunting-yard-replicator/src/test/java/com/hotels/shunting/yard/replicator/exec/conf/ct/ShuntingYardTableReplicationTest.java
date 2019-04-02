@@ -31,10 +31,10 @@ import org.junit.Test;
 import com.hotels.bdp.circustrain.api.conf.ReplicaTable;
 import com.hotels.bdp.circustrain.api.conf.SourceTable;
 
-public class SyTableReplicationTest {
+public class ShuntingYardTableReplicationTest {
   private SourceTable sourceTable;
   private ReplicaTable replicaTable;
-  private SyTableReplication tableReplication;
+  private ShuntingYardTableReplication tableReplication;
   private Validator validator;
 
   @Before
@@ -48,7 +48,7 @@ public class SyTableReplicationTest {
     sourceTable = new SourceTable();
     replicaTable = new ReplicaTable();
 
-    tableReplication = new SyTableReplication();
+    tableReplication = new ShuntingYardTableReplication();
     tableReplication.setSourceTable(sourceTable);
     tableReplication.setReplicaTable(replicaTable);
   }
@@ -60,7 +60,7 @@ public class SyTableReplicationTest {
     replicaTable.setDatabaseName("replica-database");
     replicaTable.setTableName("replica-table");
 
-    Set<ConstraintViolation<SyTableReplication>> violations = validator.validate(tableReplication);
+    Set<ConstraintViolation<ShuntingYardTableReplication>> violations = validator.validate(tableReplication);
 
     assertThat(violations.size(), is(0));
   }
@@ -103,7 +103,7 @@ public class SyTableReplicationTest {
 
     tableReplication.setReplicaTable(null);
 
-    Set<ConstraintViolation<SyTableReplication>> violations = validator.validate(tableReplication);
+    Set<ConstraintViolation<ShuntingYardTableReplication>> violations = validator.validate(tableReplication);
 
     assertThat(violations.size(), is(1));
   }
@@ -115,7 +115,7 @@ public class SyTableReplicationTest {
 
     tableReplication.setSourceTable(null);
 
-    Set<ConstraintViolation<SyTableReplication>> violations = validator.validate(tableReplication);
+    Set<ConstraintViolation<ShuntingYardTableReplication>> violations = validator.validate(tableReplication);
 
     assertThat(violations.size(), is(1));
   }
@@ -125,7 +125,7 @@ public class SyTableReplicationTest {
     tableReplication.setSourceTable(null);
     tableReplication.setReplicaTable(null);
 
-    Set<ConstraintViolation<SyTableReplication>> violations = validator.validate(tableReplication);
+    Set<ConstraintViolation<ShuntingYardTableReplication>> violations = validator.validate(tableReplication);
 
     assertThat(violations.size(), is(2));
   }
@@ -136,7 +136,7 @@ public class SyTableReplicationTest {
     replicaTable.setDatabaseName("replica-database");
     replicaTable.setTableName("replica-table");
 
-    Set<ConstraintViolation<SyTableReplication>> violations = validator.validate(tableReplication);
+    Set<ConstraintViolation<ShuntingYardTableReplication>> violations = validator.validate(tableReplication);
 
     assertThat(violations.size(), is(1));
   }
@@ -147,7 +147,7 @@ public class SyTableReplicationTest {
     replicaTable.setDatabaseName("replica-database");
     replicaTable.setTableName("replica-table");
 
-    Set<ConstraintViolation<SyTableReplication>> violations = validator.validate(tableReplication);
+    Set<ConstraintViolation<ShuntingYardTableReplication>> violations = validator.validate(tableReplication);
 
     assertThat(violations.size(), is(1));
   }
@@ -158,7 +158,7 @@ public class SyTableReplicationTest {
     sourceTable.setTableName("source-table");
     replicaTable.setTableName("replica-table");
 
-    Set<ConstraintViolation<SyTableReplication>> violations = validator.validate(tableReplication);
+    Set<ConstraintViolation<ShuntingYardTableReplication>> violations = validator.validate(tableReplication);
 
     assertThat(violations.size(), is(0));
   }
@@ -169,7 +169,7 @@ public class SyTableReplicationTest {
     sourceTable.setTableName("source-table");
     replicaTable.setDatabaseName("replica-database");
 
-    Set<ConstraintViolation<SyTableReplication>> violations = validator.validate(tableReplication);
+    Set<ConstraintViolation<ShuntingYardTableReplication>> violations = validator.validate(tableReplication);
 
     assertThat(violations.size(), is(0));
   }

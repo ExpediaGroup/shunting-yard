@@ -21,7 +21,7 @@ import javax.validation.constraints.NotNull;
 import com.hotels.bdp.circustrain.api.conf.ReplicaTable;
 import com.hotels.bdp.circustrain.api.conf.SourceTable;
 
-public class SyTableReplication {
+public class ShuntingYardTableReplication {
   private @Valid @NotNull SourceTable sourceTable;
   private @Valid @NotNull ReplicaTable replicaTable;
 

@@ -32,7 +32,7 @@ import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
 
 import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
 import com.hotels.shunting.yard.replicator.exec.conf.ShuntingYardReplications;
-import com.hotels.shunting.yard.replicator.exec.conf.ct.SyTableReplication;
+import com.hotels.shunting.yard.replicator.exec.conf.ct.ShuntingYardTableReplication;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 
 public class MessageReaderAdapter implements MetaStoreEventReader {
@@ -70,7 +70,7 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
     String replicaDatabaseName = listenerEvent.getDbName();
     String replicaTableName = listenerEvent.getTableName();
 
-    SyTableReplication tableReplication = shuntingYardReplications
+    ShuntingYardTableReplication tableReplication = shuntingYardReplications
         .getTableReplication(listenerEvent.getDbName(), listenerEvent.getTableName());
 
     if (tableReplication != null) {

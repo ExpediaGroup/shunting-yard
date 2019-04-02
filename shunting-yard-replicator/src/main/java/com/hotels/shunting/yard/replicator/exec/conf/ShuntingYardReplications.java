@@ -18,17 +18,17 @@ package com.hotels.shunting.yard.replicator.exec.conf;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.hotels.shunting.yard.replicator.exec.conf.ct.SyTableReplication;
-import com.hotels.shunting.yard.replicator.exec.conf.ct.SyTableReplications;
+import com.hotels.shunting.yard.replicator.exec.conf.ct.ShuntingYardTableReplication;
+import com.hotels.shunting.yard.replicator.exec.conf.ct.ShuntingYardTableReplications;
 
 public class ShuntingYardReplications {
-  private final Map<String, SyTableReplication> tableReplicationsMap = new HashMap<>();
+  private final Map<String, ShuntingYardTableReplication> tableReplicationsMap = new HashMap<>();
 
   public ShuntingYardReplications() {}
 
-  public ShuntingYardReplications(SyTableReplications tableReplications) {
+  public ShuntingYardReplications(ShuntingYardTableReplications tableReplications) {
     if ((tableReplications != null) && (tableReplications.getTableReplications() != null)) {
-      for (SyTableReplication tableReplication : tableReplications.getTableReplications()) {
+      for (ShuntingYardTableReplication tableReplication : tableReplications.getTableReplications()) {
         String key = (String
             .join(".", tableReplication.getSourceTable().getDatabaseName().toLowerCase(),
                 tableReplication.getSourceTable().getTableName().toLowerCase()));
@@ -37,7 +37,7 @@ public class ShuntingYardReplications {
     }
   }
 
-  public SyTableReplication getTableReplication(String dbName, String tableName) {
+  public ShuntingYardTableReplication getTableReplication(String dbName, String tableName) {
     String key = String.join(".", dbName.toLowerCase(), tableName.toLowerCase());
     return tableReplicationsMap.get(key);
   }

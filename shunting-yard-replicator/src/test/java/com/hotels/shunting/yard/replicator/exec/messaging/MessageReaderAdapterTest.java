@@ -54,8 +54,8 @@ import com.hotels.bdp.circustrain.api.conf.ReplicaTable;
 import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
 import com.hotels.bdp.circustrain.api.conf.SourceTable;
 import com.hotels.shunting.yard.replicator.exec.conf.ShuntingYardReplications;
-import com.hotels.shunting.yard.replicator.exec.conf.ct.SyTableReplication;
-import com.hotels.shunting.yard.replicator.exec.conf.ct.SyTableReplications;
+import com.hotels.shunting.yard.replicator.exec.conf.ct.ShuntingYardTableReplication;
+import com.hotels.shunting.yard.replicator.exec.conf.ct.ShuntingYardTableReplications;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -98,7 +98,7 @@ public class MessageReaderAdapterTest {
     FieldSchema partitionColumn2 = new FieldSchema("column_2", "integer", "");
     FieldSchema partitionColumn3 = new FieldSchema("column_3", "string", "");
 
-    SyTableReplication tableReplication = new SyTableReplication();
+    ShuntingYardTableReplication tableReplication = new ShuntingYardTableReplication();
     SourceTable sourceTable = new SourceTable();
     sourceTable.setDatabaseName(TEST_DB);
     sourceTable.setTableName(TEST_TABLE);
@@ -110,10 +110,10 @@ public class MessageReaderAdapterTest {
     tableReplication.setSourceTable(sourceTable);
     tableReplication.setReplicaTable(replicaTable);
 
-    List<SyTableReplication> tableReplications = new ArrayList<>();
+    List<ShuntingYardTableReplication> tableReplications = new ArrayList<>();
     tableReplications.add(tableReplication);
 
-    SyTableReplications tableReplicationsWrapper = new SyTableReplications();
+    ShuntingYardTableReplications tableReplicationsWrapper = new ShuntingYardTableReplications();
     tableReplicationsWrapper.setTableReplications(tableReplications);
 
     partitionKeys = ImmutableList.of(partitionColumn1, partitionColumn2, partitionColumn3);
@@ -164,7 +164,7 @@ public class MessageReaderAdapterTest {
 
   @Test
   public void createTableEventWhenReplicaTableNameNotProvided() {
-    SyTableReplication tableReplication = new SyTableReplication();
+    ShuntingYardTableReplication tableReplication = new ShuntingYardTableReplication();
     SourceTable sourceTable = new SourceTable();
     sourceTable.setDatabaseName(TEST_DB);
     sourceTable.setTableName(TEST_TABLE);
@@ -175,10 +175,10 @@ public class MessageReaderAdapterTest {
     tableReplication.setSourceTable(sourceTable);
     tableReplication.setReplicaTable(replicaTable);
 
-    List<SyTableReplication> tableReplications = new ArrayList<>();
+    List<ShuntingYardTableReplication> tableReplications = new ArrayList<>();
     tableReplications.add(tableReplication);
 
-    SyTableReplications tableReplicationsWrapper = new SyTableReplications();
+    ShuntingYardTableReplications tableReplicationsWrapper = new ShuntingYardTableReplications();
     tableReplicationsWrapper.setTableReplications(tableReplications);
 
     messageReaderAdapter = new MessageReaderAdapter(messageReader, SOURCE_METASTORE_URIS,
