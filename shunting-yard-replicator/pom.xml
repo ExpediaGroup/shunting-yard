@@ -82,12 +82,6 @@
       <artifactId>hadoop-common</artifactId>
       <exclusions>
         <exclusion>
-          <!-- Exclude add because it conflicts with
-            <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.el</artifactId>
-            </dependency>
-          -->
           <groupId>javax.servlet.jsp</groupId>
           <artifactId>jsp-api</artifactId>
         </exclusion>
