@@ -66,7 +66,6 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
   }
 
   private MetaStoreEvent map(ListenerEvent listenerEvent) {
-
     String replicaDatabaseName = listenerEvent.getDbName();
     String replicaTableName = listenerEvent.getTableName();
 

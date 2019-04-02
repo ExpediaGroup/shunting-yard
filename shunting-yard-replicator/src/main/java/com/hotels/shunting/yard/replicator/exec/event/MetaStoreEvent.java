@@ -35,6 +35,7 @@ import com.google.common.collect.ImmutableMap;
 import com.expedia.apiary.extensions.receiver.common.event.EventType;
 
 import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
+import com.hotels.shunting.yard.replicator.util.TableDatabaseNameJoiner;
 
 public class MetaStoreEvent {
 
@@ -208,11 +209,11 @@ public class MetaStoreEvent {
   }
 
   public String getQualifiedTableName() {
-    return String.join(".", getDatabaseName(), getTableName());
+    return TableDatabaseNameJoiner.dotJoin(getDatabaseName(), getTableName());
   }
 
   public String getQualifiedReplicaTableName() {
-    return String.join(".", getReplicaDatabaseName(), getReplicaTableName());
+    return TableDatabaseNameJoiner.dotJoin(getReplicaDatabaseName(), getReplicaTableName());
   }
 
   public boolean isDropEvent() {
