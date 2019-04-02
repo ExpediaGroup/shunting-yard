@@ -35,7 +35,7 @@ public class ShuntingYardReplicationsTest {
   private static final String REPLICA_DATABASE = "replica_db";
   private static final String REPLICA_TABLE = "replica_tbl";
 
-  private ShuntingYardReplications syTableReplications;
+  private ShuntingYardTableReplicationsMap syTableReplications;
 
   @Before
   public void init() {
@@ -56,7 +56,7 @@ public class ShuntingYardReplicationsTest {
 
     ShuntingYardTableReplications tableReplicationsWrapper = new ShuntingYardTableReplications();
     tableReplicationsWrapper.setTableReplications(tableReplications);
-    syTableReplications = new ShuntingYardReplications(tableReplicationsWrapper);
+    syTableReplications = new ShuntingYardTableReplicationsMap(tableReplicationsWrapper);
   }
 
   @Test
@@ -78,19 +78,19 @@ public class ShuntingYardReplicationsTest {
 
   @Test
   public void defaultConstructor() {
-    syTableReplications = new ShuntingYardReplications();
+    syTableReplications = new ShuntingYardTableReplicationsMap();
     assertThat(syTableReplications.getTableReplication(SOURCE_DATABASE, SOURCE_TABLE)).isNull();
   }
 
   @Test
   public void emptyTableReplications() {
-    syTableReplications = new ShuntingYardReplications(new ShuntingYardTableReplications());
+    syTableReplications = new ShuntingYardTableReplicationsMap(new ShuntingYardTableReplications());
     assertThat(syTableReplications.getTableReplication(SOURCE_DATABASE, SOURCE_TABLE)).isNull();
   }
 
   @Test
   public void nullTableReplications() {
-    syTableReplications = new ShuntingYardReplications(null);
+    syTableReplications = new ShuntingYardTableReplicationsMap(null);
     assertThat(syTableReplications.getTableReplication(SOURCE_DATABASE, SOURCE_TABLE)).isNull();
   }
 

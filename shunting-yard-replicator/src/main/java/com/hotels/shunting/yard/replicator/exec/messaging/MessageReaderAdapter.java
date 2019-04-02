@@ -31,7 +31,7 @@ import com.expedia.apiary.extensions.receiver.common.event.ListenerEvent;
 import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
 
 import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
-import com.hotels.shunting.yard.replicator.exec.conf.ShuntingYardReplications;
+import com.hotels.shunting.yard.replicator.exec.conf.ShuntingYardTableReplicationsMap;
 import com.hotels.shunting.yard.replicator.exec.conf.ct.ShuntingYardTableReplication;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 
@@ -39,12 +39,12 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
 
   private final MessageReader messageReader;
   private final String sourceHiveMetastoreUris;
-  private final ShuntingYardReplications shuntingYardReplications;
+  private final ShuntingYardTableReplicationsMap shuntingYardReplications;
 
   public MessageReaderAdapter(
       MessageReader messageReader,
       String sourceHiveMetastoreUris,
-      ShuntingYardReplications shuntingYardReplications) {
+      ShuntingYardTableReplicationsMap shuntingYardReplications) {
     this.messageReader = messageReader;
     this.sourceHiveMetastoreUris = sourceHiveMetastoreUris;
     this.shuntingYardReplications = shuntingYardReplications;

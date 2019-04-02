@@ -53,7 +53,7 @@ import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
 import com.hotels.bdp.circustrain.api.conf.ReplicaTable;
 import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
 import com.hotels.bdp.circustrain.api.conf.SourceTable;
-import com.hotels.shunting.yard.replicator.exec.conf.ShuntingYardReplications;
+import com.hotels.shunting.yard.replicator.exec.conf.ShuntingYardTableReplicationsMap;
 import com.hotels.shunting.yard.replicator.exec.conf.ct.ShuntingYardTableReplication;
 import com.hotels.shunting.yard.replicator.exec.conf.ct.ShuntingYardTableReplications;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
@@ -119,7 +119,7 @@ public class MessageReaderAdapterTest {
     partitionKeys = ImmutableList.of(partitionColumn1, partitionColumn2, partitionColumn3);
     partitionValues = ImmutableList.of(partition);
     messageReaderAdapter = new MessageReaderAdapter(messageReader, SOURCE_METASTORE_URIS,
-        new ShuntingYardReplications(tableReplicationsWrapper));
+        new ShuntingYardTableReplicationsMap(tableReplicationsWrapper));
     when(partition.getValues()).thenReturn(PARTITION_VALUES);
   }
 
@@ -144,7 +144,7 @@ public class MessageReaderAdapterTest {
   @Test
   public void createTableEventWhenTableReplicationsAreNotConfigured() {
     messageReaderAdapter = new MessageReaderAdapter(messageReader, SOURCE_METASTORE_URIS,
-        new ShuntingYardReplications(null));
+        new ShuntingYardTableReplicationsMap(null));
 
     when(messageReader.read()).thenReturn(Optional.of(apiaryCreateTableEvent));
     configureMockedEvent(apiaryCreateTableEvent);
@@ -182,7 +182,7 @@ public class MessageReaderAdapterTest {
     tableReplicationsWrapper.setTableReplications(tableReplications);
 
     messageReaderAdapter = new MessageReaderAdapter(messageReader, SOURCE_METASTORE_URIS,
-        new ShuntingYardReplications(tableReplicationsWrapper));
+        new ShuntingYardTableReplicationsMap(tableReplicationsWrapper));
 
     when(messageReader.read()).thenReturn(Optional.of(apiaryCreateTableEvent));
     configureMockedEvent(apiaryCreateTableEvent);

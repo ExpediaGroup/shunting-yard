@@ -21,12 +21,12 @@ import java.util.Map;
 import com.hotels.shunting.yard.replicator.exec.conf.ct.ShuntingYardTableReplication;
 import com.hotels.shunting.yard.replicator.exec.conf.ct.ShuntingYardTableReplications;
 
-public class ShuntingYardReplications {
+public class ShuntingYardTableReplicationsMap {
   private final Map<String, ShuntingYardTableReplication> tableReplicationsMap = new HashMap<>();
 
-  public ShuntingYardReplications() {}
+  public ShuntingYardTableReplicationsMap() {}
 
-  public ShuntingYardReplications(ShuntingYardTableReplications tableReplications) {
+  public ShuntingYardTableReplicationsMap(ShuntingYardTableReplications tableReplications) {
     if ((tableReplications != null) && (tableReplications.getTableReplications() != null)) {
       for (ShuntingYardTableReplication tableReplication : tableReplications.getTableReplications()) {
         String key = (String
