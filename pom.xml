@@ -29,7 +29,7 @@
   </modules>
 
   <properties>
-    <apiary.receiver.sqs.verison>1.4.0</apiary.receiver.sqs.verison>
+    <apiary.receiver.sqs.verison>1.4.1-SNAPSHOT</apiary.receiver.sqs.verison>
     <cobertura.version>2.0.3</cobertura.version>
     <cobertura.maven.plugin.version>2.6</cobertura.maven.plugin.version>
     <jdk.version>1.8</jdk.version>

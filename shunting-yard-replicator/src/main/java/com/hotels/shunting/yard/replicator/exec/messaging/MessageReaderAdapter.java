@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import com.expedia.apiary.extensions.receiver.common.messaging.MessageEvent;
 import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
 import com.expedia.apiary.extensions.receiver.common.event.AddPartitionEvent;
 import com.expedia.apiary.extensions.receiver.common.event.AlterPartitionEvent;
@@ -50,7 +51,7 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
 
   @Override
   public Optional<MetaStoreEvent> read() {
-    Optional<ListenerEvent> event = messageReader.read();
+    Optional<MessageEvent> event = messageReader.read();
     if (event.isPresent()) {
       return Optional.of(map(event.get()));
     } else {
@@ -58,7 +59,14 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
     }
   }
 
-  private MetaStoreEvent map(ListenerEvent listenerEvent) {
+  @Override
+  public void delete(String messageId) {
+    messageReader.delete(messageId);
+  }
+
+  private MetaStoreEvent map(MessageEvent messageEvent) {
+    ListenerEvent listenerEvent = messageEvent.getEvent();
+
     MetaStoreEvent.Builder builder = MetaStoreEvent
         .builder(listenerEvent.getEventType(), listenerEvent.getDbName(), listenerEvent.getTableName())
         .parameters(listenerEvent.getTableParameters())
@@ -66,6 +74,8 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
         .environmentContext(
             listenerEvent.getEnvironmentContext() != null ? listenerEvent.getEnvironmentContext().getProperties()
                 : null);
+
+    builder.messageProperties(messageEvent.getMessageProperties());
 
     EventType eventType = listenerEvent.getEventType();
 

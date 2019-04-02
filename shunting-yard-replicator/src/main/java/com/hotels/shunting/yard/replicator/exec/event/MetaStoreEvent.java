@@ -33,6 +33,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 import com.expedia.apiary.extensions.receiver.common.event.EventType;
+import com.expedia.apiary.extensions.receiver.common.messaging.MessageProperty;
 
 import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
 
@@ -49,6 +50,7 @@ public class MetaStoreEvent {
     private Map<String, String> parameters;
     private Map<String, String> environmentContext;
     private ReplicationMode replicationMode;
+    private Map<MessageProperty, String> messageProperties;
 
     private Builder(EventType eventType, String databaseName, String tableName) {
       checkNotNull(eventType, "eventType is required");
@@ -116,6 +118,11 @@ public class MetaStoreEvent {
       return this;
     }
 
+    public Builder messageProperties(Map<MessageProperty, String> messageProperties) {
+      this.messageProperties = messageProperties;
+      return this;
+    }
+
     public MetaStoreEvent build() {
       return new MetaStoreEvent(this);
     }
@@ -137,6 +144,7 @@ public class MetaStoreEvent {
   private final Map<String, String> parameters;
   private final Map<String, String> environmentContext;
   private final ReplicationMode replicationMode;
+  private final Map<MessageProperty, String> messageProperties;
 
   private MetaStoreEvent(Builder builder) {
     eventType = builder.eventType;
@@ -147,6 +155,7 @@ public class MetaStoreEvent {
     parameters = builder.parameters == null ? null : ImmutableMap.copyOf(builder.parameters);
     environmentContext = builder.environmentContext == null ? null : ImmutableMap.copyOf(builder.environmentContext);
     replicationMode = builder.replicationMode == null ? ReplicationMode.FULL : builder.replicationMode;
+    messageProperties = builder.messageProperties == null ? null : ImmutableMap.copyOf(builder.messageProperties);
   }
 
   public EventType getEventType() {
@@ -179,6 +188,10 @@ public class MetaStoreEvent {
 
   public ReplicationMode getReplicationMode() {
     return replicationMode;
+  }
+
+  public Map<MessageProperty, String> getMessageProperties() {
+    return messageProperties;
   }
 
   public String getQualifiedTableName() {

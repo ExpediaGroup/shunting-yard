@@ -25,6 +25,8 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.stereotype.Component;
 
+import com.expedia.apiary.extensions.receiver.sqs.messaging.SqsMessageProperty;
+
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Metrics;
 
@@ -63,6 +65,8 @@ class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator {
           log.info("New event received: {}", metaStoreEvent);
           listener.onEvent(metaStoreEvent);
           SUCCESS_COUNTER.increment();
+          String receiptHandle = metaStoreEvent.getMessageProperties().get(SqsMessageProperty.SQS_MESSAGE_RECEIPT_HANDLE);
+          eventReader.delete(receiptHandle);
         } else {
           EMPTY_COUNTER.increment();
         }

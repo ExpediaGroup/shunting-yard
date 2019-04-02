@@ -132,6 +132,11 @@ public class AggregatingMetaStoreEventReader implements MetaStoreEventReader {
 
   }
 
+  @Override
+  public void delete(String messageId) {
+    delegate.delete(messageId);
+  }
+
   private void requestMoreMessagesIfNeeded() {
     if (lastSubmittedTask == null) {
       synchronized (monitor) {

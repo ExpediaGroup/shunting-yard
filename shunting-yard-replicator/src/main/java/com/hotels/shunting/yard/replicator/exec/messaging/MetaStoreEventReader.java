@@ -25,4 +25,6 @@ public interface MetaStoreEventReader extends Closeable {
 
   Optional<MetaStoreEvent> read();
 
+  void delete(String messageId);
+
 }
