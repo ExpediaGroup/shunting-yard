@@ -35,7 +35,7 @@ public class ShuntingYardReplicationsTest {
   private static final String REPLICA_DATABASE = "replica_db";
   private static final String REPLICA_TABLE = "replica_tbl";
 
-  private ShuntingYardTableReplications syTableReplications;
+  private ShuntingYardReplications syTableReplications;
 
   @Before
   public void init() {
@@ -56,7 +56,7 @@ public class ShuntingYardReplicationsTest {
 
     SyTableReplications tableReplicationsWrapper = new SyTableReplications();
     tableReplicationsWrapper.setTableReplications(tableReplications);
-    syTableReplications = new ShuntingYardTableReplications(tableReplicationsWrapper);
+    syTableReplications = new ShuntingYardReplications(tableReplicationsWrapper);
   }
 
   @Test
@@ -68,20 +68,29 @@ public class ShuntingYardReplicationsTest {
   }
 
   @Test
+  public void queryMapWithLowerCaseSourceDatabaseAndTable() {
+    SyTableReplication tableReplication = syTableReplications
+        .getTableReplication(SOURCE_DATABASE.toLowerCase(), SOURCE_TABLE.toLowerCase());
+
+    assertThat(tableReplication.getReplicaDatabaseName()).isEqualTo(REPLICA_DATABASE);
+    assertThat(tableReplication.getReplicaTableName()).isEqualTo(REPLICA_TABLE);
+  }
+
+  @Test
   public void defaultConstructor() {
-    syTableReplications = new ShuntingYardTableReplications();
+    syTableReplications = new ShuntingYardReplications();
     assertThat(syTableReplications.getTableReplication(SOURCE_DATABASE, SOURCE_TABLE)).isNull();
   }
 
   @Test
   public void emptyTableReplications() {
-    syTableReplications = new ShuntingYardTableReplications(new SyTableReplications());
+    syTableReplications = new ShuntingYardReplications(new SyTableReplications());
     assertThat(syTableReplications.getTableReplication(SOURCE_DATABASE, SOURCE_TABLE)).isNull();
   }
 
   @Test
   public void nullTableReplications() {
-    syTableReplications = new ShuntingYardTableReplications(null);
+    syTableReplications = new ShuntingYardReplications(null);
     assertThat(syTableReplications.getTableReplication(SOURCE_DATABASE, SOURCE_TABLE)).isNull();
   }
 

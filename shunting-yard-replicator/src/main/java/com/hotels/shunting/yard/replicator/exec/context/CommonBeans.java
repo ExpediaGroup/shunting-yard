@@ -48,7 +48,7 @@ import com.hotels.shunting.yard.common.messaging.MessageReaderFactory;
 import com.hotels.shunting.yard.replicator.exec.ConfigFileValidator;
 import com.hotels.shunting.yard.replicator.exec.conf.EventReceiverConfiguration;
 import com.hotels.shunting.yard.replicator.exec.conf.ReplicaCatalog;
-import com.hotels.shunting.yard.replicator.exec.conf.ShuntingYardTableReplications;
+import com.hotels.shunting.yard.replicator.exec.conf.ShuntingYardReplications;
 import com.hotels.shunting.yard.replicator.exec.conf.SourceCatalog;
 import com.hotels.shunting.yard.replicator.exec.conf.SourceTableFilter;
 import com.hotels.shunting.yard.replicator.exec.conf.ct.SyTableReplications;
@@ -157,7 +157,7 @@ public class CommonBeans {
     MessageReader messageReader = messaReaderFactory.newInstance(replicaHiveConf);
     FilteringMessageReader filteringMessageReader = new FilteringMessageReader(messageReader, tableSelector);
     return new MessageReaderAdapter(filteringMessageReader, sourceCatalog.getHiveMetastoreUris(),
-        new ShuntingYardTableReplications(shuntingYardTableReplications));
+        new ShuntingYardReplications(shuntingYardTableReplications));
   }
 
   @Bean

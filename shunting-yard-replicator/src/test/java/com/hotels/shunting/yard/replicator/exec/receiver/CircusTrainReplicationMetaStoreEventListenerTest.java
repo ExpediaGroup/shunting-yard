@@ -31,7 +31,6 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
-import static com.hotels.bdp.circustrain.api.CircusTrainTableParameter.REPLICATION_EVENT;
 import static com.expedia.apiary.extensions.receiver.common.event.EventType.ADD_PARTITION;
 import static com.expedia.apiary.extensions.receiver.common.event.EventType.ALTER_PARTITION;
 import static com.expedia.apiary.extensions.receiver.common.event.EventType.ALTER_TABLE;
@@ -39,6 +38,8 @@ import static com.expedia.apiary.extensions.receiver.common.event.EventType.CREA
 import static com.expedia.apiary.extensions.receiver.common.event.EventType.DROP_PARTITION;
 import static com.expedia.apiary.extensions.receiver.common.event.EventType.DROP_TABLE;
 import static com.expedia.apiary.extensions.receiver.common.event.EventType.INSERT;
+
+import static com.hotels.bdp.circustrain.api.CircusTrainTableParameter.REPLICATION_EVENT;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -63,9 +64,10 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.google.common.collect.ImmutableMap;
 
+import com.expedia.apiary.extensions.receiver.common.event.EventType;
+
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 import com.hotels.shunting.yard.common.ShuntingYardException;
-import com.expedia.apiary.extensions.receiver.common.event.EventType;
 import com.hotels.shunting.yard.common.receiver.thrift.ThriftListenerUtils;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 import com.hotels.shunting.yard.replicator.exec.launcher.CircusTrainRunner;
@@ -183,6 +185,7 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
     MetaStoreEvent event = mockEvent(ALTER_TABLE);
     when(event.getDatabaseName()).thenReturn(DATABASE);
     when(event.getTableName()).thenReturn(newTableName);
+    when(event.getReplicaTableName()).thenReturn(newTableName);
     when(event.getEnvironmentContext()).thenReturn(envContextProperties);
     when(event.isCascade()).thenReturn(true);
     when(contextFactory.createContext(event)).thenReturn(context);
@@ -208,6 +211,7 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
     MetaStoreEvent event = mockEvent(ALTER_TABLE);
     when(event.getDatabaseName()).thenReturn(DATABASE);
     when(event.getTableName()).thenReturn(newTableName);
+    when(event.getReplicaTableName()).thenReturn(newTableName);
     when(event.getEnvironmentContext()).thenReturn(envContextProperties);
     when(event.isCascade()).thenReturn(true);
     when(contextFactory.createContext(event)).thenReturn(context);
@@ -318,6 +322,8 @@ public class CircusTrainReplicationMetaStoreEventListenerTest {
     when(event.getEventType()).thenReturn(eventType);
     when(event.getDatabaseName()).thenReturn(DATABASE);
     when(event.getTableName()).thenReturn(TABLE);
+    when(event.getReplicaDatabaseName()).thenReturn(DATABASE);
+    when(event.getReplicaTableName()).thenReturn(TABLE);
     return event;
   }
 
