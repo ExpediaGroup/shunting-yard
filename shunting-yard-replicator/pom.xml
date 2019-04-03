@@ -77,6 +77,7 @@
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-common</artifactId>
       <exclusions>
+        <!-- This is being excluded because it conflicts with org.glassfish.javax.el dependency -->
         <exclusion>
           <groupId>javax.servlet.jsp</groupId>
           <artifactId>jsp-api</artifactId>
