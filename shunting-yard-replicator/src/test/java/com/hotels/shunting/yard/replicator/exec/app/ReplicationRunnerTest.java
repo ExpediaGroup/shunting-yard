@@ -16,14 +16,11 @@
 package com.hotels.shunting.yard.replicator.exec.app;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -35,9 +32,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.ApplicationArguments;
-
-import com.expedia.apiary.extensions.receiver.common.messaging.MessageProperty;
-import com.expedia.apiary.extensions.receiver.sqs.messaging.SqsMessageProperty;
 
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 import com.hotels.shunting.yard.replicator.exec.messaging.MetaStoreEventReader;
@@ -83,10 +77,8 @@ public class ReplicationRunnerTest {
   @Test
   public void onEvent() throws InterruptedException {
     when(eventReader.read()).thenReturn(Optional.of(event));
-    when(event.getMessageProperties()).thenReturn(Collections.singletonMap(SqsMessageProperty.SQS_MESSAGE_RECEIPT_HANDLE, "receiptHandle"));
     runRunner();
     verify(listener, atLeastOnce()).onEvent(event);
-    verify(eventReader, atLeastOnce()).delete("receiptHandle");
   }
 
   @Test
@@ -94,7 +86,6 @@ public class ReplicationRunnerTest {
     when(eventReader.read()).thenReturn(Optional.empty());
     runRunner();
     verifyZeroInteractions(listener);
-    verify(eventReader, times(0)).delete(any(String.class));
   }
 
   @Test
@@ -102,7 +93,6 @@ public class ReplicationRunnerTest {
     when(eventReader.read()).thenThrow(RuntimeException.class);
     runRunner();
     verifyZeroInteractions(listener);
-    verify(eventReader, times(0)).delete(any(String.class));
   }
 
 }

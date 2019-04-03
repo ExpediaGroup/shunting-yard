@@ -21,6 +21,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.expedia.apiary.extensions.receiver.common.messaging.MessageEvent;
 import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
 import com.expedia.apiary.extensions.receiver.common.event.AddPartitionEvent;
@@ -30,11 +33,13 @@ import com.expedia.apiary.extensions.receiver.common.event.DropPartitionEvent;
 import com.expedia.apiary.extensions.receiver.common.event.EventType;
 import com.expedia.apiary.extensions.receiver.common.event.InsertTableEvent;
 import com.expedia.apiary.extensions.receiver.common.event.ListenerEvent;
+import com.expedia.apiary.extensions.receiver.sqs.messaging.SqsMessageProperty;
 
 import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 
 public class MessageReaderAdapter implements MetaStoreEventReader {
+  private static final Logger log = LoggerFactory.getLogger(MessageReaderAdapter.class);
 
   private final MessageReader messageReader;
   private final String sourceHiveMetastoreUris;
@@ -53,15 +58,22 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
   public Optional<MetaStoreEvent> read() {
     Optional<MessageEvent> event = messageReader.read();
     if (event.isPresent()) {
-      return Optional.of(map(event.get()));
+      MessageEvent messageEvent = event.get();
+      deleteMessage(messageEvent);
+      return Optional.of(map(messageEvent));
     } else {
       return Optional.empty();
     }
   }
 
-  @Override
-  public void delete(String messageId) {
-    messageReader.delete(messageId);
+  private void deleteMessage(MessageEvent event) {
+    try {
+      String receiptHandle = event.getMessageProperties().get(SqsMessageProperty.SQS_MESSAGE_RECEIPT_HANDLE);
+      messageReader.delete(receiptHandle);
+      log.info("Message deleted successfully");
+    } catch (Exception e) {
+      log.error("Could not delete message from queue: ", e);
+    }
   }
 
   private MetaStoreEvent map(MessageEvent messageEvent) {
@@ -74,8 +86,6 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
         .environmentContext(
             listenerEvent.getEnvironmentContext() != null ? listenerEvent.getEnvironmentContext().getProperties()
                 : null);
-
-    builder.messageProperties(messageEvent.getMessageProperties());
 
     EventType eventType = listenerEvent.getEventType();
 
@@ -124,5 +134,4 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
     }
     return builder.build();
   }
-
 }
