@@ -30,6 +30,7 @@ import com.expedia.apiary.extensions.receiver.sqs.messaging.SqsMessageProperty;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Metrics;
 
+import com.hotels.shunting.yard.common.ShuntingYardException;
 import com.hotels.shunting.yard.common.metrics.MetricsConstant;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 import com.hotels.shunting.yard.replicator.exec.messaging.MetaStoreEventReader;
@@ -65,8 +66,7 @@ class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator {
           log.info("New event received: {}", metaStoreEvent);
           listener.onEvent(metaStoreEvent);
           SUCCESS_COUNTER.increment();
-          String receiptHandle = metaStoreEvent.getMessageProperties().get(SqsMessageProperty.SQS_MESSAGE_RECEIPT_HANDLE);
-          eventReader.delete(receiptHandle);
+          deleteMessage(metaStoreEvent);
         } else {
           EMPTY_COUNTER.increment();
         }
@@ -89,4 +89,13 @@ class ReplicationRunner implements ApplicationRunner, ExitCodeGenerator {
     running = false;
   }
 
+  private void deleteMessage(MetaStoreEvent metaStoreEvent) {
+    try {
+      String receiptHandle = metaStoreEvent.getMessageProperties().get(SqsMessageProperty.SQS_MESSAGE_RECEIPT_HANDLE);
+      eventReader.delete(receiptHandle);
+      log.info("Message successfully deleted.");
+    } catch (Exception e) {
+      throw new ShuntingYardException("Unable to delete message from queue: ", e);
+    }
+  }
 }
