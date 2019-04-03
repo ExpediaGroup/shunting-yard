@@ -28,7 +28,7 @@ import com.hotels.bdp.circustrain.api.conf.SourceTable;
 import com.hotels.shunting.yard.replicator.exec.conf.ct.ShuntingYardTableReplication;
 import com.hotels.shunting.yard.replicator.exec.conf.ct.ShuntingYardTableReplications;
 
-public class ShuntingYardReplicationsTest {
+public class ShuntingYardReplicationsMapTest {
 
   private static final String SOURCE_DATABASE = "DATABASE";
   private static final String SOURCE_TABLE = "TABLE";
