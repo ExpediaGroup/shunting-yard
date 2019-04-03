@@ -61,7 +61,8 @@ public class ShuntingYardReplicationsMapTest {
 
   @Test
   public void typical() {
-    ShuntingYardTableReplication tableReplication = syTableReplications.getTableReplication(SOURCE_DATABASE, SOURCE_TABLE);
+    ShuntingYardTableReplication tableReplication = syTableReplications
+        .getTableReplication(SOURCE_DATABASE, SOURCE_TABLE);
 
     assertThat(tableReplication.getReplicaDatabaseName()).isEqualTo(REPLICA_DATABASE);
     assertThat(tableReplication.getReplicaTableName()).isEqualTo(REPLICA_TABLE);
@@ -74,12 +75,6 @@ public class ShuntingYardReplicationsMapTest {
 
     assertThat(tableReplication.getReplicaDatabaseName()).isEqualTo(REPLICA_DATABASE);
     assertThat(tableReplication.getReplicaTableName()).isEqualTo(REPLICA_TABLE);
-  }
-
-  @Test
-  public void defaultConstructor() {
-    syTableReplications = new ShuntingYardTableReplicationsMap();
-    assertThat(syTableReplications.getTableReplication(SOURCE_DATABASE, SOURCE_TABLE)).isNull();
   }
 
   @Test

@@ -25,8 +25,6 @@ import com.hotels.shunting.yard.replicator.util.TableDatabaseNameJoiner;
 public class ShuntingYardTableReplicationsMap {
   private final Map<String, ShuntingYardTableReplication> tableReplicationsMap = new HashMap<>();
 
-  public ShuntingYardTableReplicationsMap() {}
-
   public ShuntingYardTableReplicationsMap(ShuntingYardTableReplications tableReplications) {
     if ((tableReplications != null) && (tableReplications.getTableReplications() != null)) {
       for (ShuntingYardTableReplication tableReplication : tableReplications.getTableReplications()) {
