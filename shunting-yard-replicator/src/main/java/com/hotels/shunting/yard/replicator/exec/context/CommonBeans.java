@@ -48,8 +48,10 @@ import com.hotels.shunting.yard.common.messaging.MessageReaderFactory;
 import com.hotels.shunting.yard.replicator.exec.ConfigFileValidator;
 import com.hotels.shunting.yard.replicator.exec.conf.EventReceiverConfiguration;
 import com.hotels.shunting.yard.replicator.exec.conf.ReplicaCatalog;
+import com.hotels.shunting.yard.replicator.exec.conf.ShuntingYardTableReplicationsMap;
 import com.hotels.shunting.yard.replicator.exec.conf.SourceCatalog;
 import com.hotels.shunting.yard.replicator.exec.conf.SourceTableFilter;
+import com.hotels.shunting.yard.replicator.exec.conf.ct.ShuntingYardTableReplications;
 import com.hotels.shunting.yard.replicator.exec.event.aggregation.DefaultMetaStoreEventAggregator;
 import com.hotels.shunting.yard.replicator.exec.event.aggregation.MetaStoreEventAggregator;
 import com.hotels.shunting.yard.replicator.exec.external.Marshaller;
@@ -139,8 +141,8 @@ public class CommonBeans {
   }
 
   @Bean
-  TableSelector tableSelector(SourceTableFilter targetReplication) {
-    return new TableSelector(targetReplication);
+  TableSelector tableSelector(SourceTableFilter sourceTableFilter) {
+    return new TableSelector(sourceTableFilter);
   }
 
   @Bean
@@ -148,12 +150,14 @@ public class CommonBeans {
       HiveConf replicaHiveConf,
       EventReceiverConfiguration messageReaderConfig,
       SourceCatalog sourceCatalog,
-      TableSelector tableSelector) {
+      TableSelector tableSelector,
+      ShuntingYardTableReplications shuntingYardTableReplications) {
     MessageReaderFactory messaReaderFactory = MessageReaderFactory
         .newInstance(messageReaderConfig.getMessageReaderFactoryClass());
     MessageReader messageReader = messaReaderFactory.newInstance(replicaHiveConf);
     FilteringMessageReader filteringMessageReader = new FilteringMessageReader(messageReader, tableSelector);
-    return new MessageReaderAdapter(filteringMessageReader, sourceCatalog.getHiveMetastoreUris());
+    return new MessageReaderAdapter(filteringMessageReader, sourceCatalog.getHiveMetastoreUris(),
+        new ShuntingYardTableReplicationsMap(shuntingYardTableReplications));
   }
 
   @Bean

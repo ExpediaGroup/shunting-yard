@@ -65,6 +65,8 @@ public class ContextFactoryTest {
   private static final String REPLICA_DATABASE_LOCATION = "replicaDatabaseLocation";
   private static final String DATABASE = "db";
   private static final String TABLE = "tbl";
+  private static final String REPLICA_DATABASE = "replica_db";
+  private static final String REPLICA_TABLE = "replica_tbl";
 
   public @Rule TemporaryFolder tmp = new TemporaryFolder();
 
@@ -94,6 +96,8 @@ public class ContextFactoryTest {
     when(event.getEventType()).thenReturn(EventType.CREATE_TABLE);
     when(event.getDatabaseName()).thenReturn(DATABASE);
     when(event.getTableName()).thenReturn(TABLE);
+    when(event.getReplicaDatabaseName()).thenReturn(REPLICA_DATABASE);
+    when(event.getReplicaTableName()).thenReturn(REPLICA_TABLE);
     when(event.getReplicationMode()).thenReturn(ReplicationMode.FULL);
     when(eventParameters.get(METASTOREURIS.varname)).thenReturn(SOURCE_METASTORE_URIS);
 
@@ -101,8 +105,7 @@ public class ContextFactoryTest {
     when(replicaStorageDescriptor.getLocation()).thenReturn(replicaTableLocation.getAbsolutePath());
 
     when(replicaTable.getSd()).thenReturn(replicaStorageDescriptor);
-
-    when(replicaMetaStoreClient.getTable(DATABASE, TABLE)).thenReturn(replicaTable);
+    when(replicaMetaStoreClient.getTable(REPLICA_DATABASE, REPLICA_TABLE)).thenReturn(replicaTable);
 
     factory = new ContextFactory(conf, replicaMetaStoreClient, marshaller);
   }
@@ -146,10 +149,10 @@ public class ContextFactoryTest {
   @Test
   public void createContextForNotExistingReplicaTable() throws Exception {
     reset(replicaMetaStoreClient);
-    when(replicaMetaStoreClient.getTable(DATABASE, TABLE)).thenThrow(NoSuchObjectException.class);
+    when(replicaMetaStoreClient.getTable(REPLICA_DATABASE, REPLICA_TABLE)).thenThrow(NoSuchObjectException.class);
     Database replicaDatabase = mock(Database.class);
     when(replicaDatabase.getLocationUri()).thenReturn(REPLICA_DATABASE_LOCATION);
-    when(replicaMetaStoreClient.getDatabase(DATABASE)).thenReturn(replicaDatabase);
+    when(replicaMetaStoreClient.getDatabase(REPLICA_DATABASE)).thenReturn(replicaDatabase);
     Context context = factory.createContext(event);
     verify(marshaller).marshall(eq(context.getConfigLocation()), circusTrainConfigCaptor.capture());
     CircusTrainConfig circusTrainConfig = circusTrainConfigCaptor.getValue();
@@ -157,7 +160,8 @@ public class ContextFactoryTest {
     TableReplication replication = circusTrainConfig.getTableReplications().get(0);
     assertTableReplication(replication);
     assertThat(replication.getReplicationMode()).isSameAs(event.getReplicationMode());
-    assertThat(replication.getReplicaTable().getTableLocation()).isEqualTo(REPLICA_DATABASE_LOCATION + "/" + TABLE);
+    assertThat(replication.getReplicaTable().getTableLocation())
+        .isEqualTo(REPLICA_DATABASE_LOCATION + "/" + REPLICA_TABLE);
     assertThat(context.getCircusTrainConfigLocation()).isNull();
   }
 
@@ -203,8 +207,8 @@ public class ContextFactoryTest {
   @Test(expected = ShuntingYardException.class)
   public void failIfReplicaDatabseDoesNotExist() throws Exception {
     reset(replicaMetaStoreClient);
-    when(replicaMetaStoreClient.getTable(DATABASE, TABLE)).thenThrow(NoSuchObjectException.class);
-    when(replicaMetaStoreClient.getDatabase(DATABASE)).thenThrow(TException.class);
+    when(replicaMetaStoreClient.getTable(REPLICA_DATABASE, REPLICA_TABLE)).thenThrow(NoSuchObjectException.class);
+    when(replicaMetaStoreClient.getDatabase(REPLICA_DATABASE)).thenThrow(TException.class);
     factory.createContext(event);
   }
 
@@ -217,8 +221,8 @@ public class ContextFactoryTest {
   private void assertTableReplication(TableReplication replication) {
     assertThat(replication.getSourceTable().getDatabaseName()).isEqualTo(DATABASE);
     assertThat(replication.getSourceTable().getTableName()).isEqualTo(TABLE);
-    assertThat(replication.getReplicaTable().getDatabaseName()).isEqualTo(DATABASE);
-    assertThat(replication.getReplicaTable().getTableName()).isEqualTo(TABLE);
+    assertThat(replication.getReplicaTable().getDatabaseName()).isEqualTo(REPLICA_DATABASE);
+    assertThat(replication.getReplicaTable().getTableName()).isEqualTo(REPLICA_TABLE);
   }
 
 }

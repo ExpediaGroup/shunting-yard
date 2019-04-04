@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,8 @@ public class MarshallerTest {
         .replicaMetaStoreUri("replicaMetaStoreUri")
         .copierOption("p1", "val1")
         .copierOption("p2", "val2")
-        .replication(ReplicationMode.FULL, "databaseName", "tableName", "replicaTableLocation", Arrays.asList("part"),
-            Arrays.asList(Arrays.asList("partval")))
+        .replication(ReplicationMode.FULL, "databaseName", "tableName", "replicaDatabaseName", "replicaTableName",
+            "replicaTableLocation", Arrays.asList("part"), Arrays.asList(Arrays.asList("partval")))
         .build();
 
     File file = tmp.newFile("conif.yml");
@@ -70,8 +70,8 @@ public class MarshallerTest {
         .contains("    partition-filter: (part='partval')")
         .contains("    partition-limit: 32767")
         .contains("  replica-table:")
-        .contains("    database-name: databaseName")
-        .contains("    table-name: tableName")
+        .contains("    database-name: replicaDatabaseName")
+        .contains("    table-name: replicaTableName")
         .contains("    table-location: replicaTableLocation");
   }
 
@@ -85,7 +85,8 @@ public class MarshallerTest {
         .replicaMetaStoreUri("replicaMetaStoreUri")
         .copierOption("p1", "val1")
         .copierOption("p2", "val2")
-        .replication(ReplicationMode.FULL, "databaseName", "tableName", "replicaTableLocation")
+        .replication(ReplicationMode.FULL, "databaseName", "tableName", "replicaDatabaseName", "replicaTableName",
+            "replicaTableLocation")
         .build();
 
     File file = tmp.newFile("conif.yml");
@@ -109,8 +110,8 @@ public class MarshallerTest {
         .contains("    generate-partition-filter: true")
         .contains("    partition-limit: 32767")
         .contains("  replica-table:")
-        .contains("    database-name: databaseName")
-        .contains("    table-name: tableName")
+        .contains("    database-name: replicaDatabaseName")
+        .contains("    table-name: replicaTableName")
         .contains("    table-location: replicaTableLocation");
   }
 

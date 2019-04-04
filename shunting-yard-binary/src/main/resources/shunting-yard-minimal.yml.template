@@ -13,3 +13,10 @@ source-table-filter:
   table-names:
     - db1.table_1
     - db2.table_2
+table-replications:
+  - source-table:
+      database-name: db1
+      table-name: table_1
+    replica-table:
+      database-name: db_1
+      table-name: table_1_new

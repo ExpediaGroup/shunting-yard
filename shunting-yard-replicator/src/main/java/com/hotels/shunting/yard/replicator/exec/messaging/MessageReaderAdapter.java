@@ -24,8 +24,6 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.expedia.apiary.extensions.receiver.common.messaging.MessageEvent;
-import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
 import com.expedia.apiary.extensions.receiver.common.event.AddPartitionEvent;
 import com.expedia.apiary.extensions.receiver.common.event.AlterPartitionEvent;
 import com.expedia.apiary.extensions.receiver.common.event.AlterTableEvent;
@@ -33,9 +31,13 @@ import com.expedia.apiary.extensions.receiver.common.event.DropPartitionEvent;
 import com.expedia.apiary.extensions.receiver.common.event.EventType;
 import com.expedia.apiary.extensions.receiver.common.event.InsertTableEvent;
 import com.expedia.apiary.extensions.receiver.common.event.ListenerEvent;
+import com.expedia.apiary.extensions.receiver.common.messaging.MessageEvent;
+import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
 import com.expedia.apiary.extensions.receiver.sqs.messaging.SqsMessageProperty;
 
 import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
+import com.hotels.shunting.yard.replicator.exec.conf.ShuntingYardTableReplicationsMap;
+import com.hotels.shunting.yard.replicator.exec.conf.ct.ShuntingYardTableReplication;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 
 public class MessageReaderAdapter implements MetaStoreEventReader {
@@ -43,10 +45,15 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
 
   private final MessageReader messageReader;
   private final String sourceHiveMetastoreUris;
+  private final ShuntingYardTableReplicationsMap shuntingYardReplications;
 
-  public MessageReaderAdapter(MessageReader messageReader, String sourceHiveMetastoreUris) {
+  public MessageReaderAdapter(
+      MessageReader messageReader,
+      String sourceHiveMetastoreUris,
+      ShuntingYardTableReplicationsMap shuntingYardReplications) {
     this.messageReader = messageReader;
     this.sourceHiveMetastoreUris = sourceHiveMetastoreUris;
+    this.shuntingYardReplications = shuntingYardReplications;
   }
 
   @Override
@@ -60,7 +67,7 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
     if (event.isPresent()) {
       MessageEvent messageEvent = event.get();
       deleteMessage(messageEvent);
-      return Optional.of(map(messageEvent));
+      return Optional.of(map(messageEvent.getEvent()));
     } else {
       return Optional.empty();
     }
@@ -76,11 +83,21 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
     }
   }
 
-  private MetaStoreEvent map(MessageEvent messageEvent) {
-    ListenerEvent listenerEvent = messageEvent.getEvent();
+  private MetaStoreEvent map(ListenerEvent listenerEvent) {
+    String replicaDatabaseName = listenerEvent.getDbName();
+    String replicaTableName = listenerEvent.getTableName();
+
+    ShuntingYardTableReplication tableReplication = shuntingYardReplications
+        .getTableReplication(listenerEvent.getDbName(), listenerEvent.getTableName());
+
+    if (tableReplication != null) {
+      replicaDatabaseName = tableReplication.getReplicaDatabaseName();
+      replicaTableName = tableReplication.getReplicaTableName();
+    }
 
     MetaStoreEvent.Builder builder = MetaStoreEvent
-        .builder(listenerEvent.getEventType(), listenerEvent.getDbName(), listenerEvent.getTableName())
+        .builder(listenerEvent.getEventType(), listenerEvent.getDbName(), listenerEvent.getTableName(),
+            replicaDatabaseName, replicaTableName)
         .parameters(listenerEvent.getTableParameters())
         .parameter(METASTOREURIS.varname, sourceHiveMetastoreUris)
         .environmentContext(
@@ -134,4 +151,5 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
     }
     return builder.build();
   }
+
 }

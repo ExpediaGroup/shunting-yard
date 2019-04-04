@@ -107,12 +107,14 @@ public class ContextFactory {
 
   private CircusTrainConfig generateConfiguration(MetaStoreEvent event) {
     String sourceMetaStoreUri = getSourceMetaStoreUri(event);
-    String replicaTableLocation = workOutReplicaLocation(event.getDatabaseName(), event.getTableName());
+
+    String replicaTableLocation = workOutReplicaLocation(event.getReplicaDatabaseName(), event.getReplicaTableName());
     CircusTrainConfig config = CircusTrainConfig
         .builder()
         .sourceMetaStoreUri(sourceMetaStoreUri)
         .replicaMetaStoreUri(conf.get(METASTOREURIS.varname))
-        .replication(event.getReplicationMode(), event.getDatabaseName(), event.getTableName(), replicaTableLocation,
+        .replication(event.getReplicationMode(), event.getDatabaseName(), event.getTableName(),
+            event.getReplicaDatabaseName(), event.getReplicaTableName(), replicaTableLocation,
             event.getPartitionColumns(), event.getPartitionValues())
         .build();
     return config;

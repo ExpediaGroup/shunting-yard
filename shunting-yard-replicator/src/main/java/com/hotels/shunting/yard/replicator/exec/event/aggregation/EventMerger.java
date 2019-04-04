@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,8 @@ class EventMerger {
     checkArgument(canMerge(a, b), "Events cannot be merged");
     // Event type of the first event is kept for the new event
     Builder builder = MetaStoreEvent
-        .builder(a.getEventType(), a.getDatabaseName(), a.getTableName())
+        .builder(a.getEventType(), a.getDatabaseName(), a.getTableName(), a.getReplicaDatabaseName(),
+            a.getReplicaTableName())
         .parameters(a.getParameters())
         .parameters(b.getParameters())
         .environmentContext(a.getEnvironmentContext())
