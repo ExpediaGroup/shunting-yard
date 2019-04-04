@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,13 +40,13 @@ public class YamlFactoryTest {
         .append("table-replications:\n")
         .append("- partition-fetcher-buffer-size: 1000\n")
         .append("  partition-iterator-batch-size: 1000\n")
-        .append("  qualified-replica-name: databasename.tablename\n")
-        .append("  replica-database-name: databasename\n")
+        .append("  qualified-replica-name: replicadatabasename.replicatablename\n")
+        .append("  replica-database-name: replicadatabasename\n")
         .append("  replica-table:\n")
-        .append("    database-name: databaseName\n")
+        .append("    database-name: replicaDatabaseName\n")
         .append("    table-location: replicaTableLocation\n")
-        .append("    table-name: tableName\n")
-        .append("  replica-table-name: tablename\n")
+        .append("    table-name: replicaTableName\n")
+        .append("  replica-table-name: replicatablename\n")
         .append("  replication-mode: FULL\n")
         .append("  source-table:\n")
         .append("    database-name: databaseName\n")
@@ -60,7 +60,8 @@ public class YamlFactoryTest {
         .builder()
         .sourceMetaStoreUri("sourceMetaStoreUri")
         .replicaMetaStoreUri("replicaMetaStoreUri")
-        .replication(ReplicationMode.FULL, "databaseName", "tableName", "replicaTableLocation")
+        .replication(ReplicationMode.FULL, "databaseName", "tableName", "replicaDatabaseName", "replicaTableName",
+            "replicaTableLocation")
         .build();
     Yaml yaml = YamlFactory.newYaml();
     yaml.dump(circusTrainConfig, sw);

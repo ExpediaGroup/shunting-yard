@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
 import com.expedia.apiary.extensions.receiver.common.event.AddPartitionEvent;
 import com.expedia.apiary.extensions.receiver.common.event.AlterPartitionEvent;
 import com.expedia.apiary.extensions.receiver.common.event.AlterTableEvent;
@@ -29,18 +28,26 @@ import com.expedia.apiary.extensions.receiver.common.event.DropPartitionEvent;
 import com.expedia.apiary.extensions.receiver.common.event.EventType;
 import com.expedia.apiary.extensions.receiver.common.event.InsertTableEvent;
 import com.expedia.apiary.extensions.receiver.common.event.ListenerEvent;
+import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
 
 import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
+import com.hotels.shunting.yard.replicator.exec.conf.ShuntingYardTableReplicationsMap;
+import com.hotels.shunting.yard.replicator.exec.conf.ct.ShuntingYardTableReplication;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 
 public class MessageReaderAdapter implements MetaStoreEventReader {
 
   private final MessageReader messageReader;
   private final String sourceHiveMetastoreUris;
+  private final ShuntingYardTableReplicationsMap shuntingYardReplications;
 
-  public MessageReaderAdapter(MessageReader messageReader, String sourceHiveMetastoreUris) {
+  public MessageReaderAdapter(
+      MessageReader messageReader,
+      String sourceHiveMetastoreUris,
+      ShuntingYardTableReplicationsMap shuntingYardReplications) {
     this.messageReader = messageReader;
     this.sourceHiveMetastoreUris = sourceHiveMetastoreUris;
+    this.shuntingYardReplications = shuntingYardReplications;
   }
 
   @Override
@@ -59,8 +66,20 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
   }
 
   private MetaStoreEvent map(ListenerEvent listenerEvent) {
+    String replicaDatabaseName = listenerEvent.getDbName();
+    String replicaTableName = listenerEvent.getTableName();
+
+    ShuntingYardTableReplication tableReplication = shuntingYardReplications
+        .getTableReplication(listenerEvent.getDbName(), listenerEvent.getTableName());
+
+    if (tableReplication != null) {
+      replicaDatabaseName = tableReplication.getReplicaDatabaseName();
+      replicaTableName = tableReplication.getReplicaTableName();
+    }
+
     MetaStoreEvent.Builder builder = MetaStoreEvent
-        .builder(listenerEvent.getEventType(), listenerEvent.getDbName(), listenerEvent.getTableName())
+        .builder(listenerEvent.getEventType(), listenerEvent.getDbName(), listenerEvent.getTableName(),
+            replicaDatabaseName, replicaTableName)
         .parameters(listenerEvent.getTableParameters())
         .parameter(METASTOREURIS.varname, sourceHiveMetastoreUris)
         .environmentContext(

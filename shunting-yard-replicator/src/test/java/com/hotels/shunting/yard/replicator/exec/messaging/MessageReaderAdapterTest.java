@@ -39,7 +39,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
-import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
 import com.expedia.apiary.extensions.receiver.common.event.AddPartitionEvent;
 import com.expedia.apiary.extensions.receiver.common.event.AlterPartitionEvent;
 import com.expedia.apiary.extensions.receiver.common.event.AlterTableEvent;
@@ -49,8 +48,14 @@ import com.expedia.apiary.extensions.receiver.common.event.DropTableEvent;
 import com.expedia.apiary.extensions.receiver.common.event.EventType;
 import com.expedia.apiary.extensions.receiver.common.event.InsertTableEvent;
 import com.expedia.apiary.extensions.receiver.common.event.ListenerEvent;
+import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
 
+import com.hotels.bdp.circustrain.api.conf.ReplicaTable;
 import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
+import com.hotels.bdp.circustrain.api.conf.SourceTable;
+import com.hotels.shunting.yard.replicator.exec.conf.ShuntingYardTableReplicationsMap;
+import com.hotels.shunting.yard.replicator.exec.conf.ct.ShuntingYardTableReplication;
+import com.hotels.shunting.yard.replicator.exec.conf.ct.ShuntingYardTableReplications;
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -67,6 +72,8 @@ public class MessageReaderAdapterTest {
   private static final String OLD_TEST_TABLE_LOCATION = "s3://old_table_location";
   private static final String TEST_TABLE_LOCATION = "s3://table_location";
   private static final String SOURCE_METASTORE_URIS = "thrift://remote_host:9883";
+  private static final String REPLICA_DATABASE = "replica_db";
+  private static final String REPLICA_TABLE = "replica_table";
   private static final Map<String, String> PARAMETERS = ImmutableMap.of(METASTOREURIS.varname, SOURCE_METASTORE_URIS);
 
   private MessageReaderAdapter messageReaderAdapter;
@@ -91,9 +98,28 @@ public class MessageReaderAdapterTest {
     FieldSchema partitionColumn2 = new FieldSchema("column_2", "integer", "");
     FieldSchema partitionColumn3 = new FieldSchema("column_3", "string", "");
 
+    ShuntingYardTableReplication tableReplication = new ShuntingYardTableReplication();
+    SourceTable sourceTable = new SourceTable();
+    sourceTable.setDatabaseName(TEST_DB);
+    sourceTable.setTableName(TEST_TABLE);
+
+    ReplicaTable replicaTable = new ReplicaTable();
+    replicaTable.setDatabaseName(REPLICA_DATABASE);
+    replicaTable.setTableName(REPLICA_TABLE);
+
+    tableReplication.setSourceTable(sourceTable);
+    tableReplication.setReplicaTable(replicaTable);
+
+    List<ShuntingYardTableReplication> tableReplications = new ArrayList<>();
+    tableReplications.add(tableReplication);
+
+    ShuntingYardTableReplications tableReplicationsWrapper = new ShuntingYardTableReplications();
+    tableReplicationsWrapper.setTableReplications(tableReplications);
+
     partitionKeys = ImmutableList.of(partitionColumn1, partitionColumn2, partitionColumn3);
     partitionValues = ImmutableList.of(partition);
-    messageReaderAdapter = new MessageReaderAdapter(messageReader, SOURCE_METASTORE_URIS);
+    messageReaderAdapter = new MessageReaderAdapter(messageReader, SOURCE_METASTORE_URIS,
+        new ShuntingYardTableReplicationsMap(tableReplicationsWrapper));
     when(partition.getValues()).thenReturn(PARTITION_VALUES);
   }
 
@@ -104,7 +130,66 @@ public class MessageReaderAdapterTest {
     when(apiaryCreateTableEvent.getEventType()).thenReturn(EventType.CREATE_TABLE);
 
     MetaStoreEvent expected = MetaStoreEvent
-        .builder(EventType.CREATE_TABLE, TEST_DB, TEST_TABLE)
+        .builder(EventType.CREATE_TABLE, TEST_DB, TEST_TABLE, REPLICA_DATABASE, REPLICA_TABLE)
+        .environmentContext(EMPTY_MAP)
+        .parameters(PARAMETERS)
+        .replicationMode(ReplicationMode.FULL)
+        .build();
+
+    MetaStoreEvent actual = messageReaderAdapter.read().get();
+
+    assertMetaStoreEvent(expected, actual);
+  }
+
+  @Test
+  public void createTableEventWhenTableReplicationsAreNotConfigured() {
+    messageReaderAdapter = new MessageReaderAdapter(messageReader, SOURCE_METASTORE_URIS,
+        new ShuntingYardTableReplicationsMap(null));
+
+    when(messageReader.read()).thenReturn(Optional.of(apiaryCreateTableEvent));
+    configureMockedEvent(apiaryCreateTableEvent);
+    when(apiaryCreateTableEvent.getEventType()).thenReturn(EventType.CREATE_TABLE);
+
+    MetaStoreEvent expected = MetaStoreEvent
+        .builder(EventType.CREATE_TABLE, TEST_DB, TEST_TABLE, TEST_DB, TEST_TABLE)
+        .environmentContext(EMPTY_MAP)
+        .parameters(PARAMETERS)
+        .replicationMode(ReplicationMode.FULL)
+        .build();
+
+    MetaStoreEvent actual = messageReaderAdapter.read().get();
+
+    assertMetaStoreEvent(expected, actual);
+  }
+
+  @Test
+  public void createTableEventWhenReplicaTableNameNotProvided() {
+    ShuntingYardTableReplication tableReplication = new ShuntingYardTableReplication();
+    SourceTable sourceTable = new SourceTable();
+    sourceTable.setDatabaseName(TEST_DB);
+    sourceTable.setTableName(TEST_TABLE);
+
+    ReplicaTable replicaTable = new ReplicaTable();
+    replicaTable.setDatabaseName(REPLICA_DATABASE);
+
+    tableReplication.setSourceTable(sourceTable);
+    tableReplication.setReplicaTable(replicaTable);
+
+    List<ShuntingYardTableReplication> tableReplications = new ArrayList<>();
+    tableReplications.add(tableReplication);
+
+    ShuntingYardTableReplications tableReplicationsWrapper = new ShuntingYardTableReplications();
+    tableReplicationsWrapper.setTableReplications(tableReplications);
+
+    messageReaderAdapter = new MessageReaderAdapter(messageReader, SOURCE_METASTORE_URIS,
+        new ShuntingYardTableReplicationsMap(tableReplicationsWrapper));
+
+    when(messageReader.read()).thenReturn(Optional.of(apiaryCreateTableEvent));
+    configureMockedEvent(apiaryCreateTableEvent);
+    when(apiaryCreateTableEvent.getEventType()).thenReturn(EventType.CREATE_TABLE);
+
+    MetaStoreEvent expected = MetaStoreEvent
+        .builder(EventType.CREATE_TABLE, TEST_DB, TEST_TABLE, REPLICA_DATABASE, TEST_TABLE)
         .environmentContext(EMPTY_MAP)
         .parameters(PARAMETERS)
         .replicationMode(ReplicationMode.FULL)
@@ -125,7 +210,7 @@ public class MessageReaderAdapterTest {
     when(apiaryAddPartitionEvent.getEventType()).thenReturn(EventType.ADD_PARTITION);
 
     MetaStoreEvent expected = MetaStoreEvent
-        .builder(EventType.ADD_PARTITION, TEST_DB, TEST_TABLE)
+        .builder(EventType.ADD_PARTITION, TEST_DB, TEST_TABLE, REPLICA_DATABASE, REPLICA_TABLE)
         .partitionColumns(new ArrayList<String>(PARTITION_KEYS_MAP.keySet()))
         .partitionValues(PARTITION_VALUES)
         .environmentContext(EMPTY_MAP)
@@ -150,7 +235,7 @@ public class MessageReaderAdapterTest {
     when(apiaryAlterPartitionEvent.getEventType()).thenReturn(EventType.ALTER_PARTITION);
 
     MetaStoreEvent expected = MetaStoreEvent
-        .builder(EventType.ALTER_PARTITION, TEST_DB, TEST_TABLE)
+        .builder(EventType.ALTER_PARTITION, TEST_DB, TEST_TABLE, REPLICA_DATABASE, REPLICA_TABLE)
         .partitionColumns(new ArrayList<String>(PARTITION_KEYS_MAP.keySet()))
         .partitionValues(PARTITION_VALUES)
         .replicationMode(ReplicationMode.FULL)
@@ -173,7 +258,7 @@ public class MessageReaderAdapterTest {
     when(apiaryAlterTableEvent.getEventType()).thenReturn(EventType.ALTER_TABLE);
 
     MetaStoreEvent expected = MetaStoreEvent
-        .builder(EventType.ALTER_TABLE, TEST_DB, TEST_TABLE)
+        .builder(EventType.ALTER_TABLE, TEST_DB, TEST_TABLE, REPLICA_DATABASE, REPLICA_TABLE)
         .environmentContext(EMPTY_MAP)
         .parameters(PARAMETERS)
         .replicationMode(ReplicationMode.FULL)
@@ -196,7 +281,7 @@ public class MessageReaderAdapterTest {
     when(apiaryAlterPartitionEvent.getEventType()).thenReturn(EventType.ALTER_PARTITION);
 
     MetaStoreEvent expected = MetaStoreEvent
-        .builder(EventType.ALTER_PARTITION, TEST_DB, TEST_TABLE)
+        .builder(EventType.ALTER_PARTITION, TEST_DB, TEST_TABLE, REPLICA_DATABASE, REPLICA_TABLE)
         .partitionColumns(new ArrayList<String>(PARTITION_KEYS_MAP.keySet()))
         .partitionValues(PARTITION_VALUES)
         .replicationMode(ReplicationMode.METADATA_UPDATE)
@@ -220,7 +305,7 @@ public class MessageReaderAdapterTest {
     when(apiaryAlterPartitionEvent.getEventType()).thenReturn(EventType.ALTER_PARTITION);
 
     MetaStoreEvent expected = MetaStoreEvent
-        .builder(EventType.ALTER_PARTITION, TEST_DB, TEST_TABLE)
+        .builder(EventType.ALTER_PARTITION, TEST_DB, TEST_TABLE, REPLICA_DATABASE, REPLICA_TABLE)
         .partitionColumns(new ArrayList<String>(PARTITION_KEYS_MAP.keySet()))
         .partitionValues(PARTITION_VALUES)
         .replicationMode(ReplicationMode.FULL)
@@ -243,7 +328,7 @@ public class MessageReaderAdapterTest {
     when(apiaryAlterTableEvent.getEventType()).thenReturn(EventType.ALTER_TABLE);
 
     MetaStoreEvent expected = MetaStoreEvent
-        .builder(EventType.ALTER_TABLE, TEST_DB, TEST_TABLE)
+        .builder(EventType.ALTER_TABLE, TEST_DB, TEST_TABLE, REPLICA_DATABASE, REPLICA_TABLE)
         .environmentContext(EMPTY_MAP)
         .parameters(PARAMETERS)
         .replicationMode(ReplicationMode.METADATA_UPDATE)
@@ -263,7 +348,7 @@ public class MessageReaderAdapterTest {
     when(apiaryAlterTableEvent.getEventType()).thenReturn(EventType.ALTER_TABLE);
 
     MetaStoreEvent expected = MetaStoreEvent
-        .builder(EventType.ALTER_TABLE, TEST_DB, TEST_TABLE)
+        .builder(EventType.ALTER_TABLE, TEST_DB, TEST_TABLE, REPLICA_DATABASE, REPLICA_TABLE)
         .environmentContext(EMPTY_MAP)
         .parameters(PARAMETERS)
         .replicationMode(ReplicationMode.FULL)
@@ -284,7 +369,7 @@ public class MessageReaderAdapterTest {
     when(apiaryDropPartitionEvent.getEventType()).thenReturn(EventType.DROP_PARTITION);
 
     MetaStoreEvent expected = MetaStoreEvent
-        .builder(EventType.DROP_PARTITION, TEST_DB, TEST_TABLE)
+        .builder(EventType.DROP_PARTITION, TEST_DB, TEST_TABLE, REPLICA_DATABASE, REPLICA_TABLE)
         .partitionColumns(new ArrayList<String>(PARTITION_KEYS_MAP.keySet()))
         .partitionValues(PARTITION_VALUES)
         .deleteData(true)
@@ -311,7 +396,7 @@ public class MessageReaderAdapterTest {
     when(apiaryInsertTableEvent.getEventType()).thenReturn(EventType.INSERT);
 
     MetaStoreEvent expected = MetaStoreEvent
-        .builder(EventType.INSERT, TEST_DB, TEST_TABLE)
+        .builder(EventType.INSERT, TEST_DB, TEST_TABLE, REPLICA_DATABASE, REPLICA_TABLE)
         .partitionColumns(new ArrayList<String>(PARTITION_KEYS_MAP.keySet()))
         .partitionValues(PARTITION_VALUES)
         .environmentContext(EMPTY_MAP)
@@ -330,7 +415,7 @@ public class MessageReaderAdapterTest {
     when(apiaryDropTableEvent.getEventType()).thenReturn(EventType.DROP_TABLE);
 
     MetaStoreEvent expected = MetaStoreEvent
-        .builder(EventType.DROP_TABLE, TEST_DB, TEST_TABLE)
+        .builder(EventType.DROP_TABLE, TEST_DB, TEST_TABLE, REPLICA_DATABASE, REPLICA_TABLE)
         .deleteData(true)
         .environmentContext(EMPTY_MAP)
         .parameters(PARAMETERS)
@@ -356,6 +441,8 @@ public class MessageReaderAdapterTest {
     assertThat(actual.getEventType()).isEqualTo(expected.getEventType());
     assertThat(actual.getDatabaseName()).isEqualTo(expected.getDatabaseName());
     assertThat(actual.getTableName()).isEqualTo(expected.getTableName());
+    assertThat(actual.getReplicaDatabaseName()).isEqualTo(expected.getReplicaDatabaseName());
+    assertThat(actual.getReplicaTableName()).isEqualTo(expected.getReplicaTableName());
     assertThat(actual.getPartitionColumns()).isEqualTo(expected.getPartitionColumns());
     assertThat(actual.getPartitionValues()).isEqualTo(expected.getPartitionValues());
     assertThat(actual.getReplicationMode()).isEqualTo(expected.getReplicationMode());

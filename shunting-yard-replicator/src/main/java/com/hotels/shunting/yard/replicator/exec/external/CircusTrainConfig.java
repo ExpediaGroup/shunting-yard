@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,14 +93,19 @@ public class CircusTrainConfig {
         ReplicationMode replicationMode,
         String databaseName,
         String tableName,
+        String replicaDatabaseName,
+        String replicaTableName,
         String replicaTableLocation) {
-      return replication(replicationMode, databaseName, tableName, replicaTableLocation, null, null);
+      return replication(replicationMode, databaseName, tableName, replicaDatabaseName, replicaTableName,
+          replicaTableLocation, null, null);
     }
 
     public Builder replication(
         ReplicationMode replicationMode,
         String databaseName,
         String tableName,
+        String replicaDatabaseName,
+        String replicaTableName,
         String replicaTableLocation,
         List<String> partitionColumns,
         List<List<String>> partitionValues) {
@@ -119,8 +124,8 @@ public class CircusTrainConfig {
       tableReplication.setSourceTable(sourceTable);
 
       ReplicaTable replicaTable = new ReplicaTable();
-      replicaTable.setDatabaseName(checkNotNull(databaseName, "databaseName is required"));
-      replicaTable.setTableName(checkNotNull(tableName, "tableName is required"));
+      replicaTable.setDatabaseName(checkNotNull(replicaDatabaseName, "replicaDatabaseName is required"));
+      replicaTable.setTableName(checkNotNull(replicaTableName, "replicaTableName is required"));
       replicaTable.setTableLocation(checkNotNull(replicaTableLocation, "replicaTableLocation is required"));
       tableReplication.setReplicaTable(replicaTable);
 

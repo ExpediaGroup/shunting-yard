@@ -40,8 +40,8 @@ public class CircusTrainConfigTest {
         .replicaMetaStoreUri("replicaMetaStoreUri")
         .copierOption("p1", "val1")
         .copierOption("p2", "val2")
-        .replication(ReplicationMode.FULL, "databaseName", "tableName", "replicaTableLocation", Arrays.asList("part"),
-            Arrays.asList(Arrays.asList("partval")))
+        .replication(ReplicationMode.FULL, "databaseName", "tableName", "replicaDatabaseName", "replicaTableName",
+            "replicaTableLocation", Arrays.asList("part"), Arrays.asList(Arrays.asList("partval")))
         .build();
     assertThat(config.getSourceCatalog().getName()).isEqualTo("sourceName");
     assertThat(config.getSourceCatalog().getHiveMetastoreUris()).isEqualTo("sourceMetaStoreUri");
@@ -57,8 +57,8 @@ public class CircusTrainConfigTest {
     assertThat(replication.getSourceTable().getPartitionFilter()).isEqualTo("(part='partval')");
     assertThat(replication.getSourceTable().isGeneratePartitionFilter()).isEqualTo(false);
     assertThat(replication.getSourceTable().getPartitionLimit()).isEqualTo(Short.MAX_VALUE);
-    assertThat(replication.getReplicaTable().getDatabaseName()).isEqualTo("databaseName");
-    assertThat(replication.getReplicaTable().getTableName()).isEqualTo("tableName");
+    assertThat(replication.getReplicaTable().getDatabaseName()).isEqualTo("replicaDatabaseName");
+    assertThat(replication.getReplicaTable().getTableName()).isEqualTo("replicaTableName");
     assertThat(replication.getReplicaTable().getTableLocation()).isEqualTo("replicaTableLocation");
   }
 
@@ -72,8 +72,9 @@ public class CircusTrainConfigTest {
         .replicaMetaStoreUri("replicaMetaStoreUri")
         .copierOption("p1", "val1")
         .copierOption("p2", "val2")
-        .replication(ReplicationMode.FULL, "databaseName", "tableName", "replicaTableLocation",
-            Arrays.asList("part_a", "part_b"), Arrays.asList(Arrays.asList("a", "1"), Arrays.asList("a", "2")))
+        .replication(ReplicationMode.FULL, "databaseName", "tableName", "replicaDatabaseName", "replicaTableName",
+            "replicaTableLocation", Arrays.asList("part_a", "part_b"),
+            Arrays.asList(Arrays.asList("a", "1"), Arrays.asList("a", "2")))
         .build();
     assertThat(config.getSourceCatalog().getName()).isEqualTo("sourceName");
     assertThat(config.getSourceCatalog().getHiveMetastoreUris()).isEqualTo("sourceMetaStoreUri");
@@ -90,8 +91,8 @@ public class CircusTrainConfigTest {
         .isEqualTo("(part_a='a' AND part_b='1') OR (part_a='a' AND part_b='2')");
     assertThat(replication.getSourceTable().isGeneratePartitionFilter()).isEqualTo(false);
     assertThat(replication.getSourceTable().getPartitionLimit()).isEqualTo(Short.MAX_VALUE);
-    assertThat(replication.getReplicaTable().getDatabaseName()).isEqualTo("databaseName");
-    assertThat(replication.getReplicaTable().getTableName()).isEqualTo("tableName");
+    assertThat(replication.getReplicaTable().getDatabaseName()).isEqualTo("replicaDatabaseName");
+    assertThat(replication.getReplicaTable().getTableName()).isEqualTo("replicaTableName");
     assertThat(replication.getReplicaTable().getTableLocation()).isEqualTo("replicaTableLocation");
   }
 
@@ -103,7 +104,8 @@ public class CircusTrainConfigTest {
         .sourceMetaStoreUri("sourceMetaStoreUri")
         .replicaName("replicaName")
         .replicaMetaStoreUri("replicaMetaStoreUri")
-        .replication(ReplicationMode.METADATA_UPDATE, "databaseName", "tableName", "replicaTableLocation")
+        .replication(ReplicationMode.METADATA_UPDATE, "databaseName", "tableName", "replicaDatabaseName",
+            "replicaTableName", "replicaTableLocation")
         .build();
     assertThat(config.getSourceCatalog().getName()).isEqualTo("sourceName");
     assertThat(config.getSourceCatalog().getHiveMetastoreUris()).isEqualTo("sourceMetaStoreUri");
@@ -119,8 +121,8 @@ public class CircusTrainConfigTest {
     assertThat(replication.getSourceTable().getPartitionFilter()).isBlank();
     assertThat(replication.getSourceTable().isGeneratePartitionFilter()).isEqualTo(true);
     assertThat(replication.getSourceTable().getPartitionLimit()).isEqualTo(Short.MAX_VALUE);
-    assertThat(replication.getReplicaTable().getDatabaseName()).isEqualTo("databaseName");
-    assertThat(replication.getReplicaTable().getTableName()).isEqualTo("tableName");
+    assertThat(replication.getReplicaTable().getDatabaseName()).isEqualTo("replicaDatabaseName");
+    assertThat(replication.getReplicaTable().getTableName()).isEqualTo("replicaTableName");
     assertThat(replication.getReplicaTable().getTableLocation()).isEqualTo("replicaTableLocation");
   }
 
@@ -131,7 +133,8 @@ public class CircusTrainConfigTest {
         .sourceMetaStoreUri("sourceMetaStoreUri")
         .replicaName("replicaName")
         .replicaMetaStoreUri("replicaMetaStoreUri")
-        .replication(ReplicationMode.METADATA_UPDATE, "databaseName", "tableName", "replicaTableLocation")
+        .replication(ReplicationMode.METADATA_UPDATE, "databaseName", "tableName", "replicaDatabaseName",
+            "replicaTableName", "replicaTableLocation")
         .build();
     assertThat(config.getSourceCatalog().getName()).isEqualTo("source");
   }
@@ -143,7 +146,8 @@ public class CircusTrainConfigTest {
         .sourceName("sourceName")
         .sourceMetaStoreUri("sourceMetaStoreUri")
         .replicaMetaStoreUri("replicaMetaStoreUri")
-        .replication(ReplicationMode.METADATA_UPDATE, "databaseName", "tableName", "replicaTableLocation")
+        .replication(ReplicationMode.METADATA_UPDATE, "databaseName", "tableName", "replicaDatabaseName",
+            "replicaTableName", "replicaTableLocation")
         .build();
     assertThat(config.getReplicaCatalog().getName()).isEqualTo("replica");
   }
@@ -157,7 +161,8 @@ public class CircusTrainConfigTest {
         .sourceName("sourceName")
         .replicaName("replicaName")
         .replicaMetaStoreUri("replicaMetaStoreUri")
-        .replication(ReplicationMode.METADATA_UPDATE, "databaseName", "tableName", "replicaTableLocation")
+        .replication(ReplicationMode.METADATA_UPDATE, "databaseName", "tableName", "replicaDatabaseName",
+            "replicaTableName", "replicaTableLocation")
         .build();
   }
 
@@ -170,7 +175,8 @@ public class CircusTrainConfigTest {
         .sourceName("sourceName")
         .sourceMetaStoreUri("sourceMetaStoreUri")
         .replicaName("replicaName")
-        .replication(ReplicationMode.METADATA_UPDATE, "databaseName", "tableName", "replicaTableLocation")
+        .replication(ReplicationMode.METADATA_UPDATE, "databaseName", "tableName", "replicaDatabaseName",
+            "replicaTableName", "replicaTableLocation")
         .build();
   }
 
@@ -209,24 +215,34 @@ public class CircusTrainConfigTest {
 
   @Test(expected = NullPointerException.class)
   public void nullReplicationMode() {
-    CircusTrainConfig.builder().replication(null, "databaseName", "tableName", "replicaTableLocation");
+    CircusTrainConfig
+        .builder()
+        .replication(null, "databaseName", "tableName", "replicaDatabaseName", "replicaTableName",
+            "replicaTableLocation");
   }
 
   @Test(expected = NullPointerException.class)
   public void nullDatabaseName() {
-    CircusTrainConfig.builder().replication(ReplicationMode.METADATA_MIRROR, null, "tableName", "replicaTableLocation");
+    CircusTrainConfig
+        .builder()
+        .replication(ReplicationMode.METADATA_MIRROR, null, "tableName", "replicaDatabaseName", "replicaTableName",
+            "replicaTableLocation");
   }
 
   @Test(expected = NullPointerException.class)
   public void nullTableName() {
     CircusTrainConfig
         .builder()
-        .replication(ReplicationMode.METADATA_MIRROR, "databaseName", null, "replicaTableLocation");
+        .replication(ReplicationMode.METADATA_MIRROR, "databaseName", null, "replicaDatabaseName", "replicaTableName",
+            "replicaTableLocation");
   }
 
   @Test(expected = NullPointerException.class)
   public void nullReplicaTableLocation() {
-    CircusTrainConfig.builder().replication(ReplicationMode.METADATA_MIRROR, "databaseName", "tableName", null);
+    CircusTrainConfig
+        .builder()
+        .replication(ReplicationMode.METADATA_MIRROR, "databaseName", "tableName", "replicaDatabaseName",
+            "replicaTableName", null);
   }
 
 }
