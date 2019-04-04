@@ -17,7 +17,6 @@ package com.hotels.shunting.yard.replicator.exec.messaging;
 
 import static org.apache.hadoop.hive.conf.HiveConf.ConfVars.METASTOREURIS;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -130,8 +129,7 @@ public class MessageReaderAdapterTest {
 
   @Test
   public void createTableEvent() {
-    when(messageReader.read()).thenReturn(Optional.of(new MessageEvent(apiaryCreateTableEvent,
-        Collections.singletonMap(SqsMessageProperty.SQS_MESSAGE_RECEIPT_HANDLE, RECEIPT_HANDLE))));
+    when(messageReader.read()).thenReturn(newMessageEvent(apiaryCreateTableEvent));
     configureMockedEvent(apiaryCreateTableEvent);
     when(apiaryCreateTableEvent.getEventType()).thenReturn(EventType.CREATE_TABLE);
 
@@ -152,8 +150,7 @@ public class MessageReaderAdapterTest {
     messageReaderAdapter = new MessageReaderAdapter(messageReader, SOURCE_METASTORE_URIS,
         new ShuntingYardTableReplicationsMap(null));
 
-    when(messageReader.read()).thenReturn(Optional.of(new MessageEvent(apiaryCreateTableEvent,
-        Collections.singletonMap(SqsMessageProperty.SQS_MESSAGE_RECEIPT_HANDLE, RECEIPT_HANDLE))));
+    when(messageReader.read()).thenReturn(newMessageEvent(apiaryCreateTableEvent));
     configureMockedEvent(apiaryCreateTableEvent);
     when(apiaryCreateTableEvent.getEventType()).thenReturn(EventType.CREATE_TABLE);
 
@@ -191,8 +188,7 @@ public class MessageReaderAdapterTest {
     messageReaderAdapter = new MessageReaderAdapter(messageReader, SOURCE_METASTORE_URIS,
         new ShuntingYardTableReplicationsMap(tableReplicationsWrapper));
 
-    when(messageReader.read()).thenReturn(Optional.of(new MessageEvent(apiaryCreateTableEvent,
-        Collections.singletonMap(SqsMessageProperty.SQS_MESSAGE_RECEIPT_HANDLE, RECEIPT_HANDLE))));
+    when(messageReader.read()).thenReturn(newMessageEvent(apiaryCreateTableEvent));
     configureMockedEvent(apiaryCreateTableEvent);
     when(apiaryCreateTableEvent.getEventType()).thenReturn(EventType.CREATE_TABLE);
 
@@ -206,13 +202,12 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader, times(1)).delete(RECEIPT_HANDLE);
+    verify(messageReader).delete(RECEIPT_HANDLE);
   }
 
   @Test
   public void addPartitionEvent() {
-    when(messageReader.read()).thenReturn(Optional.of(new MessageEvent(apiaryAddPartitionEvent,
-        Collections.singletonMap(SqsMessageProperty.SQS_MESSAGE_RECEIPT_HANDLE, RECEIPT_HANDLE))));
+    when(messageReader.read()).thenReturn(newMessageEvent(apiaryAddPartitionEvent));
     configureMockedEvent(apiaryAddPartitionEvent);
 
     when(apiaryAddPartitionEvent.getPartitionKeys()).thenReturn(PARTITION_KEYS_MAP);
@@ -231,13 +226,12 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader, times(1)).delete(RECEIPT_HANDLE);
+    verify(messageReader).delete(RECEIPT_HANDLE);
   }
 
   @Test
   public void alterPartitionEvent() {
-    when(messageReader.read()).thenReturn(Optional.of(new MessageEvent(apiaryAlterPartitionEvent,
-        Collections.singletonMap(SqsMessageProperty.SQS_MESSAGE_RECEIPT_HANDLE, RECEIPT_HANDLE))));
+    when(messageReader.read()).thenReturn(newMessageEvent(apiaryAlterPartitionEvent));
     configureMockedEvent(apiaryAlterPartitionEvent);
 
     when(apiaryAlterPartitionEvent.getPartitionKeys()).thenReturn(PARTITION_KEYS_MAP);
@@ -258,13 +252,12 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader, times(1)).delete(RECEIPT_HANDLE);
+    verify(messageReader).delete(RECEIPT_HANDLE);
   }
 
   @Test
   public void alterTableEvent() {
-    when(messageReader.read()).thenReturn(Optional.of(new MessageEvent(apiaryAlterTableEvent,
-        Collections.singletonMap(SqsMessageProperty.SQS_MESSAGE_RECEIPT_HANDLE, RECEIPT_HANDLE))));
+    when(messageReader.read()).thenReturn(newMessageEvent(apiaryAlterTableEvent));
     configureMockedEvent(apiaryAlterTableEvent);
 
     when(apiaryAlterTableEvent.getTableLocation()).thenReturn(TEST_TABLE_LOCATION);
@@ -281,13 +274,12 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader, times(1)).delete(RECEIPT_HANDLE);
+    verify(messageReader).delete(RECEIPT_HANDLE);
   }
 
   @Test
   public void metadataOnlySyncEventForPartition() {
-    when(messageReader.read()).thenReturn(Optional.of(new MessageEvent(apiaryAlterPartitionEvent,
-        Collections.singletonMap(SqsMessageProperty.SQS_MESSAGE_RECEIPT_HANDLE, RECEIPT_HANDLE))));
+    when(messageReader.read()).thenReturn(newMessageEvent(apiaryAlterPartitionEvent));
     configureMockedEvent(apiaryAlterPartitionEvent);
 
     when(apiaryAlterPartitionEvent.getPartitionKeys()).thenReturn(PARTITION_KEYS_MAP);
@@ -308,13 +300,12 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader, times(1)).delete(RECEIPT_HANDLE);
+    verify(messageReader).delete(RECEIPT_HANDLE);
   }
 
   @Test
   public void metadataOnlySyncEventForPartitionWithNullLocations() {
-    when(messageReader.read()).thenReturn(Optional.of(new MessageEvent(apiaryAlterPartitionEvent,
-        Collections.singletonMap(SqsMessageProperty.SQS_MESSAGE_RECEIPT_HANDLE, RECEIPT_HANDLE))));
+    when(messageReader.read()).thenReturn(newMessageEvent(apiaryAlterPartitionEvent));
     configureMockedEvent(apiaryAlterPartitionEvent);
 
     when(apiaryAlterPartitionEvent.getPartitionKeys()).thenReturn(PARTITION_KEYS_MAP);
@@ -334,13 +325,12 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader, times(1)).delete(RECEIPT_HANDLE);
+    verify(messageReader).delete(RECEIPT_HANDLE);
   }
 
   @Test
   public void metadataOnlySyncEventForTable() {
-    when(messageReader.read()).thenReturn(Optional.of(new MessageEvent(apiaryAlterTableEvent,
-        Collections.singletonMap(SqsMessageProperty.SQS_MESSAGE_RECEIPT_HANDLE, RECEIPT_HANDLE))));
+    when(messageReader.read()).thenReturn(newMessageEvent(apiaryAlterTableEvent));
     configureMockedEvent(apiaryAlterTableEvent);
 
     when(apiaryAlterTableEvent.getTableLocation()).thenReturn(TEST_TABLE_LOCATION);
@@ -357,13 +347,12 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader, times(1)).delete(RECEIPT_HANDLE);
+    verify(messageReader).delete(RECEIPT_HANDLE);
   }
 
   @Test
   public void metadataOnlySyncEventForTableWithNullLocation() {
-    when(messageReader.read()).thenReturn(Optional.of(new MessageEvent(apiaryAlterTableEvent,
-        Collections.singletonMap(SqsMessageProperty.SQS_MESSAGE_RECEIPT_HANDLE, RECEIPT_HANDLE))));
+    when(messageReader.read()).thenReturn(newMessageEvent(apiaryAlterTableEvent));
     configureMockedEvent(apiaryAlterTableEvent);
 
     when(apiaryAlterTableEvent.getTableLocation()).thenReturn(null);
@@ -379,13 +368,12 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader, times(1)).delete(RECEIPT_HANDLE);
+    verify(messageReader).delete(RECEIPT_HANDLE);
   }
 
   @Test
   public void dropPartitionEvent() {
-    when(messageReader.read()).thenReturn(Optional.of(new MessageEvent(apiaryDropPartitionEvent,
-        Collections.singletonMap(SqsMessageProperty.SQS_MESSAGE_RECEIPT_HANDLE, RECEIPT_HANDLE))));
+    when(messageReader.read()).thenReturn(newMessageEvent(apiaryDropPartitionEvent));
     configureMockedEvent(apiaryDropPartitionEvent);
 
     when(apiaryDropPartitionEvent.getPartitionKeys()).thenReturn(PARTITION_KEYS_MAP);
@@ -404,7 +392,7 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader, times(1)).delete(RECEIPT_HANDLE);
+    verify(messageReader).delete(RECEIPT_HANDLE);
   }
 
   @Test
@@ -414,8 +402,7 @@ public class MessageReaderAdapterTest {
         .collect(LinkedHashMap::new,
             (m, i) -> m.put(partitionKeys.get(i).getName(), partitionValues.get(0).getValues().get(i)), Map::putAll);
 
-    when(messageReader.read()).thenReturn(Optional.of(new MessageEvent(apiaryInsertTableEvent,
-        Collections.singletonMap(SqsMessageProperty.SQS_MESSAGE_RECEIPT_HANDLE, RECEIPT_HANDLE))));
+    when(messageReader.read()).thenReturn(newMessageEvent(apiaryInsertTableEvent));
     configureMockedEvent(apiaryInsertTableEvent);
 
     when(apiaryInsertTableEvent.getPartitionKeyValues()).thenReturn(partitionKeyValues);
@@ -432,13 +419,12 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader, times(1)).delete(RECEIPT_HANDLE);
+    verify(messageReader).delete(RECEIPT_HANDLE);
   }
 
   @Test
   public void dropTableEvent() {
-    when(messageReader.read()).thenReturn(Optional.of(new MessageEvent(apiaryDropTableEvent,
-        Collections.singletonMap(SqsMessageProperty.SQS_MESSAGE_RECEIPT_HANDLE, RECEIPT_HANDLE))));
+    when(messageReader.read()).thenReturn(newMessageEvent(apiaryDropTableEvent));
     configureMockedEvent(apiaryDropTableEvent);
     when(apiaryDropTableEvent.getEventType()).thenReturn(EventType.DROP_TABLE);
 
@@ -452,13 +438,18 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader, times(1)).delete(RECEIPT_HANDLE);
+    verify(messageReader).delete(RECEIPT_HANDLE);
   }
 
   @Test
   public void testClose() throws IOException {
     messageReaderAdapter.close();
     verify(messageReader).close();
+  }
+
+  private Optional<MessageEvent> newMessageEvent(ListenerEvent event) {
+    return Optional.of(new MessageEvent(event,
+        Collections.singletonMap(SqsMessageProperty.SQS_MESSAGE_RECEIPT_HANDLE, RECEIPT_HANDLE)));
   }
 
   private void configureMockedEvent(ListenerEvent serializableListenerEvent) {
