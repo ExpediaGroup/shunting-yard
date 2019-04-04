@@ -17,7 +17,7 @@ package com.hotels.shunting.yard.replicator.exec.messaging;
 
 import static org.apache.hadoop.hive.conf.HiveConf.ConfVars.METASTOREURIS;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -119,7 +119,7 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader, timeout(1)).delete(RECEIPT_HANDLE);
+    verify(messageReader, times(1)).delete(RECEIPT_HANDLE);
   }
 
   @Test
@@ -144,7 +144,7 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader, timeout(1)).delete(RECEIPT_HANDLE);
+    verify(messageReader, times(1)).delete(RECEIPT_HANDLE);
   }
 
   @Test
@@ -171,7 +171,7 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader, timeout(1)).delete(RECEIPT_HANDLE);
+    verify(messageReader, times(1)).delete(RECEIPT_HANDLE);
   }
 
   @Test
@@ -194,7 +194,7 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader, timeout(1)).delete(RECEIPT_HANDLE);
+    verify(messageReader, times(1)).delete(RECEIPT_HANDLE);
   }
 
   @Test
@@ -221,7 +221,7 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader, timeout(1)).delete(RECEIPT_HANDLE);
+    verify(messageReader, times(1)).delete(RECEIPT_HANDLE);
   }
 
   @Test
@@ -247,7 +247,7 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader, timeout(1)).delete(RECEIPT_HANDLE);
+    verify(messageReader, times(1)).delete(RECEIPT_HANDLE);
   }
 
   @Test
@@ -270,7 +270,7 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader, timeout(1)).delete(RECEIPT_HANDLE);
+    verify(messageReader, times(1)).delete(RECEIPT_HANDLE);
   }
 
   @Test
@@ -292,7 +292,7 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader, timeout(1)).delete(RECEIPT_HANDLE);
+    verify(messageReader, times(1)).delete(RECEIPT_HANDLE);
   }
 
   @Test
@@ -317,7 +317,7 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader, timeout(1)).delete(RECEIPT_HANDLE);
+    verify(messageReader, times(1)).delete(RECEIPT_HANDLE);
   }
 
   @Test
@@ -345,7 +345,7 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader, timeout(1)).delete(RECEIPT_HANDLE);
+    verify(messageReader, times(1)).delete(RECEIPT_HANDLE);
   }
 
   @Test
@@ -365,7 +365,7 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader, timeout(1)).delete(RECEIPT_HANDLE);
+    verify(messageReader, times(1)).delete(RECEIPT_HANDLE);
   }
 
   @Test
