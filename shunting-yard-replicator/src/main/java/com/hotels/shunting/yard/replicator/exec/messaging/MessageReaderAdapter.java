@@ -75,8 +75,7 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
 
   private void deleteMessage(MessageEvent event) {
     try {
-      String receiptHandle = event.getMessageProperties().get(SqsMessageProperty.SQS_MESSAGE_RECEIPT_HANDLE);
-      messageReader.delete(receiptHandle);
+      messageReader.delete(event);
       log.debug("Message deleted successfully");
     } catch (Exception e) {
       log.error("Could not delete message from queue: ", e);

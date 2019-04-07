@@ -16,8 +16,10 @@
 package com.hotels.shunting.yard.replicator.exec.messaging;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import org.junit.Before;
@@ -112,6 +114,20 @@ public class FilteringMessageReaderTest {
   public void emptyDelegateReader() {
     filteringMessageReader = new FilteringMessageReader(delegate, tableSelector);
     assertThat(filteringMessageReader.read()).isEqualTo(Optional.empty());
+  }
+
+  @Test
+  public void typicalDelete() {
+    filteringMessageReader = new FilteringMessageReader(delegate, tableSelector);
+    filteringMessageReader.delete(messageEvent1);
+    verify(delegate).delete(messageEvent1);
+  }
+
+  @Test
+  public void typicalClose() throws IOException {
+    filteringMessageReader = new FilteringMessageReader(delegate, tableSelector);
+    filteringMessageReader.close();
+    verify(delegate).close();
   }
 
 }

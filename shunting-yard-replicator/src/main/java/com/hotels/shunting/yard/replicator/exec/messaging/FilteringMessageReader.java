@@ -44,8 +44,8 @@ public class FilteringMessageReader implements MessageReader {
   }
 
   @Override
-  public void delete(String messageId) {
-    delegate.delete(messageId);
+  public void delete(MessageEvent event) {
+    delegate.delete(event);
   }
 
   @Override
