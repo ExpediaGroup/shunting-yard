@@ -21,6 +21,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.expedia.apiary.extensions.receiver.common.event.AddPartitionEvent;
 import com.expedia.apiary.extensions.receiver.common.event.AlterPartitionEvent;
 import com.expedia.apiary.extensions.receiver.common.event.AlterTableEvent;
@@ -28,7 +31,9 @@ import com.expedia.apiary.extensions.receiver.common.event.DropPartitionEvent;
 import com.expedia.apiary.extensions.receiver.common.event.EventType;
 import com.expedia.apiary.extensions.receiver.common.event.InsertTableEvent;
 import com.expedia.apiary.extensions.receiver.common.event.ListenerEvent;
+import com.expedia.apiary.extensions.receiver.common.messaging.MessageEvent;
 import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
+import com.expedia.apiary.extensions.receiver.sqs.messaging.SqsMessageProperty;
 
 import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
 import com.hotels.shunting.yard.replicator.exec.conf.ShuntingYardTableReplicationsMap;
@@ -36,6 +41,7 @@ import com.hotels.shunting.yard.replicator.exec.conf.ct.ShuntingYardTableReplica
 import com.hotels.shunting.yard.replicator.exec.event.MetaStoreEvent;
 
 public class MessageReaderAdapter implements MetaStoreEventReader {
+  private static final Logger log = LoggerFactory.getLogger(MessageReaderAdapter.class);
 
   private final MessageReader messageReader;
   private final String sourceHiveMetastoreUris;
@@ -57,11 +63,22 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
 
   @Override
   public Optional<MetaStoreEvent> read() {
-    Optional<ListenerEvent> event = messageReader.read();
+    Optional<MessageEvent> event = messageReader.read();
     if (event.isPresent()) {
-      return Optional.of(map(event.get()));
+      MessageEvent messageEvent = event.get();
+      deleteMessage(messageEvent);
+      return Optional.of(map(messageEvent.getEvent()));
     } else {
       return Optional.empty();
+    }
+  }
+
+  private void deleteMessage(MessageEvent event) {
+    try {
+      messageReader.delete(event);
+      log.debug("Message deleted successfully");
+    } catch (Exception e) {
+      log.error("Could not delete message from queue: ", e);
     }
   }
 

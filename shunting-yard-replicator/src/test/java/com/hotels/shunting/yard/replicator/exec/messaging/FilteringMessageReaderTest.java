@@ -16,8 +16,10 @@
 package com.hotels.shunting.yard.replicator.exec.messaging;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import org.junit.Before;
@@ -26,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import com.expedia.apiary.extensions.receiver.common.messaging.MessageEvent;
 import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
 import com.expedia.apiary.extensions.receiver.common.event.ListenerEvent;
 
@@ -39,6 +42,9 @@ public class FilteringMessageReaderTest {
   private static final String TABLE_NAME2 = "test_table2";
   private static final String TABLE_NAME3 = "test_table3";
 
+  private @Mock MessageEvent messageEvent1;
+  private @Mock MessageEvent messageEvent2;
+  private @Mock MessageEvent messageEvent3;
   private @Mock ListenerEvent listenerEvent1;
   private @Mock ListenerEvent listenerEvent2;
   private @Mock ListenerEvent listenerEvent3;
@@ -48,6 +54,9 @@ public class FilteringMessageReaderTest {
 
   @Before
   public void init() {
+    when(messageEvent1.getEvent()).thenReturn(listenerEvent1);
+    when(messageEvent2.getEvent()).thenReturn(listenerEvent2);
+    when(messageEvent3.getEvent()).thenReturn(listenerEvent3);
     when(listenerEvent1.getDbName()).thenReturn(DB_NAME);
     when(listenerEvent1.getTableName()).thenReturn(TABLE_NAME1);
     when(listenerEvent2.getDbName()).thenReturn(DB_NAME);
@@ -56,9 +65,9 @@ public class FilteringMessageReaderTest {
     when(listenerEvent3.getTableName()).thenReturn(TABLE_NAME3);
 
     when(delegate.read())
-        .thenReturn(Optional.of(listenerEvent1))
-        .thenReturn(Optional.of(listenerEvent2))
-        .thenReturn(Optional.of(listenerEvent3));
+        .thenReturn(Optional.of(messageEvent1))
+        .thenReturn(Optional.of(messageEvent2))
+        .thenReturn(Optional.of(messageEvent3));
   }
 
   @Test
@@ -69,14 +78,14 @@ public class FilteringMessageReaderTest {
 
     filteringMessageReader = new FilteringMessageReader(delegate, tableSelector);
 
-    ListenerEvent event = filteringMessageReader.read().get();
+    ListenerEvent event = filteringMessageReader.read().get().getEvent();
     assertThat(event.getDbName()).isEqualTo(DB_NAME);
     assertThat(event.getTableName()).isEqualTo(TABLE_NAME1);
 
-    Optional<ListenerEvent> filtered = filteringMessageReader.read();
+    Optional<MessageEvent> filtered = filteringMessageReader.read();
     assertThat(filtered).isEqualTo(Optional.empty());
 
-    event = filteringMessageReader.read().get();
+    event = filteringMessageReader.read().get().getEvent();
     assertThat(event.getDbName()).isEqualTo(DB_NAME);
     assertThat(event.getTableName()).isEqualTo(TABLE_NAME3);
   }
@@ -89,14 +98,14 @@ public class FilteringMessageReaderTest {
 
     filteringMessageReader = new FilteringMessageReader(delegate, tableSelector);
 
-    Optional<ListenerEvent> filtered = filteringMessageReader.read();
+    Optional<MessageEvent> filtered = filteringMessageReader.read();
     assertThat(filtered).isEqualTo(Optional.empty());
 
-    ListenerEvent event = filteringMessageReader.read().get();
+    ListenerEvent event = filteringMessageReader.read().get().getEvent();
     assertThat(event.getDbName()).isEqualTo(DB_NAME);
     assertThat(event.getTableName()).isEqualTo(TABLE_NAME2);
 
-    event = filteringMessageReader.read().get();
+    event = filteringMessageReader.read().get().getEvent();
     assertThat(event.getDbName()).isEqualTo(DB_NAME);
     assertThat(event.getTableName()).isEqualTo(TABLE_NAME3);
   }
@@ -105,6 +114,20 @@ public class FilteringMessageReaderTest {
   public void emptyDelegateReader() {
     filteringMessageReader = new FilteringMessageReader(delegate, tableSelector);
     assertThat(filteringMessageReader.read()).isEqualTo(Optional.empty());
+  }
+
+  @Test
+  public void typicalDelete() {
+    filteringMessageReader = new FilteringMessageReader(delegate, tableSelector);
+    filteringMessageReader.delete(messageEvent1);
+    verify(delegate).delete(messageEvent1);
+  }
+
+  @Test
+  public void typicalClose() throws IOException {
+    filteringMessageReader = new FilteringMessageReader(delegate, tableSelector);
+    filteringMessageReader.close();
+    verify(delegate).close();
   }
 
 }

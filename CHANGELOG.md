@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Changed
 * Extracted Apiary SQS receiver logic to library in [`apiary-receivers`](https://github.com/ExpediaInc/apiary-extensions/tree/master/apiary-receivers).
+* Moved SQS message deletion out of receiver and into `MessageReaderAdapter`.
+* Upgraded `apiary-receiver-sqs` to 2.0.0 (was 1.4.0).
 
 ## [1.0.0] - 2019-03-19
 ### Added
