@@ -2,6 +2,10 @@
 
 A Spring Boot app that reads serialized Hive MetaStore Events and builds a YAML file with the information provided in the event which is then passed to [Circus Train](https://github.com/HotelsDotCom/circus-train) to perform the replication.
 
+## System architecture
+
+![Shunting Yard system diagram.](shunting-yard.png "Selected tables getting replicated by Shunting Yard based on Hive events.")
+
 ## Start using
 
 You can obtain Shunting Yard from Maven Central:
