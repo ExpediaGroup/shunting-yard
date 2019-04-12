@@ -18,8 +18,8 @@ You can obtain Shunting Yard from Maven Central:
 
 2. Download and install the latest version of [Circus Train](http://mvnrepository.com/artifact/com.hotels/circus-train/) and set the `CIRCUS_TRAIN_HOME` environment variable:
 
-     export CIRCUS_TRAIN_HOME=/home/hadoop/circus-train-<circus-train-version>
-
+           export CIRCUS_TRAIN_HOME=/home/hadoop/circus-train-<circus-train-version>
+           
 ## Usage
 To run Shunting Yard you just need to execute the `bin/replicator.sh` script in the installation directory and pass the configuration file: 
 
