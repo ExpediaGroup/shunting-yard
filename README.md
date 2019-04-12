@@ -23,13 +23,13 @@ You can obtain Shunting Yard from Maven Central:
 ## Usage
 To run Shunting Yard you just need to execute the `bin/replicator.sh` script in the installation directory and pass the configuration file: 
 
-        /home/hadoop/shunting-yard/bin/replicator.sh --config=/path/to/config/file.yml
+    /home/hadoop/shunting-yard/bin/replicator.sh --config=/path/to/config/file.yml
 
 ### EMR
 If you are planning to run Shunting Yard on EMR you will need to set up the EMR classpath by exporting the following environment variables before calling the `bin/replicator.sh` script:
 
-        export HCAT_LIB=/usr/lib/hive-hcatalog/share/hcatalog/
-        export HIVE_LIB=/usr/lib/hive/lib/
+    export HCAT_LIB=/usr/lib/hive-hcatalog/share/hcatalog/
+    export HIVE_LIB=/usr/lib/hive/lib/
 
 Note that the paths above are correct as of when this document was last updated but may differ across EMR versions, refer to the [EMR release guide](http://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-release-components.html) for more up to date information if necessary.
 
@@ -41,30 +41,30 @@ The examples below all demonstrate configuration using YAML and provide fragment
 
 The YAML fragment below shows some common options for setting up the base source (where data is coming from), replica (where data is going to) and the SQS queue to read hive events from.
 
-	source-catalog:
-       name: source-cluster
-       hive-metastore-uris: thrift://emr-master-1.compute.amazonaws.com:9083
-     replica-catalog:
-       name: replica-cluster
-       hive-metastore-uris: thrift://emr-master-2.compute.amazonaws.com:9083
-     event-receiver:
-       configuration-properties:
-         com.hotels.shunting.yard.event.receiver.sqs.queue: https://sqs.us-west-2.amazonaws.com/123456789/sqs-queue
-         com.hotels.shunting.yard.event.receiver.sqs.wait.time.seconds: 20
-     source-table-filter:
-       table-names:
-         - ...
-     table-replications:
-       ...
+    source-catalog:
+      name: source-cluster
+      hive-metastore-uris: thrift://emr-master-1.compute.amazonaws.com:9083
+    replica-catalog:
+      name: replica-cluster
+      hive-metastore-uris: thrift://emr-master-2.compute.amazonaws.com:9083
+    event-receiver:
+      configuration-properties:
+        com.hotels.shunting.yard.event.receiver.sqs.queue: https://sqs.us-west-2.amazonaws.com/123456789/sqs-queue
+        com.hotels.shunting.yard.event.receiver.sqs.wait.time.seconds: 20
+    source-table-filter:
+      table-names:
+        - ...
+    table-replications:
+      ...
 
 #### Selecting tables to monitor
 
 The YAML fragment below shows how to select the tables to be monitored by Shunting Yard.
 
-     source-table-filter:
-       table-names:
-         - test_database.test_table_1
-         - test_database.test_table_2
+    source-table-filter:
+      table-names:
+        - test_database.test_table_1
+        - test_database.test_table_2
 
 #### Specifying target database & table names
 
@@ -72,31 +72,31 @@ The YAML fragments below shows some common options for specifying the target dat
 
 ##### Specify both target database and table name.
 
-     table-replications:
-       - source-table:
-           database-name: source_database
-           table-name: test_table
-         replica-table:
-           database-name: replica_database
-           table-name: test_table_1    
-
+    table-replications:
+      - source-table:
+          database-name: source_database
+          table-name: test_table
+        replica-table:
+          database-name: replica_database
+          table-name: test_table_1    
+          
 ##### Only Change the target database but the table name remains same as source
 
-     table-replications:
-       - source-table:
-           database-name: source_database
-           table-name: test_table
-         replica-table:
-           database-name: replica_database 
+    table-replications:
+      - source-table:
+          database-name: source_database
+          table-name: test_table
+        replica-table:
+          database-name: replica_database 
 
 ##### Only Change the target table name but the database remains same as source
 
-     table-replications:
-       - source-table:
-           database-name: source_database
-           table-name: test_table
-         replica-table:
-           table-name: test_table_1
+    table-replications:
+      - source-table:
+          database-name: source_database
+          table-name: test_table
+        replica-table:
+          table-name: test_table_1
 
 ### Shunting Yard configuration reference
 The table below describes all the available configuration values for Shunting Yard.
@@ -115,18 +115,33 @@ The table below describes all the available configuration values for Shunting Ya
 |`table-replications[n].replica-table.database-name`|No|The name of the destination database in which to replicate the table. Defaults to source database name.|
 |`table-replications[n].replica-table.table-name`|No|The name of the table at the destination. Defaults to source table name.|
 
-### Graphite Metrics
+### Configuring Graphite Metrics
 
 Graphite configurations can be passed to Shunting Yard using an optional `--ct-config` argument which takes a YAML file and passes it directly to internal Circus Train instance. Refer to the [Circus Train README](https://github.com/HotelsDotCom/circus-train#graphite) for more details.
 
-#### Sample ct-config.yml:
+#### Sample ct-config.yml for graphite metrics:
 
     graphite:
       host: graphite-host:2003
       namespace: com.company.shuntingyard
       prefix: dev
 
+### Housekeeping
+
+[Housekeeping](https://github.com/HotelsDotCom/housekeeping) is the process that removes expired and orphaned data on the replica. Shunting Yard delegates housekeeping responsibility to Circus Train. Similar to Graphite configuration, Housekeeping configuration can also be directly passed to the internal Circus Train instance using `--ct-config` argument. Refer to the [Circus Train README](https://github.com/HotelsDotCom/circus-train#configuring-housekeeping) for more details.
+
+#### Sample ct-config.yml for housekeeping:
+
+    housekeeping:
+      expired-path-duration: P3D
+      db-init-script: classpath:/schema.sql
+      data-source:
+        driver-class-name: org.h2.Driver 
+        url: jdbc:h2:${housekeeping.h2.database};AUTO_SERVER=TRUE;DB_CLOSE_ON_EXIT=FALSE
+        username: user
+        password: secret
+
 # Legal
 This project is available under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0.html).
 
-Copyright 2016-2019 Expedia Inc.
+Copyright 2016-2019 Expedia, Inc.
