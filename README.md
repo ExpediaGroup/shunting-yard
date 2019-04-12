@@ -18,18 +18,18 @@ You can obtain Shunting Yard from Maven Central:
 
 2. Download and install the latest version of [Circus Train](http://mvnrepository.com/artifact/com.hotels/circus-train/) and set the `CIRCUS_TRAIN_HOME` environment variable:
 
-    export CIRCUS_TRAIN_HOME=/home/hadoop/circus-train-<circus-train-version>
+     export CIRCUS_TRAIN_HOME=/home/hadoop/circus-train-<circus-train-version>
 
 ## Usage
 To run Shunting Yard you just need to execute the `bin/replicator.sh` script in the installation directory and pass the configuration file: 
 
-    /home/hadoop/shunting-yard/bin/replicator.sh --config=/path/to/config/file.yml
+     /home/hadoop/shunting-yard/bin/replicator.sh --config=/path/to/config/file.yml
 
 ### EMR
 If you are planning to run Shunting Yard on EMR you will need to set up the EMR classpath by exporting the following environment variables before calling the `bin/replicator.sh` script:
 
-    export HCAT_LIB=/usr/lib/hive-hcatalog/share/hcatalog/
-    export HIVE_LIB=/usr/lib/hive/lib/
+     export HCAT_LIB=/usr/lib/hive-hcatalog/share/hcatalog/
+     export HIVE_LIB=/usr/lib/hive/lib/
 
 Note that the paths above are correct as of when this document was last updated but may differ across EMR versions, refer to the [EMR release guide](http://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-release-components.html) for more up to date information if necessary.
 
@@ -108,8 +108,8 @@ The table below describes all the available configuration values for Shunting Ya
 |`replica-catalog.name`|Yes|A name for the replica catalog for events and logging.|
 |`replica-catalog.hive-metastore-uris`|Yes|Fully qualified URI of the replica cluster's Hive metastore Thrift service.|
 |`event-receiver.configuration-properties.com.hotels.shunting.yard.event.receiver.sqs.queue`|Yes|Fully qualified URI of the [AWS SQS](https://aws.amazon.com/sqs/) Queue to read the hive events from.|
-|`event-receiver.configuration-properties.com.hotels.shunting.yard.event.receiver.sqs.wait.time.seconds`|No|Wait time in seconds for which the receiver will poll the SQS queue for a batch of messages. Read more about long polling with AWS SQS [here](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html)|
-|`source-table-filter.table-names`|No|A list of tables selected for Shunting Yard replication. Supported Format: `database_1.table_1, database_2.table_2`|
+|`event-receiver.configuration-properties.com.hotels.shunting.yard.event.receiver.sqs.wait.time.seconds`|No|Wait time in seconds for which the receiver will poll the SQS queue for a batch of messages. Default is 10 seconds. Read more about long polling with AWS SQS [here](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html)|
+|`source-table-filter.table-names`|No|A list of tables selected for Shunting Yard replication. Supported Format:`database_1.table_1, database_2.table_2`|
 |`table-replications[n].source-table.database-name`|No|The name of the database in which the table you wish to replicate is located.|
 |`table-replications[n].source-table.table-name`|No|The name of the table which you wish to replicate.|
 |`table-replications[n].replica-table.database-name`|No|The name of the destination database in which to replicate the table. Defaults to source database name.|
