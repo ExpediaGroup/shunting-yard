@@ -70,7 +70,7 @@ The YAML fragment below shows how to select the tables to be monitored by Shunti
 
 The YAML fragments below shows some common options for specifying the target database and table name for the selected tables.
 
-#### Specify both target database and table name.
+#### Specify both target database and table name
 
     table-replications:
       - source-table:
