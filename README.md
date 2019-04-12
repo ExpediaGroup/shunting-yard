@@ -1,6 +1,6 @@
 # Shunting Yard
 
-Shunting Yard reads serialized Hive MetaStore Events from a queue (currently supports [AWS SQS](https://aws.amazon.com/sqs/)) and replicates the data between two Data lakes. It does this by building a YAML file with the information provided in the event which is then passed to [Circus Train](https://github.com/HotelsDotCom/circus-train) to perform the replication.
+Shunting Yard reads serialized Hive MetaStore Events from a queue (currently supports [AWS SQS](https://aws.amazon.com/sqs/)) and replicates the data between two data lakes. It does this by building a YAML file with the information provided in the event which is then passed to [Circus Train](https://github.com/HotelsDotCom/circus-train) to perform the replication.
 
 ## Start using
 
@@ -31,7 +31,7 @@ If you are planning to run Shunting Yard on EMR you will need to set up the EMR 
          export HCAT_LIB=/usr/lib/hive-hcatalog/share/hcatalog/
          export HIVE_LIB=/usr/lib/hive/lib/
 
-Note that the paths above are correct as of when this document was last updated but may differ across EMR versions, refer to the [EMR release guide](http://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-release-components.html) for more up to date information if necessary.
+Note that the paths above are correct as of when this document was last updated but may differ across EMR versions. Refer to the [EMR release guide](http://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-release-components.html) for more up to date information if necessary.
 
 ## Configuring Shunting Yard
 
@@ -80,7 +80,7 @@ The YAML fragments below shows some common options for specifying the target dat
           database-name: replica_database
           table-name: test_table_1    
           
-#### Only Change the target database but the table name remains same as source
+#### Change only the target database but the table name remains same as source
 
     table-replications:
       - source-table:
@@ -89,7 +89,7 @@ The YAML fragments below shows some common options for specifying the target dat
         replica-table:
           database-name: replica_database 
 
-#### Only Change the target table name but the database remains same as source
+#### Change only the target table name but the database remains same as source
 
     table-replications:
       - source-table:
@@ -107,15 +107,15 @@ The table below describes all the available configuration values for Shunting Ya
 |`source-catalog.hive-metastore-uris`|No|Fully qualified URI of the source cluster's Hive metastore Thrift service.|
 |`replica-catalog.name`|Yes|A name for the replica catalog for events and logging.|
 |`replica-catalog.hive-metastore-uris`|Yes|Fully qualified URI of the replica cluster's Hive metastore Thrift service.|
-|`event-receiver.configuration-properties.com.hotels.shunting.yard.event.receiver.sqs.queue`|Yes|Fully qualified URI of the [AWS SQS](https://aws.amazon.com/sqs/) Queue to read the hive events from.|
-|`event-receiver.configuration-properties.com.hotels.shunting.yard.event.receiver.sqs.wait.time.seconds`|No|Wait time in seconds for which the receiver will poll the SQS queue for a batch of messages. Default is 10 seconds. Read more about long polling with AWS SQS [here](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html)|
-|`source-table-filter.table-names`|No|A list of tables selected for Shunting Yard replication. Supported Format:`database_1.table_1, database_2.table_2`|
+|`event-receiver.configuration-properties.com.hotels.shunting.yard.event.receiver.sqs.queue`|Yes|Fully qualified URI of the [AWS SQS](https://aws.amazon.com/sqs/) Queue to read the Hive events from.|
+|`event-receiver.configuration-properties.com.hotels.shunting.yard.event.receiver.sqs.wait.time.seconds`|No|Wait time in seconds for which the receiver will poll the SQS queue for a batch of messages. Default is 10 seconds. Read more about long polling with AWS SQS [here](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html).|
+|`source-table-filter.table-names`|No|A list of tables selected for Shunting Yard replication. Supported format:`database_1.table_1, database_2.table_2`|
 |`table-replications[n].source-table.database-name`|No|The name of the database in which the table you wish to replicate is located.|
 |`table-replications[n].source-table.table-name`|No|The name of the table which you wish to replicate.|
 |`table-replications[n].replica-table.database-name`|No|The name of the destination database in which to replicate the table. Defaults to source database name.|
 |`table-replications[n].replica-table.table-name`|No|The name of the table at the destination. Defaults to source table name.|
 
-### Configuring Graphite Metrics
+### Configuring Graphite metrics
 
 Graphite configurations can be passed to Shunting Yard using an optional `--ct-config` argument which takes a YAML file and passes it directly to internal Circus Train instance. Refer to the [Circus Train README](https://github.com/HotelsDotCom/circus-train#graphite) for more details.
 
