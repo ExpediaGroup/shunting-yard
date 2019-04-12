@@ -12,7 +12,7 @@ You can obtain Shunting Yard from Maven Central:
 
 ![Shunting Yard system diagram.](shunting-yard.png "Selected tables getting replicated by Shunting Yard based on Hive events.")
 
-### Install
+## Install
 
 1. Download the version to use from [Maven Central](https://mvnrepository.com/artifact/com.hotels/shunting-yard-binary) and uncompress it in a directory of your choosing.
 
@@ -37,7 +37,7 @@ Note that the paths above are correct as of when this document was last updated 
 
 The examples below all demonstrate configuration using YAML and provide fragments covering the most common use cases that should be useful as a basis for building your own configuration. A full configuration reference is provided in the following sections.
 
-#### Configuring source, replica and SQS queue
+### Configuring source, replica and SQS queue
 
 The YAML fragment below shows some common options for setting up the base source (where data is coming from), replica (where data is going to) and the SQS queue to read hive events from.
 
@@ -57,7 +57,7 @@ The YAML fragment below shows some common options for setting up the base source
     table-replications:
       ...
 
-#### Selecting tables to monitor
+### Selecting tables to monitor
 
 The YAML fragment below shows how to select the tables to be monitored by Shunting Yard.
 
@@ -66,11 +66,11 @@ The YAML fragment below shows how to select the tables to be monitored by Shunti
         - test_database.test_table_1
         - test_database.test_table_2
 
-#### Specifying target database & table names
+### Specifying target database & table names
 
 The YAML fragments below shows some common options for specifying the target database and table name for the selected tables.
 
-##### Specify both target database and table name.
+#### Specify both target database and table name.
 
     table-replications:
       - source-table:
@@ -80,7 +80,7 @@ The YAML fragments below shows some common options for specifying the target dat
           database-name: replica_database
           table-name: test_table_1    
           
-##### Only Change the target database but the table name remains same as source
+#### Only Change the target database but the table name remains same as source
 
     table-replications:
       - source-table:
@@ -89,7 +89,7 @@ The YAML fragments below shows some common options for specifying the target dat
         replica-table:
           database-name: replica_database 
 
-##### Only Change the target table name but the database remains same as source
+#### Only Change the target table name but the database remains same as source
 
     table-replications:
       - source-table:
