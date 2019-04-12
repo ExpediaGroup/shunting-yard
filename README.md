@@ -18,18 +18,18 @@ You can obtain Shunting Yard from Maven Central:
 
 2. Download and install the latest version of [Circus Train](http://mvnrepository.com/artifact/com.hotels/circus-train/) and set the `CIRCUS_TRAIN_HOME` environment variable:
 
-     export CIRCUS_TRAIN_HOME=/home/hadoop/circus-train-<circus-train-version>
+         export CIRCUS_TRAIN_HOME=/home/hadoop/circus-train-<circus-train-version>
            
 ## Usage
 To run Shunting Yard you just need to execute the `bin/replicator.sh` script in the installation directory and pass the configuration file: 
 
-     /home/hadoop/shunting-yard/bin/replicator.sh --config=/path/to/config/file.yml
+         /home/hadoop/shunting-yard/bin/replicator.sh --config=/path/to/config/file.yml
 
 ### EMR
 If you are planning to run Shunting Yard on EMR you will need to set up the EMR classpath by exporting the following environment variables before calling the `bin/replicator.sh` script:
 
-     export HCAT_LIB=/usr/lib/hive-hcatalog/share/hcatalog/
-     export HIVE_LIB=/usr/lib/hive/lib/
+         export HCAT_LIB=/usr/lib/hive-hcatalog/share/hcatalog/
+         export HIVE_LIB=/usr/lib/hive/lib/
 
 Note that the paths above are correct as of when this document was last updated but may differ across EMR versions, refer to the [EMR release guide](http://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-release-components.html) for more up to date information if necessary.
 
