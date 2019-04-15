@@ -28,11 +28,15 @@ Once Shunting Yard receives an event from the queue, it extracts the relevant in
     
 Although it's not necessary, we recommend exporting the environment variable `SHUNTING_YARD_HOME` by setting its value to wherever you extracted it to:
 
-        export SHUNTING_YARD_HOME=/<foo>/<bar>/shunting-yard-<version>
+```
+export SHUNTING_YARD_HOME=/<foo>/<bar>/shunting-yard-<version>
+```
 
 2. Download the latest version of [Circus Train](https://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.hotels&a=circus-train&p=tgz&v=RELEASE&c=bin) and uncompress it:
 
-        tar -xzf circus-train-<version>-bin.tgz
+```
+tar -xzf circus-train-<version>-bin.tgz
+```
 
 Set the `CIRCUS_TRAIN_HOME` environment variable:        
     
