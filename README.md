@@ -24,7 +24,9 @@ Once Shunting Yard receives an event from the queue, it extracts the relevant in
 
 [Download the TGZ](https://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.hotels&a=shunting-yard&p=tgz&v=RELEASE&c=bin) from Maven central and then uncompress the file by executing:
 
-        tar -xzf shunting-yard-binary-<version>-bin.tgz
+```
+tar -xzf shunting-yard-binary-<version>-bin.tgz
+```
     
 Although it's not necessary, we recommend exporting the environment variable `SHUNTING_YARD_HOME` by setting its value to wherever you extracted it to:
 
@@ -39,19 +41,25 @@ tar -xzf circus-train-<version>-bin.tgz
 ```
 
 Set the `CIRCUS_TRAIN_HOME` environment variable:        
-    
-        export CIRCUS_TRAIN_HOME=/<foo>/<bar>/circus-train-<circus-train-version>
-           
+
+```
+export CIRCUS_TRAIN_HOME=/<foo>/<bar>/circus-train-<circus-train-version>
+```
+
 ## Usage
 To run Shunting Yard you just need to execute the `bin/replicator.sh` script in the installation directory and pass the configuration file: 
 
-         $SHUNTING_YARD_HOME/bin/replicator.sh --config=/path/to/config/file.yml
+```
+$SHUNTING_YARD_HOME/bin/replicator.sh --config=/path/to/config/file.yml
+```
 
 ### EMR
 If you are planning to run Shunting Yard on EMR you will need to set up the EMR classpath by exporting the following environment variables before calling the `bin/replicator.sh` script:
 
-         export HCAT_LIB=/usr/lib/hive-hcatalog/share/hcatalog/
-         export HIVE_LIB=/usr/lib/hive/lib/
+```
+export HCAT_LIB=/usr/lib/hive-hcatalog/share/hcatalog/
+export HIVE_LIB=/usr/lib/hive/lib/
+```
 
 Note that the paths above are correct as of when this document was last updated but may differ across EMR versions. Refer to the [EMR release guide](http://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-release-components.html) for more up to date information if necessary.
 
@@ -175,7 +183,9 @@ Graphite configuration can be passed to Shunting Yard using an optional `--ct-co
 ## Usage with Circus Train common config
 To run Shunting Yard with a Circus Train common config file in addition to it's own config file, you just need to execute the `bin/replicator.sh` script in the installation directory and pass both the configuration files: 
 
-         $SHUNTING_YARD_HOME/bin/replicator.sh --config=/path/to/config/file.yml --ct-config=/path/to/config/ct-common.yml
+```
+$SHUNTING_YARD_HOME/bin/replicator.sh --config=/path/to/config/file.yml --ct-config=/path/to/config/ct-common.yml
+```
 
 # Legal
 This project is available under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0.html).
