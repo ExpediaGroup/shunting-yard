@@ -16,7 +16,7 @@ You can obtain Shunting Yard from Maven Central:
 
 Shunting Yard is intended to be a constantly running service which listens to a queue for Hive events. These events are emitted from the Hive metastore based on the operations performed on the Hive tables. For instance, an `ADD_PARTITION_EVENT` is emitted from the Hive metastore when a new partition is added to a table. Similarly, a `CREATE_TABLE_EVENT` is emitted when a new table is created in the Hive metastore. We recommend using [Apiary Metastore Listener](https://github.com/ExpediaGroup/apiary-extensions/tree/master/apiary-metastore-listener) for getting these events from your Hive Metastore.
 
-Once Shunting Yard receives an event from the queue, it extracts the relevant information from it to build a YAML file which it then passes on to [Circus Train](https://github.com/HotelsDotCom/circus-train) which does the replication. Shunting Yard also aggregates a series of events so that a minimum number of replications are performed via Circus Train.
+Once Shunting Yard receives an event from the queue, it extracts the relevant information from it to build a YAML file which it then passes on to [Circus Train](https://github.com/HotelsDotCom/circus-train) to perform the replication. Shunting Yard also aggregates a series of events so that a minimum number of replications are performed via Circus Train.
 
 ## Install
 
