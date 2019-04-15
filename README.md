@@ -1,6 +1,6 @@
 # Shunting Yard
 
-Shunting Yard reads serialized Hive MetaStore Events from a queue ([AWS SQS](https://aws.amazon.com/sqs/) is currently supported) and replicates the data between two data lakes. It does this by building a YAML file with the information provided in the event which is then passed to [Circus Train](https://github.com/HotelsDotCom/circus-train) to perform the replication.
+Shunting Yard reads serialized Hive Metastore Events from a queue ([AWS SQS](https://aws.amazon.com/sqs/) is currently supported) and replicates the data between two data lakes. It does this by building a YAML file with the information provided in the event which is then passed to [Circus Train](https://github.com/HotelsDotCom/circus-train) to perform the replication.
 
 ## Start using
 
@@ -59,7 +59,7 @@ export HCAT_LIB=/usr/lib/hive-hcatalog/share/hcatalog/
 export HIVE_LIB=/usr/lib/hive/lib/
 ```
 
-Note that the paths above are correct as of when this document was last updated but may differ across EMR versions. Refer to the [EMR release guide](http://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-release-components.html) for more up to date information if necessary.
+Note that the paths above are correct as of when this document was last updated but may differ across EMR versions. Refer to the [EMR release guide](http://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-release-components.html) for more up-to-date information if necessary.
 
 ## Configuring Shunting Yard
 
@@ -101,7 +101,7 @@ Shunting Yard by default will not replicate any tables unless they are selected 
 
 ### Specifying target database & table names
 
-Shunting Yard will by default replicate the data into the replica data lake with same replica database name and table name as the source. Sometimes a user might need to change the replica database name or table name or both. The YAML fragments below shows some common options for specifying the replica database and table name for the selected tables.
+Shunting Yard will by default replicate data into the replica data lake with the same replica database name and table name as the source. Sometimes a user might need to change the replica database name or table name or both. The YAML fragments below shows some common options for specifying the replica database and table name for the selected tables.
 
 #### Specify both replica database and table name
 
@@ -115,7 +115,7 @@ Shunting Yard will by default replicate the data into the replica data lake with
           
 #### Change only the replica database but the table name remains same as source
 
-In this case, the replica table name is not provided in the `table-replications` and hence, it will be same as source table name.
+In this case, the replica table name is not provided in the `table-replications` and therefore, it will be same as source table name.
 
     table-replications:
       - source-table:
@@ -126,7 +126,7 @@ In this case, the replica table name is not provided in the `table-replications`
 
 #### Change only the replica table name but the database remains same as source
 
-In this case, the replica database name is not provided in the `table-replications` and hence, it will be same as source database name.
+In this case, the replica database name is not provided in the `table-replications` and therefore, it will be same as source database name.
 
     table-replications:
       - source-table:
