@@ -93,7 +93,7 @@ Shunting Yard by default will not replicate any table unless few tables are sele
 
 Shunting Yard will by default replicate the data into the replica data lake with same replica database name and table name as source. Sometimes this is not ideal and a user might prefer to change the replica database name or table name or both. The YAML fragments below shows some common options for specifying the replica database and table name for the selected tables.
 
-#### Specify both target database and table name
+#### Specify both replica database and table name
 
     table-replications:
       - source-table:
@@ -103,7 +103,7 @@ Shunting Yard will by default replicate the data into the replica data lake with
           database-name: replica_database
           table-name: test_table_1    
           
-#### Change only the target database but the table name remains same as source
+#### Change only the replica database but the table name remains same as source
 
 In this case, the replica table name is not provided in the `table-replications` and hence, it will be same as source table name.
 
@@ -114,7 +114,7 @@ In this case, the replica table name is not provided in the `table-replications`
         replica-table:
           database-name: replica_database 
 
-#### Change only the target table name but the database remains same as source
+#### Change only the replica table name but the database remains same as source
 
 In this case, the replica database name is not provided in the `table-replications` and hence, it will be same as source database name.
 
@@ -136,7 +136,7 @@ The table below describes all the available configuration values for Shunting Ya
 |`replica-catalog.hive-metastore-uris`|Yes|Fully qualified URI of the replica cluster's Hive metastore Thrift service.|
 |`event-receiver.configuration-properties.com.hotels.shunting.yard.event.receiver.sqs.queue`|Yes|Fully qualified URI of the [AWS SQS](https://aws.amazon.com/sqs/) Queue to read the Hive events from.|
 |`event-receiver.configuration-properties.com.hotels.shunting.yard.event.receiver.sqs.wait.time.seconds`|No|Wait time in seconds for which the receiver will poll the SQS queue for a batch of messages. Default is 10 seconds. Read more about long polling with AWS SQS [here](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html).|
-|`source-table-filter.table-names`|No|A list of tables selected for Shunting Yard replication. Supported format:`database_1.table_1, database_2.table_2`. If these are not provided, Shunting Yard will not replicate any table.|
+|`source-table-filter.table-names`|No|A list of tables selected for Shunting Yard replication. Supported format: `database_1.table_1, database_2.table_2`. If these are not provided, Shunting Yard will not replicate any table.|
 |`table-replications[n].source-table.database-name`|No|The name of the database in which the table you wish to replicate is located. `table-replications` section is optional and if it is not provided, Shunting Yard will simply use the database name and table name of source for replica.|
 |`table-replications[n].source-table.table-name`|No|The name of the table which you wish to replicate.|
 |`table-replications[n].replica-table.database-name`|No|The name of the destination database in which to replicate the table. Defaults to source database name. Defaults to `source-table.database-name`|
