@@ -1,6 +1,6 @@
 # Shunting Yard
 
-Shunting Yard reads serialized Hive MetaStore Events from a queue (currently supports [AWS SQS](https://aws.amazon.com/sqs/)) and replicates the data between two data lakes. It does this by building a YAML file with the information provided in the event which is then passed to [Circus Train](https://github.com/HotelsDotCom/circus-train) to perform the replication.
+Shunting Yard reads serialized Hive MetaStore Events from a queue ([AWS SQS](https://aws.amazon.com/sqs/) is currently supported) and replicates the data between two data lakes. It does this by building a YAML file with the information provided in the event which is then passed to [Circus Train](https://github.com/HotelsDotCom/circus-train) to perform the replication.
 
 ## Start using
 
@@ -12,18 +12,36 @@ You can obtain Shunting Yard from Maven Central:
 
 ![Shunting Yard system diagram.](shunting-yard.png "Selected tables getting replicated by Shunting Yard based on Hive events.")
 
+## Overview
+
+Shunting Yard is intended to be a constantly running service which listens to a queue for Hive events. These events are emitted from the Hive metastore based on the operations performed on the Hive tables. For instance, an `ADD_PARTITION_EVENT` is emitted from the Hive metastore when a new partition is added to a table. Similarly, a `CREATE_TABLE_EVENT` is emitted when a new table is created in the Hive metastore. We recommend using [Apiary Metastore Listener](https://github.com/ExpediaGroup/apiary-extensions/tree/master/apiary-metastore-listener) for getting these events from your Hive Metastore.
+
+Once Shunting Yard receives an event from the queue, it extracts the relevant information from it to build a YAML file which it then passes on to [Circus Train](https://github.com/HotelsDotCom/circus-train) which does the replication. Shunting Yard also aggregates a series of events so that a minimum number of replications are performed via Circus Train.
+
 ## Install
 
 1. Download the version to use from [Maven Central](https://mvnrepository.com/artifact/com.hotels/shunting-yard-binary) and uncompress it in a directory of your choosing.
 
-2. Download and install the latest version of [Circus Train](http://mvnrepository.com/artifact/com.hotels/circus-train/) and set the `CIRCUS_TRAIN_HOME` environment variable:
+[Download the TGZ](https://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.hotels&a=shunting-yard&p=tgz&v=RELEASE&c=bin) from Maven central and then uncompress the file by executing:
 
-         export CIRCUS_TRAIN_HOME=/home/hadoop/circus-train-<circus-train-version>
+    tar -xzf shunting-yard-binary-<version>-bin.tgz
+    
+Although it's not necessary, we recommend exporting the environment variable SHUNTING_YARD_HOME by setting its value to wherever you extracted it to:
+
+    export SHUNTING_YARD_HOME=/<foo>/<bar>/shunting-yard-<version>
+
+2. Download the latest version of [Circus Train](https://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.hotels&a=circus-train&p=tgz&v=RELEASE&c=bin) and uncompress it:
+
+    tar -xzf circus-train-<version>-bin.tgz
+
+Set the `CIRCUS_TRAIN_HOME` environment variable:        
+    
+    export CIRCUS_TRAIN_HOME=/<foo>/<bar>/circus-train-<circus-train-version>
            
 ## Usage
 To run Shunting Yard you just need to execute the `bin/replicator.sh` script in the installation directory and pass the configuration file: 
 
-         /home/hadoop/shunting-yard/bin/replicator.sh --config=/path/to/config/file.yml
+         $SHUNTING_YARD_HOME/bin/replicator.sh --config=/path/to/config/file.yml
 
 ### EMR
 If you are planning to run Shunting Yard on EMR you will need to set up the EMR classpath by exporting the following environment variables before calling the `bin/replicator.sh` script:
@@ -39,7 +57,7 @@ The examples below all demonstrate configuration using YAML and provide fragment
 
 ### Configuring source, replica and SQS queue
 
-The YAML fragment below shows some common options for setting up the base source (where data is coming from), replica (where data is going to) and the SQS queue to read hive events from.
+The YAML fragment below shows some common options for setting up the base source (where data is coming from), replica (where data is going to) and the SQS queue to read Hive events from.
 
     source-catalog:
       name: source-cluster
@@ -53,13 +71,18 @@ The YAML fragment below shows some common options for setting up the base source
         com.hotels.shunting.yard.event.receiver.sqs.wait.time.seconds: 20
     source-table-filter:
       table-names:
-        - ...
+        - test_database.test_table_1
     table-replications:
-      ...
+      - source-table:
+          database-name: source_database
+          table-name: test_table
+        replica-table:
+          database-name: replica_database
+          table-name: test_table_1
 
 ### Selecting tables to monitor
 
-The YAML fragment below shows how to select the tables to be monitored by Shunting Yard.
+Shunting Yard by default will not replicate any table unless few tables are selected using `source-table-filter`. For example, if you wanted Shunting Yard to only monitor two tables, `test_database.test_table_1` and `test_database.test_table_2` you can configure it as follows:
 
     source-table-filter:
       table-names:
@@ -68,7 +91,7 @@ The YAML fragment below shows how to select the tables to be monitored by Shunti
 
 ### Specifying target database & table names
 
-The YAML fragments below shows some common options for specifying the target database and table name for the selected tables.
+Shunting Yard will by default replicate the data into the replica data lake with same replica database name and table name as source. Sometimes this is not ideal and a user might prefer to change the replica database name or table name or both. The YAML fragments below shows some common options for specifying the replica database and table name for the selected tables.
 
 #### Specify both target database and table name
 
@@ -82,6 +105,8 @@ The YAML fragments below shows some common options for specifying the target dat
           
 #### Change only the target database but the table name remains same as source
 
+In this case, the replica table name is not provided in the `table-replications` and hence, it will be same as source table name.
+
     table-replications:
       - source-table:
           database-name: source_database
@@ -90,6 +115,8 @@ The YAML fragments below shows some common options for specifying the target dat
           database-name: replica_database 
 
 #### Change only the target table name but the database remains same as source
+
+In this case, the replica database name is not provided in the `table-replications` and hence, it will be same as source database name.
 
     table-replications:
       - source-table:
@@ -109,15 +136,15 @@ The table below describes all the available configuration values for Shunting Ya
 |`replica-catalog.hive-metastore-uris`|Yes|Fully qualified URI of the replica cluster's Hive metastore Thrift service.|
 |`event-receiver.configuration-properties.com.hotels.shunting.yard.event.receiver.sqs.queue`|Yes|Fully qualified URI of the [AWS SQS](https://aws.amazon.com/sqs/) Queue to read the Hive events from.|
 |`event-receiver.configuration-properties.com.hotels.shunting.yard.event.receiver.sqs.wait.time.seconds`|No|Wait time in seconds for which the receiver will poll the SQS queue for a batch of messages. Default is 10 seconds. Read more about long polling with AWS SQS [here](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html).|
-|`source-table-filter.table-names`|No|A list of tables selected for Shunting Yard replication. Supported format:`database_1.table_1, database_2.table_2`|
-|`table-replications[n].source-table.database-name`|No|The name of the database in which the table you wish to replicate is located.|
+|`source-table-filter.table-names`|No|A list of tables selected for Shunting Yard replication. Supported format:`database_1.table_1, database_2.table_2`. If these are not provided, Shunting Yard will not replicate any table.|
+|`table-replications[n].source-table.database-name`|No|The name of the database in which the table you wish to replicate is located. `table-replications` section is optional and if it is not provided, Shunting Yard will simply use the database name and table name of source for replica.|
 |`table-replications[n].source-table.table-name`|No|The name of the table which you wish to replicate.|
-|`table-replications[n].replica-table.database-name`|No|The name of the destination database in which to replicate the table. Defaults to source database name.|
-|`table-replications[n].replica-table.table-name`|No|The name of the table at the destination. Defaults to source table name.|
+|`table-replications[n].replica-table.database-name`|No|The name of the destination database in which to replicate the table. Defaults to source database name. Defaults to `source-table.database-name`|
+|`table-replications[n].replica-table.table-name`|No|The name of the table at the destination. Defaults to `source-table.table-name`|
 
 ### Configuring Graphite metrics
 
-Graphite configurations can be passed to Shunting Yard using an optional `--ct-config` argument which takes a YAML file and passes it directly to internal Circus Train instance. Refer to the [Circus Train README](https://github.com/HotelsDotCom/circus-train#graphite) for more details.
+Graphite configuration can be passed to Shunting Yard using an optional `--ct-config` argument which takes a different YAML file to the one described above and passes it directly to internal Circus Train instance. Refer to the [Circus Train README](https://github.com/HotelsDotCom/circus-train#graphite) for more details.
 
 #### Sample ct-config.yml for graphite metrics:
 
@@ -140,6 +167,11 @@ Graphite configurations can be passed to Shunting Yard using an optional `--ct-c
         url: jdbc:h2:${housekeeping.h2.database};AUTO_SERVER=TRUE;DB_CLOSE_ON_EXIT=FALSE
         username: user
         password: secret
+        
+## Usage with Circus Train common config
+To run Shunting Yard with a Circus Train common config file in addition to it's own config file, you just need to execute the `bin/replicator.sh` script in the installation directory and pass both the configuration files: 
+
+         $SHUNTING_YARD_HOME/bin/replicator.sh --config=/path/to/config/file.yml --ct-config=/path/to/config/ct-common.yml
 
 # Legal
 This project is available under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0.html).
