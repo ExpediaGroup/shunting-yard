@@ -203,7 +203,6 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader).delete(messageEvent.get());
   }
 
   @Test
@@ -228,7 +227,6 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader).delete(event.get());
   }
 
   @Test
@@ -255,7 +253,6 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader).delete(event.get());
   }
 
   @Test
@@ -278,7 +275,6 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader).delete(event.get());
   }
 
   @Test
@@ -305,7 +301,6 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader).delete(event.get());
   }
 
   @Test
@@ -331,7 +326,6 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader).delete(event.get());
   }
 
   @Test
@@ -354,7 +348,6 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader).delete(event.get());
   }
 
   @Test
@@ -376,7 +369,6 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader).delete(event.get());
   }
 
   @Test
@@ -401,7 +393,6 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader).delete(event.get());
   }
 
   @Test
@@ -429,7 +420,6 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader).delete(event.get());
   }
 
   @Test
@@ -449,7 +439,6 @@ public class MessageReaderAdapterTest {
     MetaStoreEvent actual = messageReaderAdapter.read().get();
 
     assertMetaStoreEvent(expected, actual);
-    verify(messageReader).delete(event.get());
   }
 
   @Test

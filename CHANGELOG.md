@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## TBD
+### Fixed
+* Moved SQS message deletion from `MessageReaderAdapter` to `FilteringMessageReader` to mimic previous behaviour and delete all messages, even if they are filtered.
+
 ## [2.0.0] - 2019-04-16
 ### Added
 * Support for specifying target database and table name.

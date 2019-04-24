@@ -16,6 +16,8 @@
 package com.hotels.shunting.yard.replicator.exec.messaging;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -28,9 +30,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import com.expedia.apiary.extensions.receiver.common.event.ListenerEvent;
 import com.expedia.apiary.extensions.receiver.common.messaging.MessageEvent;
 import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
-import com.expedia.apiary.extensions.receiver.common.event.ListenerEvent;
 
 import com.hotels.shunting.yard.replicator.exec.receiver.TableSelector;
 
@@ -88,6 +90,9 @@ public class FilteringMessageReaderTest {
     event = filteringMessageReader.read().get().getEvent();
     assertThat(event.getDbName()).isEqualTo(DB_NAME);
     assertThat(event.getTableName()).isEqualTo(TABLE_NAME3);
+    verify(delegate).delete(messageEvent1);
+    verify(delegate).delete(messageEvent2);
+    verify(delegate).delete(messageEvent3);
   }
 
   @Test
@@ -108,17 +113,30 @@ public class FilteringMessageReaderTest {
     event = filteringMessageReader.read().get().getEvent();
     assertThat(event.getDbName()).isEqualTo(DB_NAME);
     assertThat(event.getTableName()).isEqualTo(TABLE_NAME3);
+    verify(delegate).delete(messageEvent1);
+    verify(delegate).delete(messageEvent2);
+    verify(delegate).delete(messageEvent3);
   }
 
   @Test
   public void emptyDelegateReader() {
     filteringMessageReader = new FilteringMessageReader(delegate, tableSelector);
     assertThat(filteringMessageReader.read()).isEqualTo(Optional.empty());
+    verify(delegate).delete(messageEvent1);
   }
 
   @Test
   public void typicalDelete() {
     filteringMessageReader = new FilteringMessageReader(delegate, tableSelector);
+    filteringMessageReader.delete(messageEvent1);
+    verify(delegate).delete(messageEvent1);
+  }
+
+  @Test
+  public void deleteThrowsException() {
+    filteringMessageReader = new FilteringMessageReader(delegate, tableSelector);
+    doThrow(new RuntimeException()).when(delegate)
+        .delete(any());
     filteringMessageReader.delete(messageEvent1);
     verify(delegate).delete(messageEvent1);
   }
