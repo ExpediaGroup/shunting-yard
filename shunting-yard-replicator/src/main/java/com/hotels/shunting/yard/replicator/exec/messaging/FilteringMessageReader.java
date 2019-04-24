@@ -41,10 +41,14 @@ public class FilteringMessageReader implements MessageReader {
   @Override
   public Optional<MessageEvent> read() {
     Optional<MessageEvent> event = delegate.read();
-    event.ifPresent(e -> delete(e));
-    if (event.isPresent() && tableSelector.canProcess(event.get().getEvent())) {
+    if (!event.isPresent()) {
+      return Optional.empty();
+    }
+    MessageEvent messageEvent = event.get();
+    if (tableSelector.canProcess(messageEvent.getEvent())) {
       return event;
     } else {
+      delete(messageEvent);
       return Optional.empty();
     }
   }

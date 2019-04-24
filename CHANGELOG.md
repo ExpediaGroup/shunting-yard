@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## TBD
 ### Fixed
-* Moved SQS message deletion from `MessageReaderAdapter` to `FilteringMessageReader` to mimic previous behaviour and delete all messages, even if they are filtered.
+* `FilteringMessageReader` now deletes filtered messages to mimic previous behaviour of delete on read.
 
 ## [2.0.0] - 2019-04-16
 ### Added

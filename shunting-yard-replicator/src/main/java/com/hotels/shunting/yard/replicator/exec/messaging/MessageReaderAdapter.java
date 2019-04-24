@@ -61,6 +61,7 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
     Optional<MessageEvent> event = messageReader.read();
     if (event.isPresent()) {
       MessageEvent messageEvent = event.get();
+      messageReader.delete(event.get());
       return Optional.of(map(messageEvent.getEvent()));
     } else {
       return Optional.empty();

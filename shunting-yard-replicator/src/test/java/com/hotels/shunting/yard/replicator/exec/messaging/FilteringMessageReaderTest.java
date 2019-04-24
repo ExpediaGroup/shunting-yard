@@ -90,9 +90,7 @@ public class FilteringMessageReaderTest {
     event = filteringMessageReader.read().get().getEvent();
     assertThat(event.getDbName()).isEqualTo(DB_NAME);
     assertThat(event.getTableName()).isEqualTo(TABLE_NAME3);
-    verify(delegate).delete(messageEvent1);
     verify(delegate).delete(messageEvent2);
-    verify(delegate).delete(messageEvent3);
   }
 
   @Test
@@ -114,8 +112,6 @@ public class FilteringMessageReaderTest {
     assertThat(event.getDbName()).isEqualTo(DB_NAME);
     assertThat(event.getTableName()).isEqualTo(TABLE_NAME3);
     verify(delegate).delete(messageEvent1);
-    verify(delegate).delete(messageEvent2);
-    verify(delegate).delete(messageEvent3);
   }
 
   @Test
