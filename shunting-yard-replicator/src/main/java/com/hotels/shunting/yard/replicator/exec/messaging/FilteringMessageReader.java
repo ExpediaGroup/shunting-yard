@@ -18,12 +18,17 @@ package com.hotels.shunting.yard.replicator.exec.messaging;
 import java.io.IOException;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.expedia.apiary.extensions.receiver.common.messaging.MessageEvent;
 import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
 
 import com.hotels.shunting.yard.replicator.exec.receiver.TableSelector;
 
 public class FilteringMessageReader implements MessageReader {
+
+  private static final Logger log = LoggerFactory.getLogger(FilteringMessageReader.class);
 
   private final MessageReader delegate;
   private final TableSelector tableSelector;
@@ -36,16 +41,26 @@ public class FilteringMessageReader implements MessageReader {
   @Override
   public Optional<MessageEvent> read() {
     Optional<MessageEvent> event = delegate.read();
-    if (event.isPresent() && tableSelector.canProcess(event.get().getEvent())) {
+    if (!event.isPresent()) {
+      return Optional.empty();
+    }
+    MessageEvent messageEvent = event.get();
+    if (tableSelector.canProcess(messageEvent.getEvent())) {
       return event;
     } else {
+      delete(messageEvent);
       return Optional.empty();
     }
   }
 
   @Override
   public void delete(MessageEvent event) {
-    delegate.delete(event);
+    try {
+      delegate.delete(event);
+      log.debug("Message deleted successfully");
+    } catch (Exception e) {
+      log.error("Could not delete message from queue: ", e);
+    }
   }
 
   @Override
