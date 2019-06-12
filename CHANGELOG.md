@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Fixed
 * `FilteringMessageReader` now deletes filtered messages to mimic previous behaviour of delete on read.
 
+### Changed
+- Excluded `org.pentaho.pentaho-aggdesigner-algorithm` dependency as it's not available in Maven Central.
+
 ## [2.0.0] - 2019-04-16
 ### Added
 * Support for specifying target database and table name.
