@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!--
-  Copyright (C) 2016-2019 Expedia Inc.
+  Copyright (C) 2016-2019 Expedia, Inc.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@
     </layout>
   </appender>
 
-  <logger name="com.hotels.shunting">
+  <logger name="com.expediagroup.shuntingyard">
     <level value="DEBUG"/>
   </logger>
 

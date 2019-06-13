@@ -4,20 +4,21 @@
   <parent>
     <groupId>com.hotels</groupId>
     <artifactId>hotels-oss-parent</artifactId>
-    <version>2.3.5</version>
+    <version>4.0.1</version>
   </parent>
 
+  <groupId>com.expediagroup</groupId>
   <artifactId>shunting-yard</artifactId>
-  <version>2.0.2-SNAPSHOT</version>
+  <version>3.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Shunting Yard Parent</name>
-  <url>https://github.com/HotelsDotCom/shunting-yard</url>
+  <url>https://github.com/ExpediaGroup/shunting-yard</url>
   <inceptionYear>2016</inceptionYear>
 
   <scm>
-    <connection>scm:git:git@github.com:HotelsDotCom/shunting-yard.git</connection>
-    <developerConnection>scm:git:git@github.com:HotelsDotCom/shunting-yard.git</developerConnection>
-    <url>https://github.com/HotelsDotCom/shunting-yard</url>
+    <connection>scm:git:git@github.com:ExpediaGroup/shunting-yard.git</connection>
+    <developerConnection>scm:git:git@github.com:ExpediaGroup/shunting-yard.git</developerConnection>
+    <url>https://github.com/ExpediaGroup/shunting-yard</url>
     <tag>HEAD</tag>
   </scm>
 
@@ -248,9 +249,7 @@
           <configuration>
             <!-- excluding files that don't need a header update -->
             <excludes>
-              <exclude>src/main/java/com/hotels/shunting/yard/common/receiver/thrift/EventIdFactory.java</exclude>
-              <exclude>src/test/java/com/hotels/shunting/yard/common/receiver/thrift/EventIdFactoryTest.java</exclude>
-              <exclude>src/main/java/com/hotels/shunting/yard/common/receiver/thrift/ExpressionBuilder.java</exclude>
+              <exclude>src/main/java/com/expediagroup/shuntingyard/common/receiver/thrift/ExpressionBuilder.java</exclude>
             </excludes>
           </configuration>
         </plugin>
