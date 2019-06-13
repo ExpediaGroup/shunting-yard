@@ -249,9 +249,7 @@
           <configuration>
             <!-- excluding files that don't need a header update -->
             <excludes>
-              <exclude>src/main/java/com/hotels/shunting/yard/common/receiver/thrift/EventIdFactory.java</exclude>
-              <exclude>src/test/java/com/hotels/shunting/yard/common/receiver/thrift/EventIdFactoryTest.java</exclude>
-              <exclude>src/main/java/com/hotels/shunting/yard/common/receiver/thrift/ExpressionBuilder.java</exclude>
+              <exclude>src/main/java/com/expediagroup/shuntingyard/common/receiver/thrift/ExpressionBuilder.java</exclude>
             </excludes>
           </configuration>
         </plugin>
