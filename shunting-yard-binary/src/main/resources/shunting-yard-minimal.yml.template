@@ -5,7 +5,7 @@ replica-catalog:
   name: target-data-warehouse
   hive-metastore-uris: thrift://domain-name.eu-west-1.compute.amazonaws.com:9083
 event-receiver:
-  message-reader-factory-class: com.hotels.shunting.yard.receiver.sqs.messaging.SqsMessageReaderFactory
+  message-reader-factory-class: com.expediagroup.shuntingyard.receiver.sqs.messaging.SqsMessageReaderFactory
   configuration-properties:
     com.hotels.shunting.yard.event.receiver.sqs.queue: https://sqs.us-west-2.amazonaws.com/1234567/sqs-queue
     com.hotels.shunting.yard.event.receiver.sqs.wait.time.seconds: 15
