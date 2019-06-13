@@ -11,13 +11,13 @@
   <version>2.0.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Shunting Yard Parent</name>
-  <url>https://github.com/HotelsDotCom/shunting-yard</url>
+  <url>https://github.com/ExpediaGroup/shunting-yard</url>
   <inceptionYear>2016</inceptionYear>
 
   <scm>
-    <connection>scm:git:git@github.com:HotelsDotCom/shunting-yard.git</connection>
-    <developerConnection>scm:git:git@github.com:HotelsDotCom/shunting-yard.git</developerConnection>
-    <url>https://github.com/HotelsDotCom/shunting-yard</url>
+    <connection>scm:git:git@github.com:ExpediaGroup/shunting-yard.git</connection>
+    <developerConnection>scm:git:git@github.com:ExpediaGroup/shunting-yard.git</developerConnection>
+    <url>https://github.com/ExpediaGroup/shunting-yard</url>
     <tag>HEAD</tag>
   </scm>
 
