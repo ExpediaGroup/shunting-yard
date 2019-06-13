@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - Maven group ID is now com.expediagroup.shuntingyard (was com.hotels.shunting.yard).
 - All Java classes moved to com.expediagroup.shuntingyard (was com.hotels.shunting.yard).
 - hotels-oss-parent version updated to 4.0.1 (was 2.3.5).
+- Updated configuration properties to not have package names in them.
 
 ## [2.0.1] - 2019-06-12
 ### Fixed
