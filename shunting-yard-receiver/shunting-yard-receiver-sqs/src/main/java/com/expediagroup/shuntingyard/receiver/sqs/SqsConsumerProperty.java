@@ -26,7 +26,7 @@ public enum SqsConsumerProperty implements Property {
   AWS_ACCESS_KEY("aws.access.key", null),
   AWS_SECRET_KEY("aws.secret.key", null);
 
-  private static final String PROPERTY_PREFIX = "com.hotels.shunting.yard.event.receiver.sqs.";
+  private static final String PROPERTY_PREFIX = "sqs.";
 
   private final String unPrefixedKey;
   private final Object defaultValue;

@@ -15,7 +15,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.hotels</groupId>
+      <groupId>com.expediagroup</groupId>
       <artifactId>shunting-yard-common</artifactId>
       <version>${project.version}</version>
     </dependency>

@@ -25,12 +25,10 @@ import static com.expediagroup.shuntingyard.receiver.sqs.SqsConsumerProperty.WAI
 
 import org.junit.Test;
 
-import com.expediagroup.shuntingyard.receiver.sqs.SqsConsumerProperty;
-
 public class SqsConsumerPropertyTest {
 
   private static String prefixedKey(String key) {
-    return "com.hotels.shunting.yard.event.receiver.sqs." + key;
+    return "sqs." + key;
   }
 
   @Test

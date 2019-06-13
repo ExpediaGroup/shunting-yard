@@ -7,8 +7,8 @@ replica-catalog:
 event-receiver:
   message-reader-factory-class: com.expediagroup.shuntingyard.receiver.sqs.messaging.SqsMessageReaderFactory
   configuration-properties:
-    com.hotels.shunting.yard.event.receiver.sqs.queue: https://sqs.us-west-2.amazonaws.com/1234567/sqs-queue
-    com.hotels.shunting.yard.event.receiver.sqs.wait.time.seconds: 15
+    sqs.queue: https://sqs.us-west-2.amazonaws.com/1234567/sqs-queue
+    sqs.wait.time.seconds: 15
 source-table-filter:
   table-names:
     - db1.table_1
