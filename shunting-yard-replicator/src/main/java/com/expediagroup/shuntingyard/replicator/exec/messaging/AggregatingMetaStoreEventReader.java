@@ -117,7 +117,7 @@ public class AggregatingMetaStoreEventReader implements MetaStoreEventReader {
         log.warn("Thread was interrupted whilst buffering message. Retrying...", e);
       } catch (ExecutionException e) {
         // TODO at this point all previously read messages will be lost: this will be addressed in
-        // https://github.com/HotelsDotCom/shunting-yard/issues/3
+        // https://github.com/ExpediaGroup/shunting-yard/issues/3
         lastSubmittedTask = null;
         requestMoreMessagesIfNeeded();
         Throwable cause = e.getCause();
