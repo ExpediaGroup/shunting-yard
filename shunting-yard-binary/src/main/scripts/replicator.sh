@@ -49,7 +49,7 @@ if [[ -z ${HADOOP_CLASSPATH-} ]]; then
 fi
 
 java -cp $SHUNTING_YARD_CLASSPATH:$HADOOP_CLASSPATH \
-  com.hotels.shunting.yard.replicator.exec.MetaStoreEventReplication \
+  com.expediagroup.shuntingyard.replicator.exec.MetaStoreEventReplication \
   "$@"
 
 exit

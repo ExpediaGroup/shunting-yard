@@ -3,9 +3,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+
+[3.0.0] - TBD
+
+### Changed
+- Maven group ID is now com.expediagroup.shuntingyard (was com.hotels.shunting.yard).
+- All Java classes moved to com.expediagroup.shuntingyard (was com.hotels.shunting.yard).
+- hotels-oss-parent version updated to 4.0.1 (was 2.3.5).
+- Updated configuration properties to not have package names in them.
+
 ## [2.0.1] - 2019-06-12
 ### Fixed
 * `FilteringMessageReader` now deletes filtered messages to mimic previous behaviour of delete on read.
+
+### Changed
+- Excluded `org.pentaho.pentaho-aggdesigner-algorithm` dependency as it's not available in Maven Central.
 
 ## [2.0.0] - 2019-04-16
 ### Added

@@ -6,7 +6,7 @@ Shunting Yard reads serialized Hive Metastore Events from a queue ([AWS SQS](htt
 
 You can obtain Shunting Yard from Maven Central:
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.hotels/shunting-yard/badge.svg?subject=com.hotels:shunting-yard)](https://maven-badges.herokuapp.com/maven-central/com.hotels/shunting-yard) [![Build Status](https://travis-ci.org/HotelsDotCom/shunting-yard.svg?branch=master)](https://travis-ci.org/HotelsDotCom/shunting-yard) [![Coverage Status](https://coveralls.io/repos/github/HotelsDotCom/shunting-yard/badge.svg?branch=master)](https://coveralls.io/github/HotelsDotCom/shunting-yard?branch=master) ![GitHub license](https://img.shields.io/github/license/HotelsDotCom/shunting-yard.svg)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.expediagroup/shunting-yard/badge.svg?subject=com.expediagroup:shunting-yard)](https://maven-badges.herokuapp.com/maven-central/com.expediagroup/shunting-yard) [![Build Status](https://travis-ci.org/ExpediaGroup/shunting-yard.svg?branch=master)](https://travis-ci.org/ExpediaGroup/shunting-yard) [![Coverage Status](https://coveralls.io/repos/github/ExpediaGroup/shunting-yard/badge.svg?branch=master)](https://coveralls.io/github/ExpediaGroup/shunting-yard?branch=master) ![GitHub license](https://img.shields.io/github/license/ExpediaGroup/shunting-yard.svg)
 
 ## System architecture
 
@@ -77,8 +77,8 @@ The YAML fragment below shows some common options for setting up the base source
       hive-metastore-uris: thrift://emr-master-2.compute.amazonaws.com:9083
     event-receiver:
       configuration-properties:
-        com.hotels.shunting.yard.event.receiver.sqs.queue: https://sqs.us-west-2.amazonaws.com/123456789/sqs-queue
-        com.hotels.shunting.yard.event.receiver.sqs.wait.time.seconds: 20
+        sqs.queue: https://sqs.us-west-2.amazonaws.com/123456789/sqs-queue
+        sqs.wait.time.seconds: 20
     source-table-filter:
       table-names:
         - test_database.test_table_1
@@ -144,8 +144,8 @@ The table below describes all the available configuration values for Shunting Ya
 |`source-catalog.hive-metastore-uris`|Yes|Fully qualified URI of the source cluster's Hive Metastore Thrift service.|
 |`replica-catalog.name`|Yes|A name for the replica catalog for events and logging.|
 |`replica-catalog.hive-metastore-uris`|Yes|Fully qualified URI of the replica cluster's Hive Metastore Thrift service.|
-|`event-receiver.configuration-properties.com.hotels.shunting.yard.event.receiver.sqs.queue`|Yes|Fully qualified URI of the [AWS SQS](https://aws.amazon.com/sqs/) Queue to read the Hive events from.|
-|`event-receiver.configuration-properties.com.hotels.shunting.yard.event.receiver.sqs.wait.time.seconds`|No|Wait time in seconds for which the receiver will poll the SQS queue for a batch of messages. Default is 10 seconds. Read more about long polling with AWS SQS [here](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html).|
+|`sqs.queue`|Yes|Fully qualified URI of the [AWS SQS](https://aws.amazon.com/sqs/) Queue to read the Hive events from.|
+|`sqs.wait.time.seconds`|No|Wait time in seconds for which the receiver will poll the SQS queue for a batch of messages. Default is 10 seconds. Read more about long polling with AWS SQS [here](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html).|
 |`source-table-filter.table-names`|No|A list of tables selected for Shunting Yard replication. Supported format: `database_1.table_1, database_2.table_2`. If these are not provided, Shunting Yard will not replicate any tables.|
 |`table-replications[n].source-table.database-name`|No|The name of the database in which the table you wish to replicate is located. `table-replications` section is optional and if it is not provided, Shunting Yard will use the database name and table name from the source for the replica.|
 |`table-replications[n].source-table.table-name`|No|The name of the table which you wish to replicate.|
