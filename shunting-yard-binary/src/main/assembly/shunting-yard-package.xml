@@ -17,6 +17,7 @@
       <outputDirectory>lib</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <excludes>
+        <exclude>com.expediagroup:*</exclude>
         <exclude>com.hotels:*</exclude>
         <exclude>com.google.api*:*</exclude>
         <exclude>com.google.cloud*:*</exclude>
