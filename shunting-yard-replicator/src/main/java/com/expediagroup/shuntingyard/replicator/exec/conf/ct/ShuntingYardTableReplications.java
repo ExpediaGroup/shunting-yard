@@ -19,7 +19,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,7 +26,7 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "")
 public class ShuntingYardTableReplications {
 
-  private @Valid @NotEmpty List<ShuntingYardTableReplication> tableReplications;
+  private @Valid List<ShuntingYardTableReplication> tableReplications;
 
   public List<ShuntingYardTableReplication> getTableReplications() {
     return tableReplications;
