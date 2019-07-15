@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,17 +22,17 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.hadoop.hive.metastore.api.MetaException;
+import org.apache.hadoop.hive.metastore.events.ListenerEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 
 public class JavaMetaStoreEventSerDe implements MetaStoreEventSerDe {
   private static final Logger log = LoggerFactory.getLogger(JavaMetaStoreEventSerDe.class);
 
   @Override
-  public byte[] marshal(SerializableListenerEvent listenerEvent) throws MetaException {
+  public byte[] marshal(ListenerEvent listenerEvent) throws MetaException {
     ByteArrayOutputStream buffer = new ByteArrayOutputStream();
     try (ObjectOutputStream out = new ObjectOutputStream(buffer)) {
       out.writeObject(listenerEvent);
@@ -45,9 +45,10 @@ public class JavaMetaStoreEventSerDe implements MetaStoreEventSerDe {
   }
 
   @Override
-  public <T extends SerializableListenerEvent> T unmarshal(byte[] payload) throws MetaException {
+  public <T extends ListenerEvent> T unmarshal(byte[] payload) throws MetaException {
     ByteArrayInputStream buffer = new ByteArrayInputStream(payload);
     try (ObjectInputStream in = new ObjectInputStream(buffer)) {
+      System.out.println(in);
       return (T) in.readObject();
     } catch (Exception e) {
       String message = "Unable to deserialize event from payload";

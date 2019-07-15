@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,14 @@
  */
 package com.hotels.shunting.yard.common.messaging;
 
+import com.hotels.shunting.yard.common.event.EventType;
+
 public class Message {
 
   public static class Builder {
     private String database;
     private String table;
+    private EventType eventType;
     private long timestamp = System.currentTimeMillis();
     private byte[] payload;
 
@@ -49,6 +52,11 @@ public class Message {
       return this;
     }
 
+    public Builder eventType(EventType eventType) {
+      this.eventType = eventType;
+      return this;
+    }
+
     public Builder timestamp(long timestamp) {
       this.timestamp = timestamp;
       return this;
@@ -61,8 +69,8 @@ public class Message {
 
     public Message build() {
       return new Message(checkEmpty(database, "Parameter 'database' is required"),
-          checkEmpty(table, "Parameter 'table' is required"), timestamp,
-          checkNull(payload, "Parameter 'payload' is required"));
+          checkEmpty(table, "Parameter 'table' is required"), checkNull(eventType, "Parameter 'eventType' is required"),
+          timestamp, checkNull(payload, "Parameter 'payload' is required"));
     }
   }
 
@@ -72,12 +80,14 @@ public class Message {
 
   private final String database;
   private final String table;
+  private final EventType eventType;
   private final long timestamp;
   private final byte[] payload;
 
-  private Message(String database, String table, long timestamp, byte[] payload) {
+  private Message(String database, String table, EventType eventType, long timestamp, byte[] payload) {
     this.database = database;
     this.table = table;
+    this.eventType = eventType;
     this.timestamp = timestamp;
     this.payload = payload;
   }
@@ -92,6 +102,10 @@ public class Message {
 
   public String getTable() {
     return table;
+  }
+
+  public EventType getEventType() {
+    return eventType;
   }
 
   public long getTimestamp() {

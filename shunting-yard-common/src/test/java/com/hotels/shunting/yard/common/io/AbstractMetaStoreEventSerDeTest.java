@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ import org.apache.hadoop.hive.metastore.events.CreateTableEvent;
 import org.apache.hadoop.hive.metastore.events.DropPartitionEvent;
 import org.apache.hadoop.hive.metastore.events.DropTableEvent;
 import org.apache.hadoop.hive.metastore.events.InsertEvent;
+import org.apache.hadoop.hive.metastore.events.ListenerEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -129,13 +130,13 @@ public abstract class AbstractMetaStoreEventSerDeTest {
         serializableInsertEvent() };
   }
 
-  public @Parameter SerializableListenerEvent event;
+  public @Parameter ListenerEvent event;
 
   protected abstract MetaStoreEventSerDe serDe();
 
   @Test
   public void typical() throws Exception {
-    SerializableListenerEvent processedEvent = serDe().unmarshal(serDe().marshal(event));
+    ListenerEvent processedEvent = serDe().unmarshal(serDe().marshal(event));
     assertThat(processedEvent).isNotSameAs(event).isEqualTo(event);
   }
 

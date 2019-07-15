@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,9 +55,9 @@ public abstract class SerializableListenerEvent implements Serializable {
     environmentContext = event.getEnvironmentContext();
   }
 
-  public EventType getEventType() {
-    return EventType.forClass(this.getClass());
-  }
+  // public EventType getEventType() {
+  // return EventType.forClass(this.getClass());
+  // }
 
   public abstract String getDatabaseName();
 

@@ -24,12 +24,14 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hive.metastore.events.ListenerEvent;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.header.Header;
+import org.apache.kafka.common.header.Headers;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 import com.hotels.shunting.yard.common.io.SerDeException;
 import com.hotels.shunting.yard.common.messaging.MessageReader;
@@ -75,7 +77,7 @@ public class KafkaMessageReader implements MessageReader {
   }
 
   @Override
-  public SerializableListenerEvent next() {
+  public ListenerEvent next() {
     readRecordsIfNeeded();
     return eventPayLoad(records.next());
   }
@@ -86,8 +88,16 @@ public class KafkaMessageReader implements MessageReader {
     }
   }
 
-  private SerializableListenerEvent eventPayLoad(ConsumerRecord<Long, byte[]> message) {
+  private ListenerEvent eventPayLoad(ConsumerRecord<Long, byte[]> message) {
     try {
+      Headers headers = message.headers();
+      Iterator<Header> itr = headers.headers("eventType").iterator();
+
+      while (itr.hasNext()) {
+        Header header = itr.next();
+        System.out.println(new String(header.value()));
+      }
+
       return eventSerDe.unmarshal(message.value());
     } catch (Exception e) {
       throw new SerDeException("Unable to unmarshall event", e);

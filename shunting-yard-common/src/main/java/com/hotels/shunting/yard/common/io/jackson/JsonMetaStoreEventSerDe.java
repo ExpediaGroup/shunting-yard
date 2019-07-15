@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import org.apache.hadoop.hive.metastore.HiveMetaStore.HMSHandler;
 import org.apache.hadoop.hive.metastore.api.MetaException;
 import org.apache.hadoop.hive.metastore.api.SkewedInfo;
 import org.apache.hadoop.hive.metastore.events.CreateTableEvent;
@@ -33,7 +34,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import com.hotels.shunting.yard.common.event.EventType;
-import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 
 public class JsonMetaStoreEventSerDe implements MetaStoreEventSerDe {
@@ -60,7 +60,7 @@ public class JsonMetaStoreEventSerDe implements MetaStoreEventSerDe {
   }
 
   @Override
-  public byte[] marshal(SerializableListenerEvent listenerEvent) throws MetaException {
+  public byte[] marshal(ListenerEvent listenerEvent) throws MetaException {
     try {
       log.debug("Marshalling event: {}", listenerEvent);
       ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -78,7 +78,7 @@ public class JsonMetaStoreEventSerDe implements MetaStoreEventSerDe {
   }
 
   @Override
-  public <T extends SerializableListenerEvent> T unmarshal(byte[] payload) throws MetaException {
+  public <T extends ListenerEvent> T unmarshal(byte[] payload) throws MetaException {
     try {
       if (log.isDebugEnabled()) {
         log.debug("Marshalled event is: {}", new String(payload));
@@ -86,11 +86,12 @@ public class JsonMetaStoreEventSerDe implements MetaStoreEventSerDe {
       ByteArrayInputStream buffer = new ByteArrayInputStream(payload);
       // As we don't know the type in advance we can only deserialize the event twice:
       // 1. Create a dummy object just to find out the type
-      T genericEvent = mapper.readerFor(HeplerSerializableListenerEvent.class).readValue(buffer);
-      log.debug("Umarshal event of type: {}", genericEvent.getEventType());
+      T genericEvent = mapper.readerFor(HelperListenerEvent.class).readValue(buffer);
+      // log.debug("Umarshal event of type: {}", genericEvent.getEventType());
       // 2. Deserialize the actual object
       buffer.reset();
-      T event = mapper.readerFor(genericEvent.getEventType().eventClass()).readValue(buffer);
+      // T event = mapper.readerFor(genericEvent.getEventType().eventClass()).readValue(buffer);
+      T event = mapper.readerFor(EventType.ON_DROP_TABLE.eventClass()).readValue(buffer);
       log.debug("Unmarshalled event is: {}", event);
       return event;
     } catch (Exception e) {
@@ -100,34 +101,37 @@ public class JsonMetaStoreEventSerDe implements MetaStoreEventSerDe {
     }
   }
 
-  static class HeplerSerializableListenerEvent extends SerializableListenerEvent {
+  static class HelperListenerEvent extends ListenerEvent {
     private static final long serialVersionUID = 1L;
     private static final ListenerEvent DUMMY_EVENT = new CreateTableEvent(null, false, null);
 
     private EventType eventType;
 
-    HeplerSerializableListenerEvent() {
-      super(DUMMY_EVENT);
+    // HelperListenerEvent() {
+    // super(DUMMY_EVENT);
+    // }
+    public HelperListenerEvent(boolean status, HMSHandler handler) {
+      super(status, handler);
     }
 
-    @Override
-    public EventType getEventType() {
-      return eventType;
-    }
+    // @Override
+    // public EventType getEventType() {
+    // return eventType;
+    // }
 
     public void setEventType(EventType eventType) {
       this.eventType = eventType;
     }
 
-    @Override
-    public String getDatabaseName() {
-      return null;
-    }
-
-    @Override
-    public String getTableName() {
-      return null;
-    }
+    // @Override
+    // public String getDatabaseName() {
+    // return null;
+    // }
+    //
+    // @Override
+    // public String getTableName() {
+    // return null;
+    // }
   }
 
 }

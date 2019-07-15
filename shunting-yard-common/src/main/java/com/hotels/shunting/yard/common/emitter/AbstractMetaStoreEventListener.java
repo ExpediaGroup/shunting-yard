@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,10 @@
  */
 package com.hotels.shunting.yard.common.emitter;
 
+import static org.apache.hadoop.hive.conf.HiveConf.ConfVars.METASTOREURIS;
+
 import static com.hotels.shunting.yard.common.emitter.EmitterUtils.error;
+import static com.hotels.shunting.yard.common.event.CustomEventParameters.HIVE_VERSION;
 
 import java.util.concurrent.ExecutorService;
 
@@ -37,11 +40,13 @@ import org.apache.hadoop.hive.metastore.events.DropIndexEvent;
 import org.apache.hadoop.hive.metastore.events.DropPartitionEvent;
 import org.apache.hadoop.hive.metastore.events.DropTableEvent;
 import org.apache.hadoop.hive.metastore.events.InsertEvent;
+import org.apache.hadoop.hive.metastore.events.ListenerEvent;
 import org.apache.hadoop.hive.metastore.events.LoadPartitionDoneEvent;
+import org.apache.hive.common.util.HiveVersionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hotels.shunting.yard.common.event.SerializableListenerEvent;
+import com.hotels.shunting.yard.common.event.EventType;
 import com.hotels.shunting.yard.common.event.SerializableListenerEventFactory;
 import com.hotels.shunting.yard.common.io.MetaStoreEventSerDe;
 import com.hotels.shunting.yard.common.messaging.Message;
@@ -72,11 +77,13 @@ public abstract class AbstractMetaStoreEventListener extends MetaStoreEventListe
     return new WrappingMessageTask(getMessageTaskFactory().newTask(message));
   }
 
-  private Message withPayload(SerializableListenerEvent event) throws MetaException {
+  private Message withPayload(ListenerEvent event, String dbName, String tableName, EventType eventType)
+    throws MetaException {
     return Message
         .builder()
-        .database(event.getDatabaseName())
-        .table(event.getTableName())
+        .database(dbName)
+        .table(tableName)
+        .eventType(eventType)
         .payload(getMetaStoreEventSerDe().marshal(event))
         .build();
   }
@@ -85,7 +92,12 @@ public abstract class AbstractMetaStoreEventListener extends MetaStoreEventListe
   public void onCreateTable(CreateTableEvent tableEvent) throws MetaException {
     log.info("Create table event received");
     try {
-      executorService.submit(message(withPayload(serializableListenerEventFactory.create(tableEvent))));
+      tableEvent.putParameter(HIVE_VERSION.varname(), HiveVersionInfo.getVersion());
+      tableEvent.putParameter(METASTOREURIS.varname, super.getConf().get(METASTOREURIS.varname));
+
+      executorService
+          .submit(message(withPayload(tableEvent, tableEvent.getTable().getDbName(),
+              tableEvent.getTable().getTableName(), EventType.ON_CREATE_TABLE)));
     } catch (Exception e) {
       error(e);
     }
@@ -95,7 +107,9 @@ public abstract class AbstractMetaStoreEventListener extends MetaStoreEventListe
   public void onDropTable(DropTableEvent tableEvent) throws MetaException {
     log.info("Drop table event received");
     try {
-      executorService.submit(message(withPayload(serializableListenerEventFactory.create(tableEvent))));
+      executorService
+          .submit(message(withPayload(tableEvent, tableEvent.getTable().getDbName(),
+              tableEvent.getTable().getTableName(), EventType.ON_DROP_TABLE)));
     } catch (Exception e) {
       error(e);
     }
@@ -105,7 +119,9 @@ public abstract class AbstractMetaStoreEventListener extends MetaStoreEventListe
   public void onAlterTable(AlterTableEvent tableEvent) throws MetaException {
     log.info("Alter table event received");
     try {
-      executorService.submit(message(withPayload(serializableListenerEventFactory.create(tableEvent))));
+      executorService
+          .submit(message(withPayload(tableEvent, tableEvent.getNewTable().getDbName(),
+              tableEvent.getNewTable().getTableName(), EventType.ON_ALTER_TABLE)));
     } catch (Exception e) {
       error(e);
     }
@@ -115,7 +131,9 @@ public abstract class AbstractMetaStoreEventListener extends MetaStoreEventListe
   public void onAddPartition(AddPartitionEvent partitionEvent) throws MetaException {
     log.info("Add partition event received");
     try {
-      executorService.submit(message(withPayload(serializableListenerEventFactory.create(partitionEvent))));
+      executorService
+          .submit(message(withPayload(partitionEvent, partitionEvent.getTable().getDbName(),
+              partitionEvent.getTable().getTableName(), EventType.ON_ADD_PARTITION)));
     } catch (Exception e) {
       error(e);
     }
@@ -125,7 +143,9 @@ public abstract class AbstractMetaStoreEventListener extends MetaStoreEventListe
   public void onDropPartition(DropPartitionEvent partitionEvent) throws MetaException {
     log.info("Drop partition event received");
     try {
-      executorService.submit(message(withPayload(serializableListenerEventFactory.create(partitionEvent))));
+      executorService
+          .submit(message(withPayload(partitionEvent, partitionEvent.getTable().getDbName(),
+              partitionEvent.getTable().getTableName(), EventType.ON_DROP_PARTITION)));
     } catch (Exception e) {
       error(e);
     }
@@ -135,7 +155,9 @@ public abstract class AbstractMetaStoreEventListener extends MetaStoreEventListe
   public void onAlterPartition(AlterPartitionEvent partitionEvent) throws MetaException {
     log.info("Alter partition event received");
     try {
-      executorService.submit(message(withPayload(serializableListenerEventFactory.create(partitionEvent))));
+      executorService
+          .submit(message(withPayload(partitionEvent, partitionEvent.getTable().getDbName(),
+              partitionEvent.getTable().getTableName(), EventType.ON_ALTER_PARTITION)));
     } catch (Exception e) {
       error(e);
     }
@@ -145,7 +167,8 @@ public abstract class AbstractMetaStoreEventListener extends MetaStoreEventListe
   public void onInsert(InsertEvent insertEvent) throws MetaException {
     log.info("Insert event received");
     try {
-      executorService.submit(message(withPayload(serializableListenerEventFactory.create(insertEvent))));
+      executorService
+          .submit(message(withPayload(insertEvent, insertEvent.getTable(), insertEvent.getDb(), EventType.ON_INSERT)));
     } catch (Exception e) {
       error(e);
     }

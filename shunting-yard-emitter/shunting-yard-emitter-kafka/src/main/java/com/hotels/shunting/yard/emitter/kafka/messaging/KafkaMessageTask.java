@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package com.hotels.shunting.yard.emitter.kafka.messaging;
 
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.header.Headers;
 
 import com.hotels.shunting.yard.common.messaging.Message;
 import com.hotels.shunting.yard.common.messaging.MessageTask;
@@ -36,7 +37,12 @@ class KafkaMessageTask implements MessageTask {
 
   @Override
   public void run() {
-    producer.send(new ProducerRecord<>(topic, partition(), message.getTimestamp(), message.getPayload()));
+    ProducerRecord<Long, byte[]> pr = new ProducerRecord<Long, byte[]>(topic, partition(), message.getTimestamp(),
+        message.getPayload());
+
+    Headers headers = pr.headers();
+    headers.add("eventType", message.getEventType().name().getBytes());
+    producer.send(pr);
   }
 
   private int partition() {

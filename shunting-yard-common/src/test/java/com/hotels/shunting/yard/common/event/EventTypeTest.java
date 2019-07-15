@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.hadoop.hive.metastore.events.ListenerEvent;
 import org.junit.Test;
 
 public class EventTypeTest {
 
   @Test
   public void eventClassesAreUnique() {
-    Map<Class<? extends SerializableListenerEvent>, EventType> cache = new HashMap<>();
+    Map<Class<? extends ListenerEvent>, EventType> cache = new HashMap<>();
     for (EventType et : EventType.values()) {
       assertThat(cache).doesNotContainKey(et.eventClass());
       cache.put(et.eventClass(), et);

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package com.hotels.shunting.yard.emitter.sqs.messaging;
 
-import org.datanucleus.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,11 +42,12 @@ class SqsMessageTask implements MessageTask {
   @Override
   public void run() {
     LOG.info("Sending message to topic {} and group ID {}", topic, messageGroupId);
-    producer.sendMessage(new SendMessageRequest()
-        .withQueueUrl(topic)
-        .withMessageGroupId(messageGroupId)
-        .withMessageBody(new String(Base64.encode(payload)))
-        .withDelaySeconds(0));
+    producer
+        .sendMessage(new SendMessageRequest()
+            .withQueueUrl(topic)
+            .withMessageGroupId(messageGroupId)
+            .withMessageBody(new String(payload))
+            .withDelaySeconds(0));
   }
 
 }
