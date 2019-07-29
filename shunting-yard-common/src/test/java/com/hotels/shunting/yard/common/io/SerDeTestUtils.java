@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -150,7 +150,7 @@ public class SerDeTestUtils {
   public static EnvironmentContext createEnvironmentContext() {
     // Fully populated EnvironmentContext to make sure all fields are serde properly
     EnvironmentContext context = new EnvironmentContext();
-    context.setProperties(ImmutableMap.of("context_key", "context_value"));
+    context.setProperties(ImmutableMap.of("context_key", "context_value", "c1", "v1", "c2", "v2"));
     return context;
   }
 

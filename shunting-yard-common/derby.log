@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Fri Jul 26 13:27:25 BST 2019:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance a816c00e-016c-2e40-0e8a-00000a772ec8 
+on database directory /Users/abhgupta/Desktop/workspace/shunting-yard/shunting-yard-common/metastore_db with class loader sun.misc.Launcher$AppClassLoader@3b192d32 
+Loaded from file:/Users/abhgupta/.m2/repository/org/apache/derby/derby/10.10.2.0/derby-10.10.2.0.jar
+java.vendor=AdoptOpenJDK
+java.runtime.version=1.8.0_212-b03
+user.dir=/Users/abhgupta/Desktop/workspace/shunting-yard/shunting-yard-common
+os.name=Mac OS X
+os.arch=x86_64
+os.version=10.13.6
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''

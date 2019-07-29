@@ -74,6 +74,7 @@
                   <include>com.hotels:shunting-yard-emitter*</include>
                   <include>com.hotels:hcommon-hive-metastore</include>
                   <include>org.apache.kafka:*</include>
+                  <include>com.esotericsoftware:*</include>
                 </includes>
               </artifactSet>
               <relocations>

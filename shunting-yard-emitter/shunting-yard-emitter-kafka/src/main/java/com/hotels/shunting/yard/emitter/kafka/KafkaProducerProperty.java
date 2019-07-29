@@ -16,7 +16,7 @@
 package com.hotels.shunting.yard.emitter.kafka;
 
 import com.hotels.shunting.yard.common.Property;
-import com.hotels.shunting.yard.common.io.jackson.JsonMetaStoreEventSerDe;
+import com.hotels.shunting.yard.common.io.jackson.KryoMetaStoreEventSerDe;
 
 public enum KafkaProducerProperty implements Property {
   TOPIC("topic", null),
@@ -28,7 +28,7 @@ public enum KafkaProducerProperty implements Property {
   BATCH_SIZE("batch.size", 16384),
   LINGER_MS("linger.ms", 1L),
   BUFFER_MEMORY("buffer.memory", 33554432L),
-  SERDE_CLASS("serde.class", JsonMetaStoreEventSerDe.class.getName());
+  SERDE_CLASS("serde.class", KryoMetaStoreEventSerDe.class.getName());
 
   private static final String PROPERTY_PREFIX = "com.hotels.shunting.yard.event.emitter.kafka.";
 

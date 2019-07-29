@@ -42,6 +42,7 @@ class KafkaMessageTask implements MessageTask {
 
     Headers headers = pr.headers();
     headers.add("eventType", message.getEventType().name().getBytes());
+    System.out.println("*********EVENT TYPE=" + message.getEventType().name());
     producer.send(pr);
   }
 
