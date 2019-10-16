@@ -38,6 +38,7 @@ import org.springframework.core.annotation.Order;
 import com.expediagroup.shuntingyard.common.messaging.MessageReaderFactory;
 import com.expediagroup.shuntingyard.replicator.exec.ConfigFileValidator;
 import com.expediagroup.shuntingyard.replicator.exec.conf.EventReceiverConfiguration;
+import com.expediagroup.shuntingyard.replicator.exec.conf.OrphanedDataStrategyConfig;
 import com.expediagroup.shuntingyard.replicator.exec.conf.ReplicaCatalog;
 import com.expediagroup.shuntingyard.replicator.exec.conf.ShuntingYardTableReplicationsMap;
 import com.expediagroup.shuntingyard.replicator.exec.conf.SourceCatalog;
@@ -60,6 +61,7 @@ import com.google.common.base.Supplier;
 
 import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
 
+import com.hotels.bdp.circustrain.api.conf.OrphanedDataStrategy;
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 import com.hotels.hcommon.hive.metastore.client.api.MetaStoreClientFactory;
 import com.hotels.hcommon.hive.metastore.client.closeable.CloseableMetaStoreClientFactory;
@@ -128,9 +130,11 @@ public class CommonBeans {
   @Bean
   ReplicationMetaStoreEventListener replicationMetaStoreEventListener(
       HiveConf replicaHiveConf,
-      Supplier<CloseableMetaStoreClient> replicaMetaStoreClientSupplier) {
+      Supplier<CloseableMetaStoreClient> replicaMetaStoreClientSupplier,
+      OrphanedDataStrategyConfig orphanedDataStrategyConfig) {
     CloseableMetaStoreClient metaStoreClient = replicaMetaStoreClientSupplier.get();
-    ContextFactory contextFactory = new ContextFactory(replicaHiveConf, metaStoreClient, new Marshaller());
+    ContextFactory contextFactory = new ContextFactory(replicaHiveConf, metaStoreClient, new Marshaller(),
+      orphanedDataStrategyConfig.getOrphanedDataStrategy());
     return new CircusTrainReplicationMetaStoreEventListener(metaStoreClient, contextFactory, new CircusTrainRunner());
   }
 

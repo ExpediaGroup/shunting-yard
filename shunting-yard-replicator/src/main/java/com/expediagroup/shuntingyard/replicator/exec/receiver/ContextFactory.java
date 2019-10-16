@@ -41,6 +41,7 @@ import com.expediagroup.shuntingyard.replicator.exec.event.MetaStoreEvent;
 import com.expediagroup.shuntingyard.replicator.exec.external.CircusTrainConfig;
 import com.expediagroup.shuntingyard.replicator.exec.external.Marshaller;
 
+import com.hotels.bdp.circustrain.api.conf.OrphanedDataStrategy;
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 
 public class ContextFactory {
@@ -54,10 +55,14 @@ public class ContextFactory {
   private final CloseableMetaStoreClient metaStoreClient;
   private final Marshaller marshaller;
 
-  public ContextFactory(Configuration conf, CloseableMetaStoreClient metaStoreClient, Marshaller marshaller) {
+  private OrphanedDataStrategy orphanedDataStrategy;
+
+  public ContextFactory(Configuration conf, CloseableMetaStoreClient metaStoreClient, Marshaller marshaller,
+    OrphanedDataStrategy orphanedDataStrategy) {
     this.conf = conf;
     this.metaStoreClient = metaStoreClient;
     this.marshaller = marshaller;
+    this.orphanedDataStrategy = orphanedDataStrategy;
   }
 
   private String dir(MetaStoreEvent event) {
@@ -103,7 +108,8 @@ public class ContextFactory {
 
     marshaller.marshall(configLocation.getAbsolutePath(), circusTrainConfig);
 
-    return new Context(workspace.getAbsolutePath(), configLocation.getAbsolutePath(), circusTrainConfigLocation);
+    return new Context(workspace.getAbsolutePath(), configLocation.getAbsolutePath(), circusTrainConfigLocation,
+      orphanedDataStrategy);
   }
 
   private CircusTrainConfig generateConfiguration(MetaStoreEvent event) {
@@ -116,7 +122,7 @@ public class ContextFactory {
         .replicaMetaStoreUri(conf.get(METASTOREURIS.varname))
         .replication(event.getReplicationMode(), event.getDatabaseName(), event.getTableName(),
             event.getReplicaDatabaseName(), event.getReplicaTableName(), replicaTableLocation,
-            event.getPartitionColumns(), event.getPartitionValues())
+            event.getPartitionColumns(), event.getPartitionValues(), orphanedDataStrategy)
         .build();
     return config;
   }

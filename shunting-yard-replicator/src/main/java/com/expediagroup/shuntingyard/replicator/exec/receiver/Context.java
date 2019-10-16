@@ -15,16 +15,21 @@
  */
 package com.expediagroup.shuntingyard.replicator.exec.receiver;
 
+import com.hotels.bdp.circustrain.api.conf.OrphanedDataStrategy;
+
 public class Context {
 
   private final String workspace;
   private final String configLocation;
   private final String circusTrainConfigLocation;
+  private final OrphanedDataStrategy orphanedDataStrategy;
 
-  Context(String workspace, String configLocation, String circusTrainConfigLocation) {
+  Context(String workspace, String configLocation, String circusTrainConfigLocation,
+    OrphanedDataStrategy orphanedDataStrategy) {
     this.workspace = workspace;
     this.configLocation = configLocation;
     this.circusTrainConfigLocation = circusTrainConfigLocation;
+    this.orphanedDataStrategy = orphanedDataStrategy;
   }
 
   public String getWorkspace() {
@@ -37,6 +42,10 @@ public class Context {
 
   public String getCircusTrainConfigLocation() {
     return circusTrainConfigLocation;
+  }
+
+  public OrphanedDataStrategy getOrphanedDataStrategy() {
+    return orphanedDataStrategy;
   }
 
 }

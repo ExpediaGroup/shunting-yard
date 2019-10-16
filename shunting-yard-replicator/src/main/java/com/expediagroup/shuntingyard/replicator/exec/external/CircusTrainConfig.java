@@ -26,6 +26,7 @@ import java.util.Map;
 import com.expediagroup.shuntingyard.replicator.exec.conf.ReplicaCatalog;
 import com.google.common.base.Joiner;
 
+import com.hotels.bdp.circustrain.api.conf.OrphanedDataStrategy;
 import com.hotels.bdp.circustrain.api.conf.ReplicaTable;
 import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
 import com.hotels.bdp.circustrain.api.conf.SourceCatalog;
@@ -95,9 +96,10 @@ public class CircusTrainConfig {
         String tableName,
         String replicaDatabaseName,
         String replicaTableName,
-        String replicaTableLocation) {
+        String replicaTableLocation,
+        OrphanedDataStrategy orphanedDataStrategy) {
       return replication(replicationMode, databaseName, tableName, replicaDatabaseName, replicaTableName,
-          replicaTableLocation, null, null);
+          replicaTableLocation, null, null, orphanedDataStrategy);
     }
 
     public Builder replication(
@@ -108,7 +110,8 @@ public class CircusTrainConfig {
         String replicaTableName,
         String replicaTableLocation,
         List<String> partitionColumns,
-        List<List<String>> partitionValues) {
+        List<List<String>> partitionValues,
+        OrphanedDataStrategy orphanedDataStrategy) {
       TableReplication tableReplication = new TableReplication();
       tableReplication.setReplicationMode(checkNotNull(replicationMode, "replicationMode is required"));
 
@@ -128,6 +131,8 @@ public class CircusTrainConfig {
       replicaTable.setTableName(checkNotNull(replicaTableName, "replicaTableName is required"));
       replicaTable.setTableLocation(checkNotNull(replicaTableLocation, "replicaTableLocation is required"));
       tableReplication.setReplicaTable(replicaTable);
+
+      tableReplication.setOrphanedDataStrategy(orphanedDataStrategy);
 
       tableReplications.add(tableReplication);
       return this;

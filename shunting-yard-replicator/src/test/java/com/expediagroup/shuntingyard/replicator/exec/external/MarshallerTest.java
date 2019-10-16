@@ -25,10 +25,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.expediagroup.shuntingyard.replicator.exec.external.CircusTrainConfig;
-import com.expediagroup.shuntingyard.replicator.exec.external.Marshaller;
 import com.google.common.io.Files;
 
+import com.hotels.bdp.circustrain.api.conf.OrphanedDataStrategy;
 import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
 
 public class MarshallerTest {
@@ -48,7 +47,8 @@ public class MarshallerTest {
         .copierOption("p1", "val1")
         .copierOption("p2", "val2")
         .replication(ReplicationMode.FULL, "databaseName", "tableName", "replicaDatabaseName", "replicaTableName",
-            "replicaTableLocation", Arrays.asList("part"), Arrays.asList(Arrays.asList("partval")))
+            "replicaTableLocation", Arrays.asList("part"), Arrays.asList(Arrays.asList("partval")),
+          OrphanedDataStrategy.NONE)
         .build();
 
     File file = tmp.newFile("conif.yml");
@@ -65,6 +65,7 @@ public class MarshallerTest {
         .contains("  p1: val1")
         .contains("  p2: val2")
         .contains("table-replications:")
+        .contains("- orphaned-data-strategy: NONE")
         .contains("  replication-mode: FULL")
         .contains("  source-table:")
         .contains("    database-name: databaseName")
@@ -88,7 +89,7 @@ public class MarshallerTest {
         .copierOption("p1", "val1")
         .copierOption("p2", "val2")
         .replication(ReplicationMode.FULL, "databaseName", "tableName", "replicaDatabaseName", "replicaTableName",
-            "replicaTableLocation")
+            "replicaTableLocation", OrphanedDataStrategy.HOUSEKEEPING)
         .build();
 
     File file = tmp.newFile("conif.yml");
@@ -105,6 +106,7 @@ public class MarshallerTest {
         .contains("  p1: val1")
         .contains("  p2: val2")
         .contains("table-replications:")
+        .contains("- orphaned-data-strategy: HOUSEKEEPING")
         .contains("  replication-mode: FULL")
         .contains("  source-table:")
         .contains("    database-name: databaseName")
