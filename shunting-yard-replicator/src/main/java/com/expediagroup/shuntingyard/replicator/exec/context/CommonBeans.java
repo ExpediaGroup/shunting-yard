@@ -43,7 +43,7 @@ import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
 import com.expediagroup.shuntingyard.common.messaging.MessageReaderFactory;
 import com.expediagroup.shuntingyard.replicator.exec.ConfigFileValidator;
 import com.expediagroup.shuntingyard.replicator.exec.conf.EventReceiverConfiguration;
-import com.expediagroup.shuntingyard.replicator.exec.conf.OrphanedDataStrategyConfig;
+import com.expediagroup.shuntingyard.replicator.exec.conf.OrphanedDataStrategyConfiguration;
 import com.expediagroup.shuntingyard.replicator.exec.conf.ReplicaCatalog;
 import com.expediagroup.shuntingyard.replicator.exec.conf.ShuntingYardTableReplicationsMap;
 import com.expediagroup.shuntingyard.replicator.exec.conf.SourceCatalog;
@@ -132,10 +132,10 @@ public class CommonBeans {
   ReplicationMetaStoreEventListener replicationMetaStoreEventListener(
       HiveConf replicaHiveConf,
       Supplier<CloseableMetaStoreClient> replicaMetaStoreClientSupplier,
-      OrphanedDataStrategyConfig orphanedDataStrategyConfig) {
+      OrphanedDataStrategyConfiguration orphanedDataStrategyConfiguration) {
     CloseableMetaStoreClient metaStoreClient = replicaMetaStoreClientSupplier.get();
     ContextFactory contextFactory = new ContextFactory(replicaHiveConf, metaStoreClient, new Marshaller(),
-      orphanedDataStrategyConfig.getOrphanedDataStrategy());
+      orphanedDataStrategyConfiguration.getOrphanedDataStrategy());
     return new CircusTrainReplicationMetaStoreEventListener(metaStoreClient, contextFactory, new CircusTrainRunner());
   }
 

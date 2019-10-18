@@ -22,7 +22,7 @@ import com.hotels.bdp.circustrain.api.conf.OrphanedDataStrategy;
 
 @Configuration
 @ConfigurationProperties
-public class OrphanedDataStrategyConfig {
+public class OrphanedDataStrategyConfiguration {
   private OrphanedDataStrategy orphanedDataStrategy = OrphanedDataStrategy.HOUSEKEEPING;
 
   public void setOrphanedDataStrategy(OrphanedDataStrategy orphanedDataStrategy) {
