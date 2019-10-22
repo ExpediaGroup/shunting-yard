@@ -152,6 +152,8 @@ To override this behaviour, the configuration parameter `orphaned-data-strategy`
  
 This will ensure that Shunting Yard only starts up Circus Train's replication module, and that no paths are added to a Housekeeping database.
 
+This is a necessary step if you want to use a different housekeeping mechanism for your orphaned data, eg. [Beekeeper](https://github.com/ExpediaGroup/beekeeper).
+
 ### Shunting Yard configuration reference
 The table below describes all the available configuration values for Shunting Yard.
 
