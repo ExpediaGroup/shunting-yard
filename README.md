@@ -139,7 +139,7 @@ In this case, the replica database name is not provided in the `table-replicatio
 
 Shunting Yard will invoke Circus Train's default [orphaned data strategy](https://github.com/HotelsDotCom/circus-train/#configuring-replication-and-housekeeping) which is to run the Housekeeping process to cleanup dereferenced snapshots. This means that Housekeeping configuration will need to be provided.
 
-To override this, add the configuration parameter `orphaned-data-strategy`:
+To override this behaviour, the configuration parameter `orphaned-data-strategy` can be provided as follows:
 
     table-replications:
       - source-table:
