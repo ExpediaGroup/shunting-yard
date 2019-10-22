@@ -249,4 +249,12 @@ public class CircusTrainConfigTest {
             "replicaTableName", null, OrphanedDataStrategy.HOUSEKEEPING);
   }
 
+  @Test(expected = NullPointerException.class)
+  public void nullOrphanedDataStrategy() {
+    CircusTrainConfig
+      .builder()
+      .replication(ReplicationMode.METADATA_MIRROR, "databaseName", "tableName", "replicaDatabaseName",
+        "replicaTableName", "replicaTableLocation", null);
+  }
+
 }

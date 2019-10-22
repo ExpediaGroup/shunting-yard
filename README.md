@@ -181,18 +181,6 @@ Graphite configuration can be passed to Shunting Yard using an optional `--ct-co
       namespace: com.company.shuntingyard
       prefix: dev
 
-### Configuring table transformations
-
-Circus Train can transform the metadata of replica tables by adding table parameters during the replication. Please see [Metadata transformations](https://github.com/HotelsDotCom/circus-train#metadata-transformations) in the Circus Train docs for more detailed instructions.
-
-#### Sample ct-config.yml with table transformations:
-
-    transform-options:
-      table-properties:
-        my-custom-property: my-custom-value
-        my-custom-property2: my-custom-value2
-
-
 ### Housekeeping
 
 [Housekeeping](https://github.com/HotelsDotCom/housekeeping) is the process that removes expired and orphaned data on the replica. Shunting Yard delegates housekeeping responsibility to Circus Train. Similar to Graphite configuration, the Housekeeping configuration can also be directly passed to the internal Circus Train instance using the `--ct-config` argument. Refer to the [Circus Train README](https://github.com/HotelsDotCom/circus-train#configuring-housekeeping) for more details.
@@ -207,7 +195,17 @@ Circus Train can transform the metadata of replica tables by adding table parame
         url: jdbc:h2:${housekeeping.h2.database};AUTO_SERVER=TRUE;DB_CLOSE_ON_EXIT=FALSE
         username: user
         password: secret
-        
+
+#### Using Beekeeper for housekeeping
+
+If [Beekeeper](https://github.com/ExpediaGroup/beekeeper) is installed in your data lake, Circus Train can be configured to use Beekeeper to delete orphaned data by adding table parameters to the replica table during the replication. Please see [Metadata transformations](https://github.com/HotelsDotCom/circus-train#metadata-transformations) in the Circus Train docs for more detailed instructions.
+
+##### Sample ct-config.yml to use Beekeeper:
+
+    transform-options:
+      table-properties:
+        '[beekeeper.remove.unreferenced.data]': true
+
 ## Usage with Circus Train common config
 To run Shunting Yard with a Circus Train common config file in addition to its own config file, you just need to execute the `bin/replicator.sh` script in the installation directory and pass both the configuration files: 
 

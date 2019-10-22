@@ -132,7 +132,7 @@ public class CircusTrainConfig {
       replicaTable.setTableLocation(checkNotNull(replicaTableLocation, "replicaTableLocation is required"));
       tableReplication.setReplicaTable(replicaTable);
 
-      tableReplication.setOrphanedDataStrategy(orphanedDataStrategy);
+      tableReplication.setOrphanedDataStrategy(checkNotNull(orphanedDataStrategy));
 
       tableReplications.add(tableReplication);
       return this;
