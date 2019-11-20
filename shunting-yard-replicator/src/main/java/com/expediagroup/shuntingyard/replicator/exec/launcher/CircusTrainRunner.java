@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import com.expediagroup.shuntingyard.replicator.exec.receiver.Context;
 
 import com.hotels.bdp.circustrain.api.CircusTrainException;
+import com.hotels.bdp.circustrain.api.conf.OrphanedDataStrategy;
 
 public class CircusTrainRunner {
   private static final Logger log = LoggerFactory.getLogger(CircusTrainRunner.class);
@@ -52,6 +53,12 @@ public class CircusTrainRunner {
         cli.addArgument("--config=" + context.getCircusTrainConfigLocation());
       }
 
+      String modules = "--modules=replication";
+      if (context.getOrphanedDataStrategy() == OrphanedDataStrategy.HOUSEKEEPING) {
+        modules = modules + ", housekeeping";
+      }
+      cli.addArgument(modules);
+      log.info("Running Circus Train with orphaned data strategy: {}", context.getOrphanedDataStrategy());
       Executor executor = new DefaultExecutor();
       executor.setWorkingDirectory(new File(context.getWorkspace()));
       executor.setStreamHandler(new PumpStreamHandler(out, err));

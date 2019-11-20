@@ -46,15 +46,14 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import com.expedia.apiary.extensions.receiver.common.event.EventType;
+
 import com.expediagroup.shuntingyard.common.ShuntingYardException;
 import com.expediagroup.shuntingyard.replicator.exec.event.MetaStoreEvent;
 import com.expediagroup.shuntingyard.replicator.exec.external.CircusTrainConfig;
 import com.expediagroup.shuntingyard.replicator.exec.external.Marshaller;
-import com.expediagroup.shuntingyard.replicator.exec.receiver.Context;
-import com.expediagroup.shuntingyard.replicator.exec.receiver.ContextFactory;
 
-import com.expedia.apiary.extensions.receiver.common.event.EventType;
-
+import com.hotels.bdp.circustrain.api.conf.OrphanedDataStrategy;
 import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
 import com.hotels.bdp.circustrain.api.conf.TableReplication;
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
@@ -110,7 +109,7 @@ public class ContextFactoryTest {
     when(replicaTable.getSd()).thenReturn(replicaStorageDescriptor);
     when(replicaMetaStoreClient.getTable(REPLICA_DATABASE, REPLICA_TABLE)).thenReturn(replicaTable);
 
-    factory = new ContextFactory(conf, replicaMetaStoreClient, marshaller);
+    factory = new ContextFactory(conf, replicaMetaStoreClient, marshaller, OrphanedDataStrategy.HOUSEKEEPING);
   }
 
   @Test
@@ -128,6 +127,7 @@ public class ContextFactoryTest {
     assertThat(replication.getReplicaTable().getTableLocation())
         .isEqualTo(replicaTableLocation.getParentFile().getAbsolutePath());
     assertThat(context.getCircusTrainConfigLocation()).isNull();
+    assertThat(context.getOrphanedDataStrategy()).isEqualTo(OrphanedDataStrategy.HOUSEKEEPING);
   }
 
   @Test
@@ -147,6 +147,7 @@ public class ContextFactoryTest {
     assertThat(replication.getReplicaTable().getTableLocation())
         .isEqualTo(replicaTableLocation.getParentFile().getAbsolutePath());
     assertThat(context.getCircusTrainConfigLocation()).isNull();
+    assertThat(context.getOrphanedDataStrategy()).isEqualTo(OrphanedDataStrategy.HOUSEKEEPING);
   }
 
   @Test
@@ -166,6 +167,7 @@ public class ContextFactoryTest {
     assertThat(replication.getReplicaTable().getTableLocation())
         .isEqualTo(REPLICA_DATABASE_LOCATION + "/" + REPLICA_TABLE);
     assertThat(context.getCircusTrainConfigLocation()).isNull();
+    assertThat(context.getOrphanedDataStrategy()).isEqualTo(OrphanedDataStrategy.HOUSEKEEPING);
   }
 
   @Test
@@ -186,6 +188,7 @@ public class ContextFactoryTest {
     assertThat(replication.getReplicaTable().getTableLocation())
         .isEqualTo(replicaTableLocation.getParentFile().getAbsolutePath());
     assertThat(context.getCircusTrainConfigLocation()).isEqualTo("ct-config.yml");
+    assertThat(context.getOrphanedDataStrategy()).isEqualTo(OrphanedDataStrategy.HOUSEKEEPING);
   }
 
   @Test
@@ -205,6 +208,7 @@ public class ContextFactoryTest {
     assertThat(replication.getReplicaTable().getTableLocation())
         .isEqualTo(replicaTableLocation.getParentFile().getAbsolutePath());
     assertThat(context.getCircusTrainConfigLocation()).isNull();
+    assertThat(context.getOrphanedDataStrategy()).isEqualTo(OrphanedDataStrategy.HOUSEKEEPING);
   }
 
   @Test(expected = ShuntingYardException.class)

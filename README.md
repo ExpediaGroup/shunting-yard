@@ -135,6 +135,25 @@ In this case, the replica database name is not provided in the `table-replicatio
         replica-table:
           table-name: test_table_1
 
+### Orphaned data strategy
+
+Shunting Yard will invoke Circus Train's default [orphaned data strategy](https://github.com/HotelsDotCom/circus-train/#configuring-replication-and-housekeeping) which is to run the Housekeeping process to cleanup dereferenced snapshots. This means that Housekeeping configuration will need to be provided.
+
+To override this behaviour, the configuration parameter `orphaned-data-strategy` can be provided as follows:
+
+    table-replications:
+      - source-table:
+          database-name: source_database
+          table-name: test_table
+        replica-table:
+          database-name: replica_database
+          table-name: test_table_1 
+    orphaned-data-strategy: NONE 
+ 
+This will ensure that Shunting Yard only starts up Circus Train's replication module, and that no paths are added to a Housekeeping database.
+
+This is a necessary step if you want to use a different housekeeping mechanism for your orphaned data, eg. [Beekeeper](https://github.com/ExpediaGroup/beekeeper).
+
 ### Shunting Yard configuration reference
 The table below describes all the available configuration values for Shunting Yard.
 
@@ -147,6 +166,7 @@ The table below describes all the available configuration values for Shunting Ya
 |`sqs.queue`|Yes|Fully qualified URI of the [AWS SQS](https://aws.amazon.com/sqs/) Queue to read the Hive events from.|
 |`sqs.wait.time.seconds`|No|Wait time in seconds for which the receiver will poll the SQS queue for a batch of messages. Default is 10 seconds. Read more about long polling with AWS SQS [here](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html).|
 |`source-table-filter.table-names`|No|A list of tables selected for Shunting Yard replication. Supported format: `database_1.table_1, database_2.table_2`. If these are not provided, Shunting Yard will not replicate any tables.|
+|`orphaned-data-strategy`|No|Orphaned data strategy to use for replications. Possible values: `NONE` and `HOUSEKEEPING`. Default is `HOUSEKEEPING`.|
 |`table-replications[n].source-table.database-name`|No|The name of the database in which the table you wish to replicate is located. `table-replications` section is optional and if it is not provided, Shunting Yard will use the database name and table name from the source for the replica.|
 |`table-replications[n].source-table.table-name`|No|The name of the table which you wish to replicate.|
 |`table-replications[n].replica-table.database-name`|No|The name of the destination database in which to replicate the table. Defaults to `source-table.database-name`|
@@ -177,7 +197,17 @@ Graphite configuration can be passed to Shunting Yard using an optional `--ct-co
         url: jdbc:h2:${housekeeping.h2.database};AUTO_SERVER=TRUE;DB_CLOSE_ON_EXIT=FALSE
         username: user
         password: secret
-        
+
+#### Using Beekeeper for housekeeping
+
+If [Beekeeper](https://github.com/ExpediaGroup/beekeeper) is installed in your data lake, Circus Train can be configured to use Beekeeper to delete orphaned data by adding table parameters to the replica table during the replication. Please see [Metadata transformations](https://github.com/HotelsDotCom/circus-train#metadata-transformations) in the Circus Train docs for more detailed instructions.
+
+##### Sample ct-config.yml to use Beekeeper:
+
+    transform-options:
+      table-properties:
+        '[beekeeper.remove.unreferenced.data]': true
+
 ## Usage with Circus Train common config
 To run Shunting Yard with a Circus Train common config file in addition to its own config file, you just need to execute the `bin/replicator.sh` script in the installation directory and pass both the configuration files: 
 

@@ -23,8 +23,8 @@ import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 
 import com.expediagroup.shuntingyard.replicator.exec.external.CircusTrainConfig;
-import com.expediagroup.shuntingyard.replicator.yaml.YamlFactory;
 
+import com.hotels.bdp.circustrain.api.conf.OrphanedDataStrategy;
 import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
 
 public class YamlFactoryTest {
@@ -40,7 +40,8 @@ public class YamlFactoryTest {
         .append("  hive-metastore-uris: sourceMetaStoreUri\n")
         .append("  name: source\n")
         .append("table-replications:\n")
-        .append("- partition-fetcher-buffer-size: 1000\n")
+        .append("- orphaned-data-strategy: HOUSEKEEPING\n")
+        .append("  partition-fetcher-buffer-size: 1000\n")
         .append("  partition-iterator-batch-size: 1000\n")
         .append("  qualified-replica-name: replicadatabasename.replicatablename\n")
         .append("  replica-database-name: replicadatabasename\n")
@@ -50,6 +51,7 @@ public class YamlFactoryTest {
         .append("    table-name: replicaTableName\n")
         .append("  replica-table-name: replicatablename\n")
         .append("  replication-mode: FULL\n")
+        .append("  replication-strategy: UPSERT\n")
         .append("  source-table:\n")
         .append("    database-name: databaseName\n")
         .append("    generate-partition-filter: true\n")
@@ -63,7 +65,7 @@ public class YamlFactoryTest {
         .sourceMetaStoreUri("sourceMetaStoreUri")
         .replicaMetaStoreUri("replicaMetaStoreUri")
         .replication(ReplicationMode.FULL, "databaseName", "tableName", "replicaDatabaseName", "replicaTableName",
-            "replicaTableLocation")
+            "replicaTableLocation", OrphanedDataStrategy.HOUSEKEEPING)
         .build();
     Yaml yaml = YamlFactory.newYaml();
     yaml.dump(circusTrainConfig, sw);

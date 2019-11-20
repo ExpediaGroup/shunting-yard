@@ -37,13 +37,13 @@
     <slf4j.version>1.7.7</slf4j.version>
     <hadoop.version>2.7.2</hadoop.version>
     <hive.version>2.3.4</hive.version>
-    <hcommon.hive.metastore.version>1.0.0</hcommon.hive.metastore.version>
+    <hcommon.hive.metastore.version>1.4.1</hcommon.hive.metastore.version>
     <derby.version>10.10.2.0</derby.version>
     <kafka.version>0.11.0.1</kafka.version>
     <aws.version>1.11.415</aws.version>
     <aws.kcl.version>1.9.0</aws.kcl.version>
     <aws.kpl.version>0.12.8</aws.kpl.version>
-    <circus.train.version>12.0.0</circus.train.version>
+    <circus.train.version>15.0.0</circus.train.version>
     <commons.lang3.version>3.7</commons.lang3.version>
     <thrift.version>0.10.0</thrift.version>
     <guava.version>25.0-jre</guava.version>

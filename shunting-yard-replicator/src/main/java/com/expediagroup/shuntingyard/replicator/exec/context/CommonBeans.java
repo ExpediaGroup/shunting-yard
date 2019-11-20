@@ -15,9 +15,10 @@
  */
 package com.expediagroup.shuntingyard.replicator.exec.context;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import static com.expediagroup.shuntingyard.replicator.exec.app.ConfigurationVariables.CT_CONFIG;
 import static com.expediagroup.shuntingyard.replicator.exec.app.ConfigurationVariables.WORKSPACE;
-import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,9 +36,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
+import com.google.common.base.Supplier;
+
+import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
+
 import com.expediagroup.shuntingyard.common.messaging.MessageReaderFactory;
 import com.expediagroup.shuntingyard.replicator.exec.ConfigFileValidator;
 import com.expediagroup.shuntingyard.replicator.exec.conf.EventReceiverConfiguration;
+import com.expediagroup.shuntingyard.replicator.exec.conf.OrphanedDataStrategyConfiguration;
 import com.expediagroup.shuntingyard.replicator.exec.conf.ReplicaCatalog;
 import com.expediagroup.shuntingyard.replicator.exec.conf.ShuntingYardTableReplicationsMap;
 import com.expediagroup.shuntingyard.replicator.exec.conf.SourceCatalog;
@@ -56,9 +62,6 @@ import com.expediagroup.shuntingyard.replicator.exec.receiver.ContextFactory;
 import com.expediagroup.shuntingyard.replicator.exec.receiver.ReplicationMetaStoreEventListener;
 import com.expediagroup.shuntingyard.replicator.exec.receiver.TableSelector;
 import com.expediagroup.shuntingyard.replicator.metastore.DefaultMetaStoreClientSupplier;
-import com.google.common.base.Supplier;
-
-import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
 
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 import com.hotels.hcommon.hive.metastore.client.api.MetaStoreClientFactory;
@@ -128,9 +131,11 @@ public class CommonBeans {
   @Bean
   ReplicationMetaStoreEventListener replicationMetaStoreEventListener(
       HiveConf replicaHiveConf,
-      Supplier<CloseableMetaStoreClient> replicaMetaStoreClientSupplier) {
+      Supplier<CloseableMetaStoreClient> replicaMetaStoreClientSupplier,
+      OrphanedDataStrategyConfiguration orphanedDataStrategyConfiguration) {
     CloseableMetaStoreClient metaStoreClient = replicaMetaStoreClientSupplier.get();
-    ContextFactory contextFactory = new ContextFactory(replicaHiveConf, metaStoreClient, new Marshaller());
+    ContextFactory contextFactory = new ContextFactory(replicaHiveConf, metaStoreClient, new Marshaller(),
+      orphanedDataStrategyConfiguration.getOrphanedDataStrategy());
     return new CircusTrainReplicationMetaStoreEventListener(metaStoreClient, contextFactory, new CircusTrainRunner());
   }
 

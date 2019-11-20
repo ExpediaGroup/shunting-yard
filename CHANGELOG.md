@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ## [TBD] - TBD
 ### Changed
 - Upgraded `hotels-oss-parent` to 4.1.0 (was 4.0.1).
+- Upgraded `hcommon-hive-metastore` to 1.4.1 (was 1.0.0).
+- Upgraded Circus Train version to 15.0.0 (was 12.0.0).
+
+### Added
+- Support for skipping Circus Train's housekeeping process.
 
 ## [3.0.0] - 2019-06-20
 ### Changed

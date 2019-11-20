@@ -23,8 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import com.expediagroup.shuntingyard.replicator.exec.external.CircusTrainConfig;
-
+import com.hotels.bdp.circustrain.api.conf.OrphanedDataStrategy;
 import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
 import com.hotels.bdp.circustrain.api.conf.TableReplication;
 
@@ -43,7 +42,7 @@ public class CircusTrainConfigTest {
         .copierOption("p1", "val1")
         .copierOption("p2", "val2")
         .replication(ReplicationMode.FULL, "databaseName", "tableName", "replicaDatabaseName", "replicaTableName",
-            "replicaTableLocation", Arrays.asList("part"), Arrays.asList(Arrays.asList("partval")))
+            "replicaTableLocation", Arrays.asList("part"), Arrays.asList(Arrays.asList("partval")), OrphanedDataStrategy.NONE)
         .build();
     assertThat(config.getSourceCatalog().getName()).isEqualTo("sourceName");
     assertThat(config.getSourceCatalog().getHiveMetastoreUris()).isEqualTo("sourceMetaStoreUri");
@@ -62,6 +61,7 @@ public class CircusTrainConfigTest {
     assertThat(replication.getReplicaTable().getDatabaseName()).isEqualTo("replicaDatabaseName");
     assertThat(replication.getReplicaTable().getTableName()).isEqualTo("replicaTableName");
     assertThat(replication.getReplicaTable().getTableLocation()).isEqualTo("replicaTableLocation");
+    assertThat(replication.getOrphanedDataStrategy()).isEqualTo(OrphanedDataStrategy.NONE);
   }
 
   @Test
@@ -76,7 +76,7 @@ public class CircusTrainConfigTest {
         .copierOption("p2", "val2")
         .replication(ReplicationMode.FULL, "databaseName", "tableName", "replicaDatabaseName", "replicaTableName",
             "replicaTableLocation", Arrays.asList("part_a", "part_b"),
-            Arrays.asList(Arrays.asList("a", "1"), Arrays.asList("a", "2")))
+            Arrays.asList(Arrays.asList("a", "1"), Arrays.asList("a", "2")), OrphanedDataStrategy.HOUSEKEEPING)
         .build();
     assertThat(config.getSourceCatalog().getName()).isEqualTo("sourceName");
     assertThat(config.getSourceCatalog().getHiveMetastoreUris()).isEqualTo("sourceMetaStoreUri");
@@ -96,6 +96,7 @@ public class CircusTrainConfigTest {
     assertThat(replication.getReplicaTable().getDatabaseName()).isEqualTo("replicaDatabaseName");
     assertThat(replication.getReplicaTable().getTableName()).isEqualTo("replicaTableName");
     assertThat(replication.getReplicaTable().getTableLocation()).isEqualTo("replicaTableLocation");
+    assertThat(replication.getOrphanedDataStrategy()).isEqualTo(OrphanedDataStrategy.HOUSEKEEPING);
   }
 
   @Test
@@ -107,7 +108,7 @@ public class CircusTrainConfigTest {
         .replicaName("replicaName")
         .replicaMetaStoreUri("replicaMetaStoreUri")
         .replication(ReplicationMode.METADATA_UPDATE, "databaseName", "tableName", "replicaDatabaseName",
-            "replicaTableName", "replicaTableLocation")
+            "replicaTableName", "replicaTableLocation", OrphanedDataStrategy.HOUSEKEEPING)
         .build();
     assertThat(config.getSourceCatalog().getName()).isEqualTo("sourceName");
     assertThat(config.getSourceCatalog().getHiveMetastoreUris()).isEqualTo("sourceMetaStoreUri");
@@ -126,6 +127,7 @@ public class CircusTrainConfigTest {
     assertThat(replication.getReplicaTable().getDatabaseName()).isEqualTo("replicaDatabaseName");
     assertThat(replication.getReplicaTable().getTableName()).isEqualTo("replicaTableName");
     assertThat(replication.getReplicaTable().getTableLocation()).isEqualTo("replicaTableLocation");
+    assertThat(replication.getOrphanedDataStrategy()).isEqualTo(OrphanedDataStrategy.HOUSEKEEPING);
   }
 
   @Test
@@ -136,7 +138,7 @@ public class CircusTrainConfigTest {
         .replicaName("replicaName")
         .replicaMetaStoreUri("replicaMetaStoreUri")
         .replication(ReplicationMode.METADATA_UPDATE, "databaseName", "tableName", "replicaDatabaseName",
-            "replicaTableName", "replicaTableLocation")
+            "replicaTableName", "replicaTableLocation", OrphanedDataStrategy.HOUSEKEEPING)
         .build();
     assertThat(config.getSourceCatalog().getName()).isEqualTo("source");
   }
@@ -149,7 +151,7 @@ public class CircusTrainConfigTest {
         .sourceMetaStoreUri("sourceMetaStoreUri")
         .replicaMetaStoreUri("replicaMetaStoreUri")
         .replication(ReplicationMode.METADATA_UPDATE, "databaseName", "tableName", "replicaDatabaseName",
-            "replicaTableName", "replicaTableLocation")
+            "replicaTableName", "replicaTableLocation", OrphanedDataStrategy.HOUSEKEEPING)
         .build();
     assertThat(config.getReplicaCatalog().getName()).isEqualTo("replica");
   }
@@ -164,7 +166,7 @@ public class CircusTrainConfigTest {
         .replicaName("replicaName")
         .replicaMetaStoreUri("replicaMetaStoreUri")
         .replication(ReplicationMode.METADATA_UPDATE, "databaseName", "tableName", "replicaDatabaseName",
-            "replicaTableName", "replicaTableLocation")
+            "replicaTableName", "replicaTableLocation", OrphanedDataStrategy.HOUSEKEEPING)
         .build();
   }
 
@@ -178,7 +180,7 @@ public class CircusTrainConfigTest {
         .sourceMetaStoreUri("sourceMetaStoreUri")
         .replicaName("replicaName")
         .replication(ReplicationMode.METADATA_UPDATE, "databaseName", "tableName", "replicaDatabaseName",
-            "replicaTableName", "replicaTableLocation")
+            "replicaTableName", "replicaTableLocation", OrphanedDataStrategy.HOUSEKEEPING)
         .build();
   }
 
@@ -220,7 +222,7 @@ public class CircusTrainConfigTest {
     CircusTrainConfig
         .builder()
         .replication(null, "databaseName", "tableName", "replicaDatabaseName", "replicaTableName",
-            "replicaTableLocation");
+            "replicaTableLocation", OrphanedDataStrategy.HOUSEKEEPING);
   }
 
   @Test(expected = NullPointerException.class)
@@ -228,7 +230,7 @@ public class CircusTrainConfigTest {
     CircusTrainConfig
         .builder()
         .replication(ReplicationMode.METADATA_MIRROR, null, "tableName", "replicaDatabaseName", "replicaTableName",
-            "replicaTableLocation");
+            "replicaTableLocation", OrphanedDataStrategy.HOUSEKEEPING);
   }
 
   @Test(expected = NullPointerException.class)
@@ -236,7 +238,7 @@ public class CircusTrainConfigTest {
     CircusTrainConfig
         .builder()
         .replication(ReplicationMode.METADATA_MIRROR, "databaseName", null, "replicaDatabaseName", "replicaTableName",
-            "replicaTableLocation");
+            "replicaTableLocation", OrphanedDataStrategy.HOUSEKEEPING);
   }
 
   @Test(expected = NullPointerException.class)
@@ -244,7 +246,15 @@ public class CircusTrainConfigTest {
     CircusTrainConfig
         .builder()
         .replication(ReplicationMode.METADATA_MIRROR, "databaseName", "tableName", "replicaDatabaseName",
-            "replicaTableName", null);
+            "replicaTableName", null, OrphanedDataStrategy.HOUSEKEEPING);
+  }
+
+  @Test(expected = NullPointerException.class)
+  public void nullOrphanedDataStrategy() {
+    CircusTrainConfig
+      .builder()
+      .replication(ReplicationMode.METADATA_MIRROR, "databaseName", "tableName", "replicaDatabaseName",
+        "replicaTableName", "replicaTableLocation", null);
   }
 
 }
