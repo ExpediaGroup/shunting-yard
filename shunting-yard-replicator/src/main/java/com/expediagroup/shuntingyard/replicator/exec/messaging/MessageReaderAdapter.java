@@ -149,7 +149,6 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
 
   private boolean isPartitionedTable(String dbName, String tableName) {
     Table sourceTable = null;
-
     try {
       sourceTable = sourceMetastoreClient.getTable(dbName, tableName);
     } catch (TException e) {
@@ -160,7 +159,6 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
       return false;
     }
     return true;
-
   }
 
 }
