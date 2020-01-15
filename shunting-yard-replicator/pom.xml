@@ -99,10 +99,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>com.hotels</groupId>
-      <artifactId>hcommon-hive-metastore</artifactId>
-    </dependency>
 
     <!-- Hibernate for validation annotations -->
     <dependency>

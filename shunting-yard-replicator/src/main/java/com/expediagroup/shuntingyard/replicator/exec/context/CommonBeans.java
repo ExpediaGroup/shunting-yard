@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2019 Expedia, Inc.
+ * Copyright (C) 2016-2020 Expedia, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
 import com.google.common.base.Supplier;
+import com.google.common.collect.Lists;
 
 import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
 
@@ -110,6 +111,16 @@ public class CommonBeans {
     return hiveConf;
   }
 
+  @Bean
+  HiveConf sourceHiveConf(Configuration baseConfiguration, SourceCatalog sourceCatalog) {
+    Map<String, String> properties = new HashMap<>();
+    if (sourceCatalog.getHiveMetastoreUris() != null) {
+      properties.put(ConfVars.METASTOREURIS.varname, sourceCatalog.getHiveMetastoreUris());
+    }
+    HiveConf hiveConf = new HiveConfFactory(Lists.newArrayList(), properties).newInstance();
+    return hiveConf;
+  }
+
   private void putConfigurationProperties(Map<String, String> configurationProperties, Map<String, String> properties) {
     if (configurationProperties != null) {
       properties.putAll(configurationProperties);
@@ -129,13 +140,20 @@ public class CommonBeans {
   }
 
   @Bean
+  Supplier<CloseableMetaStoreClient> sourceMetaStoreClientSupplier(
+      HiveConf sourceHiveConf,
+      MetaStoreClientFactory sourceMetaStoreClientFactory) {
+    return new DefaultMetaStoreClientSupplier(sourceHiveConf, sourceMetaStoreClientFactory);
+  }
+
+  @Bean
   ReplicationMetaStoreEventListener replicationMetaStoreEventListener(
       HiveConf replicaHiveConf,
       Supplier<CloseableMetaStoreClient> replicaMetaStoreClientSupplier,
       OrphanedDataStrategyConfiguration orphanedDataStrategyConfiguration) {
     CloseableMetaStoreClient metaStoreClient = replicaMetaStoreClientSupplier.get();
     ContextFactory contextFactory = new ContextFactory(replicaHiveConf, metaStoreClient, new Marshaller(),
-      orphanedDataStrategyConfiguration.getOrphanedDataStrategy());
+        orphanedDataStrategyConfiguration.getOrphanedDataStrategy());
     return new CircusTrainReplicationMetaStoreEventListener(metaStoreClient, contextFactory, new CircusTrainRunner());
   }
 
@@ -152,6 +170,7 @@ public class CommonBeans {
   @Bean
   MessageReaderAdapter messageReaderAdapter(
       HiveConf replicaHiveConf,
+      Supplier<CloseableMetaStoreClient> sourceMetaStoreClientSupplier,
       EventReceiverConfiguration messageReaderConfig,
       SourceCatalog sourceCatalog,
       TableSelector tableSelector,
@@ -161,7 +180,7 @@ public class CommonBeans {
     MessageReader messageReader = messaReaderFactory.newInstance(replicaHiveConf);
     FilteringMessageReader filteringMessageReader = new FilteringMessageReader(messageReader, tableSelector);
     return new MessageReaderAdapter(filteringMessageReader, sourceCatalog.getHiveMetastoreUris(),
-        new ShuntingYardTableReplicationsMap(shuntingYardTableReplications));
+        sourceMetaStoreClientSupplier.get(), new ShuntingYardTableReplicationsMap(shuntingYardTableReplications));
   }
 
   @Bean
