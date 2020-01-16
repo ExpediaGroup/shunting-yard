@@ -15,13 +15,13 @@
  */
 package com.expediagroup.shuntingyard.replicator.exec.messaging;
 
+import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 import static org.apache.hadoop.hive.conf.HiveConf.ConfVars.METASTOREURIS;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.hadoop.hive.metastore.api.Table;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -81,7 +81,7 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
     }
   }
 
-  private MetaStoreEvent map(ListenerEvent listenerEvent) throws ShuntingYardException {
+  private MetaStoreEvent map(ListenerEvent listenerEvent) {
     String replicaDatabaseName = listenerEvent.getDbName();
     String replicaTableName = listenerEvent.getTableName();
 
@@ -128,11 +128,10 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
       break;
     case ALTER_TABLE:
       AlterTableEvent alterTable = (AlterTableEvent) listenerEvent;
-      if (isPartitionedTable(alterTable.getDbName(), alterTable.getTableName())) {
-        if (alterTable.getTableLocation() != null) {
-          if (alterTable.getTableLocation().equals(alterTable.getOldTableLocation())) {
-            builder.replicationMode(ReplicationMode.METADATA_UPDATE);
-          }
+      if (isPartitionedTable(alterTable.getDbName(), alterTable.getTableName())
+          && alterTable.getTableLocation() != null) {
+        if (alterTable.getTableLocation().equals(alterTable.getOldTableLocation())) {
+          builder.replicationMode(ReplicationMode.METADATA_UPDATE);
         }
       }
       break;
@@ -155,10 +154,7 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
       throw new ShuntingYardException(String.format("Could not find table {}.{}", dbName, tableName), e);
     }
 
-    if (CollectionUtils.isEmpty(sourceTable.getPartitionKeys())) {
-      return false;
-    }
-    return true;
+    return isNotEmpty(sourceTable.getPartitionKeys());
   }
 
 }

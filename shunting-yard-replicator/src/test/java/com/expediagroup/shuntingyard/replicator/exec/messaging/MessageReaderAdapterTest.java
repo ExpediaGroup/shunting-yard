@@ -75,8 +75,6 @@ public class MessageReaderAdapterTest {
   private static final Map<String, String> PARTITION_KEYS_MAP = ImmutableMap
       .of("column_1", "string", "column_2", "integer", "column_3", "string");
   private static final Map<String, String> EMPTY_MAP = ImmutableMap.of();
-  private static final String OLD_PARTITION_LOCATION = "s3://table_location/old_partition_location";
-  private static final String PARTITION_LOCATION = "s3://table_location/partition_location";
   private static final String TEST_DB = "test_db";
   private static final String TEST_TABLE = "test_table";
   private static final String OLD_TEST_TABLE_LOCATION = "s3://old_table_location";
@@ -363,13 +361,36 @@ public class MessageReaderAdapterTest {
   }
 
   @Test
-  public void insertOverwriteEventForUnpartitionedTable() throws MetaException, NoSuchObjectException, TException {
+  public void insertOverwriteEventForUnpartitionedTable() throws TException {
     Optional<MessageEvent> event = newMessageEvent(apiaryAlterTableEvent);
     when(messageReader.read()).thenReturn(event);
     configureMockedEvent(apiaryAlterTableEvent);
 
     when(metaStoreClient.getTable(TEST_DB, TEST_TABLE)).thenReturn(hiveTable);
     when(hiveTable.getPartitionKeys()).thenReturn(Lists.newArrayList());
+    when(apiaryAlterTableEvent.getEventType()).thenReturn(EventType.ALTER_TABLE);
+
+    MetaStoreEvent expected = MetaStoreEvent
+        .builder(EventType.ALTER_TABLE, TEST_DB, TEST_TABLE, REPLICA_DATABASE, REPLICA_TABLE)
+        .environmentContext(EMPTY_MAP)
+        .parameters(PARAMETERS)
+        .replicationMode(ReplicationMode.FULL)
+        .build();
+
+    MetaStoreEvent actual = messageReaderAdapter.read().get();
+
+    assertMetaStoreEvent(expected, actual);
+    verify(messageReader).delete(event.get());
+  }
+
+  @Test
+  public void insertOverwriteEventForUnpartitionedTableWhenPartitionKeysAreNull() throws TException {
+    Optional<MessageEvent> event = newMessageEvent(apiaryAlterTableEvent);
+    when(messageReader.read()).thenReturn(event);
+    configureMockedEvent(apiaryAlterTableEvent);
+
+    when(metaStoreClient.getTable(TEST_DB, TEST_TABLE)).thenReturn(hiveTable);
+    when(hiveTable.getPartitionKeys()).thenReturn(null);
     when(apiaryAlterTableEvent.getEventType()).thenReturn(EventType.ALTER_TABLE);
 
     MetaStoreEvent expected = MetaStoreEvent
