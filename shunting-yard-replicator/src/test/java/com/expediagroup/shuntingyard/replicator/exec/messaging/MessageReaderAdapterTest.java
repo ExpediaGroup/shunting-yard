@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2019 Expedia, Inc.
+ * Copyright (C) 2016-2020 Expedia, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,20 +30,20 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 import org.apache.hadoop.hive.metastore.api.FieldSchema;
+import org.apache.hadoop.hive.metastore.api.MetaException;
+import org.apache.hadoop.hive.metastore.api.NoSuchObjectException;
 import org.apache.hadoop.hive.metastore.api.Partition;
+import org.apache.hadoop.hive.metastore.api.Table;
+import org.apache.thrift.TException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import com.expediagroup.shuntingyard.replicator.exec.conf.ShuntingYardTableReplicationsMap;
-import com.expediagroup.shuntingyard.replicator.exec.conf.ct.ShuntingYardTableReplication;
-import com.expediagroup.shuntingyard.replicator.exec.conf.ct.ShuntingYardTableReplications;
-import com.expediagroup.shuntingyard.replicator.exec.event.MetaStoreEvent;
-import com.expediagroup.shuntingyard.replicator.exec.messaging.MessageReaderAdapter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 
 import com.expedia.apiary.extensions.receiver.common.event.AddPartitionEvent;
 import com.expedia.apiary.extensions.receiver.common.event.AlterPartitionEvent;
@@ -58,9 +58,15 @@ import com.expedia.apiary.extensions.receiver.common.messaging.MessageEvent;
 import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
 import com.expedia.apiary.extensions.receiver.sqs.messaging.SqsMessageProperty;
 
+import com.expediagroup.shuntingyard.replicator.exec.conf.ShuntingYardTableReplicationsMap;
+import com.expediagroup.shuntingyard.replicator.exec.conf.ct.ShuntingYardTableReplication;
+import com.expediagroup.shuntingyard.replicator.exec.conf.ct.ShuntingYardTableReplications;
+import com.expediagroup.shuntingyard.replicator.exec.event.MetaStoreEvent;
+
 import com.hotels.bdp.circustrain.api.conf.ReplicaTable;
 import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
 import com.hotels.bdp.circustrain.api.conf.SourceTable;
+import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MessageReaderAdapterTest {
@@ -69,8 +75,6 @@ public class MessageReaderAdapterTest {
   private static final Map<String, String> PARTITION_KEYS_MAP = ImmutableMap
       .of("column_1", "string", "column_2", "integer", "column_3", "string");
   private static final Map<String, String> EMPTY_MAP = ImmutableMap.of();
-  private static final String OLD_PARTITION_LOCATION = "s3://table_location/old_partition_location";
-  private static final String PARTITION_LOCATION = "s3://table_location/partition_location";
   private static final String TEST_DB = "test_db";
   private static final String TEST_TABLE = "test_table";
   private static final String OLD_TEST_TABLE_LOCATION = "s3://old_table_location";
@@ -92,13 +96,15 @@ public class MessageReaderAdapterTest {
   private @Mock DropTableEvent apiaryDropTableEvent;
 
   private @Mock MessageReader messageReader;
+  private @Mock CloseableMetaStoreClient metaStoreClient;
+  private @Mock Table hiveTable;
   private @Mock Partition partition;
 
   private List<Partition> partitionValues;
   private List<FieldSchema> partitionKeys;
 
   @Before
-  public void init() {
+  public void init() throws MetaException, NoSuchObjectException, TException {
     FieldSchema partitionColumn1 = new FieldSchema("column_1", "string", "");
     FieldSchema partitionColumn2 = new FieldSchema("column_2", "integer", "");
     FieldSchema partitionColumn3 = new FieldSchema("column_3", "string", "");
@@ -123,7 +129,11 @@ public class MessageReaderAdapterTest {
 
     partitionKeys = ImmutableList.of(partitionColumn1, partitionColumn2, partitionColumn3);
     partitionValues = ImmutableList.of(partition);
-    messageReaderAdapter = new MessageReaderAdapter(messageReader, SOURCE_METASTORE_URIS,
+
+    when(hiveTable.getPartitionKeys()).thenReturn(partitionKeys);
+    when(metaStoreClient.getTable(TEST_DB, TEST_TABLE)).thenReturn(hiveTable);
+
+    messageReaderAdapter = new MessageReaderAdapter(messageReader, SOURCE_METASTORE_URIS, metaStoreClient,
         new ShuntingYardTableReplicationsMap(tableReplicationsWrapper));
     when(partition.getValues()).thenReturn(PARTITION_VALUES);
   }
@@ -148,7 +158,7 @@ public class MessageReaderAdapterTest {
 
   @Test
   public void createTableEventWhenTableReplicationsAreNotConfigured() {
-    messageReaderAdapter = new MessageReaderAdapter(messageReader, SOURCE_METASTORE_URIS,
+    messageReaderAdapter = new MessageReaderAdapter(messageReader, SOURCE_METASTORE_URIS, metaStoreClient,
         new ShuntingYardTableReplicationsMap(null));
 
     when(messageReader.read()).thenReturn(newMessageEvent(apiaryCreateTableEvent));
@@ -186,7 +196,7 @@ public class MessageReaderAdapterTest {
     ShuntingYardTableReplications tableReplicationsWrapper = new ShuntingYardTableReplications();
     tableReplicationsWrapper.setTableReplications(tableReplications);
 
-    messageReaderAdapter = new MessageReaderAdapter(messageReader, SOURCE_METASTORE_URIS,
+    messageReaderAdapter = new MessageReaderAdapter(messageReader, SOURCE_METASTORE_URIS, metaStoreClient,
         new ShuntingYardTableReplicationsMap(tableReplicationsWrapper));
 
     Optional<MessageEvent> messageEvent = newMessageEvent(apiaryCreateTableEvent);
@@ -240,8 +250,6 @@ public class MessageReaderAdapterTest {
 
     when(apiaryAlterPartitionEvent.getPartitionKeys()).thenReturn(PARTITION_KEYS_MAP);
     when(apiaryAlterPartitionEvent.getPartitionValues()).thenReturn(PARTITION_VALUES);
-    when(apiaryAlterPartitionEvent.getOldPartitionLocation()).thenReturn(OLD_PARTITION_LOCATION);
-    when(apiaryAlterPartitionEvent.getPartitionLocation()).thenReturn(PARTITION_LOCATION);
     when(apiaryAlterPartitionEvent.getEventType()).thenReturn(EventType.ALTER_PARTITION);
 
     MetaStoreEvent expected = MetaStoreEvent
@@ -283,33 +291,6 @@ public class MessageReaderAdapterTest {
   }
 
   @Test
-  public void metadataOnlySyncEventForPartition() {
-    Optional<MessageEvent> event = newMessageEvent(apiaryAlterPartitionEvent);
-    when(messageReader.read()).thenReturn(event);
-    configureMockedEvent(apiaryAlterPartitionEvent);
-
-    when(apiaryAlterPartitionEvent.getPartitionKeys()).thenReturn(PARTITION_KEYS_MAP);
-    when(apiaryAlterPartitionEvent.getPartitionValues()).thenReturn(PARTITION_VALUES);
-    when(apiaryAlterPartitionEvent.getOldPartitionLocation()).thenReturn(PARTITION_LOCATION);
-    when(apiaryAlterPartitionEvent.getPartitionLocation()).thenReturn(PARTITION_LOCATION);
-    when(apiaryAlterPartitionEvent.getEventType()).thenReturn(EventType.ALTER_PARTITION);
-
-    MetaStoreEvent expected = MetaStoreEvent
-        .builder(EventType.ALTER_PARTITION, TEST_DB, TEST_TABLE, REPLICA_DATABASE, REPLICA_TABLE)
-        .partitionColumns(new ArrayList<String>(PARTITION_KEYS_MAP.keySet()))
-        .partitionValues(PARTITION_VALUES)
-        .replicationMode(ReplicationMode.METADATA_UPDATE)
-        .environmentContext(EMPTY_MAP)
-        .parameters(PARAMETERS)
-        .build();
-
-    MetaStoreEvent actual = messageReaderAdapter.read().get();
-
-    assertMetaStoreEvent(expected, actual);
-    verify(messageReader).delete(event.get());
-  }
-
-  @Test
   public void metadataOnlySyncEventForPartitionWithNullLocations() {
     Optional<MessageEvent> event = newMessageEvent(apiaryAlterPartitionEvent);
     when(messageReader.read()).thenReturn(event);
@@ -317,7 +298,6 @@ public class MessageReaderAdapterTest {
 
     when(apiaryAlterPartitionEvent.getPartitionKeys()).thenReturn(PARTITION_KEYS_MAP);
     when(apiaryAlterPartitionEvent.getPartitionValues()).thenReturn(PARTITION_VALUES);
-    when(apiaryAlterPartitionEvent.getPartitionLocation()).thenReturn(null);
     when(apiaryAlterPartitionEvent.getEventType()).thenReturn(EventType.ALTER_PARTITION);
 
     MetaStoreEvent expected = MetaStoreEvent
@@ -365,6 +345,52 @@ public class MessageReaderAdapterTest {
     configureMockedEvent(apiaryAlterTableEvent);
 
     when(apiaryAlterTableEvent.getTableLocation()).thenReturn(null);
+    when(apiaryAlterTableEvent.getEventType()).thenReturn(EventType.ALTER_TABLE);
+
+    MetaStoreEvent expected = MetaStoreEvent
+        .builder(EventType.ALTER_TABLE, TEST_DB, TEST_TABLE, REPLICA_DATABASE, REPLICA_TABLE)
+        .environmentContext(EMPTY_MAP)
+        .parameters(PARAMETERS)
+        .replicationMode(ReplicationMode.FULL)
+        .build();
+
+    MetaStoreEvent actual = messageReaderAdapter.read().get();
+
+    assertMetaStoreEvent(expected, actual);
+    verify(messageReader).delete(event.get());
+  }
+
+  @Test
+  public void insertOverwriteEventForUnpartitionedTable() throws TException {
+    Optional<MessageEvent> event = newMessageEvent(apiaryAlterTableEvent);
+    when(messageReader.read()).thenReturn(event);
+    configureMockedEvent(apiaryAlterTableEvent);
+
+    when(metaStoreClient.getTable(TEST_DB, TEST_TABLE)).thenReturn(hiveTable);
+    when(hiveTable.getPartitionKeys()).thenReturn(Lists.newArrayList());
+    when(apiaryAlterTableEvent.getEventType()).thenReturn(EventType.ALTER_TABLE);
+
+    MetaStoreEvent expected = MetaStoreEvent
+        .builder(EventType.ALTER_TABLE, TEST_DB, TEST_TABLE, REPLICA_DATABASE, REPLICA_TABLE)
+        .environmentContext(EMPTY_MAP)
+        .parameters(PARAMETERS)
+        .replicationMode(ReplicationMode.FULL)
+        .build();
+
+    MetaStoreEvent actual = messageReaderAdapter.read().get();
+
+    assertMetaStoreEvent(expected, actual);
+    verify(messageReader).delete(event.get());
+  }
+
+  @Test
+  public void insertOverwriteEventForUnpartitionedTableWhenPartitionKeysAreNull() throws TException {
+    Optional<MessageEvent> event = newMessageEvent(apiaryAlterTableEvent);
+    when(messageReader.read()).thenReturn(event);
+    configureMockedEvent(apiaryAlterTableEvent);
+
+    when(metaStoreClient.getTable(TEST_DB, TEST_TABLE)).thenReturn(hiveTable);
+    when(hiveTable.getPartitionKeys()).thenReturn(null);
     when(apiaryAlterTableEvent.getEventType()).thenReturn(EventType.ALTER_TABLE);
 
     MetaStoreEvent expected = MetaStoreEvent
@@ -460,8 +486,9 @@ public class MessageReaderAdapterTest {
   }
 
   private Optional<MessageEvent> newMessageEvent(ListenerEvent event) {
-    return Optional.of(new MessageEvent(event,
-        Collections.singletonMap(SqsMessageProperty.SQS_MESSAGE_RECEIPT_HANDLE, RECEIPT_HANDLE)));
+    return Optional
+        .of(new MessageEvent(event,
+            Collections.singletonMap(SqsMessageProperty.SQS_MESSAGE_RECEIPT_HANDLE, RECEIPT_HANDLE)));
   }
 
   private void configureMockedEvent(ListenerEvent serializableListenerEvent) {

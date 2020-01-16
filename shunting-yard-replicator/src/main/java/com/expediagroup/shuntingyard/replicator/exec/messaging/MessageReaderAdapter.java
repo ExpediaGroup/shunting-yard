@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2019 Expedia, Inc.
+ * Copyright (C) 2016-2020 Expedia, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,17 @@
  */
 package com.expediagroup.shuntingyard.replicator.exec.messaging;
 
+import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 import static org.apache.hadoop.hive.conf.HiveConf.ConfVars.METASTOREURIS;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import com.expediagroup.shuntingyard.replicator.exec.conf.ShuntingYardTableReplicationsMap;
-import com.expediagroup.shuntingyard.replicator.exec.conf.ct.ShuntingYardTableReplication;
-import com.expediagroup.shuntingyard.replicator.exec.event.MetaStoreEvent;
+import org.apache.hadoop.hive.metastore.api.Table;
+import org.apache.thrift.TException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.expedia.apiary.extensions.receiver.common.event.AddPartitionEvent;
 import com.expedia.apiary.extensions.receiver.common.event.AlterPartitionEvent;
@@ -35,20 +37,30 @@ import com.expedia.apiary.extensions.receiver.common.event.ListenerEvent;
 import com.expedia.apiary.extensions.receiver.common.messaging.MessageEvent;
 import com.expedia.apiary.extensions.receiver.common.messaging.MessageReader;
 
+import com.expediagroup.shuntingyard.common.ShuntingYardException;
+import com.expediagroup.shuntingyard.replicator.exec.conf.ShuntingYardTableReplicationsMap;
+import com.expediagroup.shuntingyard.replicator.exec.conf.ct.ShuntingYardTableReplication;
+import com.expediagroup.shuntingyard.replicator.exec.event.MetaStoreEvent;
+
 import com.hotels.bdp.circustrain.api.conf.ReplicationMode;
+import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 
 public class MessageReaderAdapter implements MetaStoreEventReader {
 
+  private static final Logger log = LoggerFactory.getLogger(MessageReaderAdapter.class);
   private final MessageReader messageReader;
   private final String sourceHiveMetastoreUris;
   private final ShuntingYardTableReplicationsMap shuntingYardReplications;
+  private final CloseableMetaStoreClient sourceMetastoreClient;
 
   public MessageReaderAdapter(
       MessageReader messageReader,
       String sourceHiveMetastoreUris,
+      CloseableMetaStoreClient sourceMetastoreClient,
       ShuntingYardTableReplicationsMap shuntingYardReplications) {
     this.messageReader = messageReader;
     this.sourceHiveMetastoreUris = sourceHiveMetastoreUris;
+    this.sourceMetastoreClient = sourceMetastoreClient;
     this.shuntingYardReplications = shuntingYardReplications;
   }
 
@@ -100,11 +112,6 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
       break;
     case ALTER_PARTITION:
       AlterPartitionEvent alterPartition = (AlterPartitionEvent) listenerEvent;
-      if (alterPartition.getPartitionLocation() != null) {
-        if (alterPartition.getPartitionLocation().equals(alterPartition.getOldPartitionLocation())) {
-          builder.replicationMode(ReplicationMode.METADATA_UPDATE);
-        }
-      }
       builder.partitionColumns(new ArrayList<>(alterPartition.getPartitionKeys().keySet()));
       builder.partitionValues(alterPartition.getPartitionValues());
       break;
@@ -121,7 +128,8 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
       break;
     case ALTER_TABLE:
       AlterTableEvent alterTable = (AlterTableEvent) listenerEvent;
-      if (alterTable.getTableLocation() != null) {
+      if (isPartitionedTable(alterTable.getDbName(), alterTable.getTableName())
+          && alterTable.getTableLocation() != null) {
         if (alterTable.getTableLocation().equals(alterTable.getOldTableLocation())) {
           builder.replicationMode(ReplicationMode.METADATA_UPDATE);
         }
@@ -136,6 +144,17 @@ public class MessageReaderAdapter implements MetaStoreEventReader {
       break;
     }
     return builder.build();
+  }
+
+  private boolean isPartitionedTable(String dbName, String tableName) {
+    Table sourceTable = null;
+    try {
+      sourceTable = sourceMetastoreClient.getTable(dbName, tableName);
+    } catch (TException e) {
+      throw new ShuntingYardException(String.format("Could not find table {}.{}", dbName, tableName), e);
+    }
+
+    return isNotEmpty(sourceTable.getPartitionKeys());
   }
 
 }
