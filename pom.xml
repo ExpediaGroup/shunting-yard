@@ -9,7 +9,7 @@
 
   <groupId>com.expediagroup</groupId>
   <artifactId>shunting-yard</artifactId>
-  <version>3.1.0</version>
+  <version>3.1.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Shunting Yard Parent</name>
   <url>https://github.com/ExpediaGroup/shunting-yard</url>
@@ -19,7 +19,7 @@
     <connection>scm:git:git@github.com:ExpediaGroup/shunting-yard.git</connection>
     <developerConnection>scm:git:git@github.com:ExpediaGroup/shunting-yard.git</developerConnection>
     <url>https://github.com/ExpediaGroup/shunting-yard</url>
-    <tag>shunting-yard-3.1.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <modules>
