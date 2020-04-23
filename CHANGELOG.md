@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 # [3.1.1] - TBD
 ### Changed
-- Upgraded version of `hive.version` to `2.3.7` (was `2.3.4`)
+- Upgraded version of `hive.version` to `2.3.7` (was `2.3.4`). Allows Shunting Yard to be used on JDK>=9.
 
 ## [3.1.0] - 2020-01-16
 ### Changed
