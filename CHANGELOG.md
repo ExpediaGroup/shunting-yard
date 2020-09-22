@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 # [3.2.0] - TBD
 ### Changed
-- Upgraded parent of shunting-yard from hotels-oss-parent to eg-oss-parent.
+- Upgraded shunting-yard parent from `hotels-oss-parent` to `eg-oss-parent`.
 
 # [3.1.1] - TBD
 ### Changed
