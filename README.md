@@ -6,7 +6,7 @@ Shunting Yard reads serialized Hive Metastore Events from a queue ([AWS SQS](htt
 
 You can obtain Shunting Yard from Maven Central:
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.expediagroup/shunting-yard/badge.svg?subject=com.expediagroup:shunting-yard)](https://maven-badges.herokuapp.com/maven-central/com.expediagroup/shunting-yard) [![Build Status](https://travis-ci.org/ExpediaGroup/shunting-yard.svg?branch=master)](https://travis-ci.org/ExpediaGroup/shunting-yard) [![Coverage Status](https://coveralls.io/repos/github/ExpediaGroup/shunting-yard/badge.svg?branch=master)](https://coveralls.io/github/ExpediaGroup/shunting-yard?branch=master) ![GitHub license](https://img.shields.io/github/license/ExpediaGroup/shunting-yard.svg)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.expediagroup/shunting-yard/badge.svg?subject=com.expediagroup:shunting-yard)](https://maven-badges.herokuapp.com/maven-central/com.expediagroup/shunting-yard) [![Build Status](https://travis-ci.org/ExpediaGroup/shunting-yard.svg?branch=master)](https://travis-ci.org/ExpediaGroup/shunting-yard) ![build](https://github.com/ExpediaGroup/shunting-yard/workflows/build/badge.svg?event=push)  [![Coverage Status](https://coveralls.io/repos/github/ExpediaGroup/shunting-yard/badge.svg?branch=master)](https://coveralls.io/github/ExpediaGroup/shunting-yard?branch=master) ![GitHub license](https://img.shields.io/github/license/ExpediaGroup/shunting-yard.svg)
 
 ## System architecture
 
