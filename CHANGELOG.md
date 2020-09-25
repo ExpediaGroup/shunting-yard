@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - Upgraded `hcommon.hive.metastore` from `1.4.1` to `1.4.2`.
 - Upgraded `circus.train` from `15.0.0` to `16.3.0`.
 - Upgraded `beeju.version` from `1.2.0` to `3.1.0`.
-- Upgraded `mockito.version` from `2.10.0` to `2.28.2`.
+- Upgraded `mockito.version` from `2.10.0` to `3.5.11`.
 - Upgraded AWS SDK (`aws.version`) from `1.11.415` to `1.11.852`.
 - Upgraded `micrometer.version` (in shunting-yard-replicator) from `1.0.5` to `1.5.4`.
 
