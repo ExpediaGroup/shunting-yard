@@ -35,23 +35,23 @@
     <slf4j.version>1.7.7</slf4j.version>
     <hadoop.version>2.7.2</hadoop.version>
     <hive.version>2.3.7</hive.version>
-    <hcommon.hive.metastore.version>1.4.1</hcommon.hive.metastore.version>
+    <hcommon.hive.metastore.version>1.4.2</hcommon.hive.metastore.version>
     <derby.version>10.10.2.0</derby.version>
     <kafka.version>0.11.0.1</kafka.version>
-    <aws.version>1.11.415</aws.version>
+    <aws.version>1.11.852</aws.version>
     <aws.kcl.version>1.9.0</aws.kcl.version>
     <aws.kpl.version>0.12.8</aws.kpl.version>
-    <circus.train.version>15.0.0</circus.train.version>
+    <circus.train.version>16.3.0</circus.train.version>
     <commons.lang3.version>3.7</commons.lang3.version>
     <thrift.version>0.10.0</thrift.version>
     <guava.version>25.0-jre</guava.version>
 
     <junit.version>4.12</junit.version>
     <assertj.version>3.10.0</assertj.version>
-    <mockito.version>2.10.0</mockito.version>
+    <mockito.version>2.28.2</mockito.version>
     <powermock.version>2.0.0-beta.5</powermock.version>
     <lastcommons.version>5.2.1</lastcommons.version>
-    <beeju.version>1.2.0</beeju.version>
+    <beeju.version>3.1.0</beeju.version>
 
     <maven.shade.plugin.version>3.1.1</maven.shade.plugin.version>
     <shade.prefix>${project.groupId}.shaded</shade.prefix>
