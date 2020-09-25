@@ -30,7 +30,6 @@
 
   <properties>
     <apiary.receiver.sqs.verison>2.0.0</apiary.receiver.sqs.verison>
-    <!--<jacoco.version>0.8.6</jacoco.version>-->
     <jdk.version>1.8</jdk.version>
     <slf4j.version>1.7.7</slf4j.version>
     <hadoop.version>2.7.2</hadoop.version>
