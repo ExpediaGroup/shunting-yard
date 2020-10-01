@@ -15,8 +15,8 @@
   <inceptionYear>2016</inceptionYear>
 
   <scm>
-    <connection>scm:git:git@github.com:ExpediaGroup/shunting-yard.git</connection>
-    <developerConnection>scm:git:git@github.com:ExpediaGroup/shunting-yard.git</developerConnection>
+    <connection>scm:git:https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/ExpediaGroup/shunting-yard.git</connection>
+    <developerConnection>scm:git:https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/ExpediaGroup/shunting-yard.git</developerConnection>
     <url>https://github.com/ExpediaGroup/shunting-yard</url>
     <tag>HEAD</tag>
   </scm>
