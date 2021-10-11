@@ -2,6 +2,10 @@
 
 Shunting Yard reads serialized Hive Metastore Events from a queue ([AWS SQS](https://aws.amazon.com/sqs/) is currently supported) and replicates the data between two data lakes. It does this by building a YAML file with the information provided in the event which is then passed to [Circus Train](https://github.com/HotelsDotCom/circus-train) to perform the replication.
 
+## Status ⚠️
+
+This project is no longer in active development. 
+
 ## Start using
 
 You can obtain Shunting Yard from Maven Central:
